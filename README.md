@@ -1,11 +1,8 @@
 # BrowserOS Mobile
 
 <div align="center">
-  <img src="https://pub-b52e24a001bd463a848cb2d8c8667f63.r2.dev/browseros-banner.png" alt="BrowserOS Banner" >
   <h3>The World's First AI-Powered Mobile Browser Agent 🚀</h3>
   <br>
-  <a href="https://discord.gg/YKwjt5vuKr"><img src="https://img.shields.io/badge/Discord-Join%20us-blue" alt="Discord"></a>
-  <a href="https://twitter.com/browseros_ai"><img src="https://img.shields.io/twitter/follow/browserOS_ai?style=social" alt="Twitter"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" alt="License"></a>
 </div>
 
@@ -61,8 +58,6 @@ We'd love your help making BrowserOS Mobile better!
 
 *   🐛 [Report bugs](https://github.com/somdipto/zerant/issues)
 *   💡 [Suggest features](https://github.com/somdipto/zerant/issues)
-*   💬 [Join our Discord](https://discord.gg/YKwjt5vuKr)
-*   🐦 [Follow us on Twitter](https://x.com/browserOS_ai)
 
 ## 📄 License
 
