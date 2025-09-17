@@ -1,5 +1,8 @@
 # BrowserOS Mobile
-  <h3>Your AI-Powered Mobile Browser Agent 🚀</h3>
+
+<div align="center">
+  <img src="https://pub-b52e24a001bd463a848cb2d8c8667f63.r2.dev/browseros-banner.png" alt="BrowserOS Banner" >
+  <h3>The World's First AI-Powered Mobile Browser Agent 🚀</h3>
   <br>
   <a href="https://discord.gg/YKwjt5vuKr"><img src="https://img.shields.io/badge/Discord-Join%20us-blue" alt="Discord"></a>
   <a href="https://twitter.com/browseros_ai"><img src="https://img.shields.io/twitter/follow/browserOS_ai?style=social" alt="Twitter"></a>
@@ -8,7 +11,7 @@
 
 ## 🌐 About BrowserOS Mobile
 
-BrowserOS Mobile is an open-source mobile browser with a built-in AI agent. It's designed to bring the power of AI to your mobile browsing experience, allowing you to automate tasks, summarize articles, and much more, right from your phone.
+BrowserOS Mobile is the world's first open-source mobile browser with a built-in AI agent. It's designed to bring the power of AI to your mobile browsing experience, allowing you to automate tasks, summarize articles, and much more, right from your phone.
 
 ## ✨ Features
 
