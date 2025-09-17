@@ -1,0 +1,10 @@
+**/.DS_Store
+.gcs_entries
+**/dmg
+**/env
+**/logs
+**/old-scripts
+**/__pycache__/**
+nxtscape-cli-access.json
+gclient.json
+.env

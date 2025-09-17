@@ -1,0 +1,389 @@
+From 81b5a06baee044d48b58f4cde27d9c6378612516 Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Tue, 22 Jul 2025 21:36:22 -0700
+Subject: [PATCH] patch(M): pin browseros native panels
+
+---
+ .../browseros_extension_constants.h           | 35 ++++++++++
+ .../prefs/chrome_syncable_prefs_database.cc   | 10 +++
+ .../ui/actions/browseros_actions_config.h     | 64 +++++++++++++++++++
+ .../pinned_toolbar_actions_model.cc           | 21 +++++-
+ .../pinned_toolbar_actions_model.h            |  5 ++
+ .../browser/ui/toolbar/toolbar_pref_names.cc  |  6 ++
+ .../browser/ui/toolbar/toolbar_pref_names.h   |  8 +++
+ .../toolbar/pinned_action_toolbar_button.cc   | 52 +++++++++------
+ .../pinned_toolbar_actions_container.cc       | 13 ++++
+ 9 files changed, 194 insertions(+), 20 deletions(-)
+ create mode 100644 chrome/browser/extensions/browseros_extension_constants.h
+ create mode 100644 chrome/browser/ui/actions/browseros_actions_config.h
+
+diff --git a/chrome/browser/extensions/browseros_extension_constants.h b/chrome/browser/extensions/browseros_extension_constants.h
+new file mode 100644
+index 0000000000000..209020e21f247
+--- /dev/null
++++ b/chrome/browser/extensions/browseros_extension_constants.h
+@@ -0,0 +1,35 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_BROWSEROS_EXTENSION_CONSTANTS_H_
++#define CHROME_BROWSER_EXTENSIONS_BROWSEROS_EXTENSION_CONSTANTS_H_
++
++namespace extensions {
++namespace browseros {
++
++// AI Agent Extension ID
++inline constexpr char kAISidePanelExtensionId[] =
++    "djhdjhlnljbjgejbndockeedocneiaei";
++
++// Bug Reporter Extension ID
++inline constexpr char kBugReporterExtensionId[] =
++    "jpajdgphofjhblkgpbemoelbnbinnpje";
++
++// Allowlist of BrowserOS extension IDs that are permitted to be installed
++// Only extensions with these IDs will be loaded from the config
++constexpr const char* kAllowedExtensions[] = {
++    kAISidePanelExtensionId,  // AI Side Panel extension
++    kBugReporterExtensionId,  // Bug Reporter extension
++};
++
++// Check if an extension is a BrowserOS extension
++inline bool IsBrowserOSExtension(const std::string& extension_id) {
++  return extension_id == kAISidePanelExtensionId ||
++         extension_id == kBugReporterExtensionId;
++}
++
++}  // namespace browseros
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_BROWSEROS_EXTENSION_CONSTANTS_H_
+diff --git a/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc b/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc
+index 26f4aed48a900..946b7292a78e8 100644
+--- a/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc
++++ b/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc
+@@ -394,6 +394,8 @@ enum {
+   kPinSplitTabButton = 100327,
+   kGlicRolloutEligibility = 100328,
+   kShelfNotebookLmAppPinRolls = 100329,
++  kPinnedThirdPartyLlmMigrationComplete = 100330,
++  kPinnedClashOfGptsMigrationComplete = 100331,
+   // See components/sync_preferences/README.md about adding new entries here.
+   // vvvvv IMPORTANT! vvvvv
+   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
+@@ -574,6 +576,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
+      {syncable_prefs_ids::kTabSearchMigrationComplete, syncer::PREFERENCES,
+       sync_preferences::PrefSensitivity::kNone,
+       sync_preferences::MergeBehavior::kNone}},
++    {prefs::kPinnedThirdPartyLlmMigrationComplete,
++     {syncable_prefs_ids::kPinnedThirdPartyLlmMigrationComplete, syncer::PREFERENCES,
++      sync_preferences::PrefSensitivity::kNone,
++      sync_preferences::MergeBehavior::kNone}},
++    {prefs::kPinnedClashOfGptsMigrationComplete,
++     {syncable_prefs_ids::kPinnedClashOfGptsMigrationComplete, syncer::PREFERENCES,
++      sync_preferences::PrefSensitivity::kNone,
++      sync_preferences::MergeBehavior::kNone}},
+ #endif  // BUILDFLAG(IS_ANDROID)
+ #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+     {extensions::pref_names::kPinnedExtensions,
+diff --git a/chrome/browser/ui/actions/browseros_actions_config.h b/chrome/browser/ui/actions/browseros_actions_config.h
+new file mode 100644
+index 0000000000000..4838a697b0028
+--- /dev/null
++++ b/chrome/browser/ui/actions/browseros_actions_config.h
+@@ -0,0 +1,64 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_ACTIONS_BROWSEROS_ACTIONS_CONFIG_H_
++#define CHROME_BROWSER_UI_ACTIONS_BROWSEROS_ACTIONS_CONFIG_H_
++
++#include <string>
++#include <string_view>
++
++#include "base/containers/contains.h"
++#include "base/containers/fixed_flat_set.h"
++#include "chrome/browser/ui/actions/chrome_action_id.h"
++#include "chrome/browser/ui/ui_features.h"
++#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
++#include "chrome/common/chrome_features.h"
++#include "chrome/browser/extensions/browseros_extension_constants.h"
++#include "ui/actions/actions.h"
++
++namespace browseros {
++
++// Native action IDs for BrowserOS panels that need special treatment
++// These actions will:
++// - Always be pinned
++// - Show text labels
++// - Have high flex priority (always visible)
++constexpr auto kBrowserOSNativeActionIds =
++    base::MakeFixedFlatSet<actions::ActionId>({
++        kActionSidePanelShowThirdPartyLlm,
++        kActionSidePanelShowClashOfGpts,
++    });
++
++// Extension IDs that behave like native BrowserOS panels
++constexpr auto kBrowserOSExtensionIds =
++    base::MakeFixedFlatSet<std::string_view>({
++        extensions::browseros::kAISidePanelExtensionId,
++    });
++
++// Check if an action ID is a BrowserOS action (native or extension)
++inline bool IsBrowserOSAction(actions::ActionId id) {
++  // Check native actions
++  if (kBrowserOSNativeActionIds.contains(id)) {
++    return true;
++  }
++  return false;
++}
++
++
++// Get the feature flag for a native BrowserOS action
++inline const base::Feature* GetFeatureForBrowserOSAction(actions::ActionId id) {
++  switch (id) {
++    case kActionSidePanelShowThirdPartyLlm:
++      return &features::kThirdPartyLlmPanel;
++    case kActionSidePanelShowClashOfGpts:
++      return &features::kClashOfGpts;
++    default:
++      return nullptr;
++  }
++}
++
++}  // namespace browseros
++
++#endif  // CHROME_BROWSER_UI_ACTIONS_BROWSEROS_ACTIONS_CONFIG_H_
++
+diff --git a/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.cc b/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.cc
+index 72c9f630c905c..e33e71988598a 100644
+--- a/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.cc
++++ b/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.cc
+@@ -16,6 +16,7 @@
+ #include "base/strings/strcat.h"
+ #include "base/values.h"
+ #include "chrome/browser/profiles/profile.h"
++#include "chrome/browser/ui/actions/browseros_actions_config.h"
+ #include "chrome/browser/ui/actions/chrome_action_id.h"
+ #include "chrome/browser/ui/browser.h"
+ #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
+@@ -237,7 +238,8 @@ void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
+     return;
+   }
+   // Chrome Labs is no longer automatically pinned for new profiles
+-  // We keep this migration complete check to not affect users who already have it
++  // We keep this migration complete check to not affect users who already have
++  // it
+   if (!pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
+     // UpdatePinnedState(kActionShowChromeLabs, true);  // No longer auto-pin
+     pref_service_->SetBoolean(prefs::kPinnedChromeLabsMigrationComplete, true);
+@@ -256,6 +258,23 @@ void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
+   }
+ }
+ 
++void PinnedToolbarActionsModel::EnsureAlwaysPinnedActions() {
++  // Only update if we're allowed to (not incognito/guest profiles).
++  if (!CanUpdate()) {
++    return;
++  }
++
++  // Pin native BrowserOS actions if their features are enabled
++  for (actions::ActionId id : browseros::kBrowserOSNativeActionIds) {
++    const base::Feature* feature = browseros::GetFeatureForBrowserOSAction(id);
++    if (feature && base::FeatureList::IsEnabled(*feature) && !Contains(id)) {
++      UpdatePinnedState(id, true);
++    }
++  }
++  
++  // Note: Extension pinning is handled by ExtensionSidePanelManager
++}
++
+ const std::vector<actions::ActionId>&
+ PinnedToolbarActionsModel::PinnedActionIds() const {
+   return pinned_action_ids_;
+diff --git a/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h b/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h
+index b1eb4975bb7e5..1636739c788ea 100644
+--- a/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h
++++ b/chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h
+@@ -95,6 +95,11 @@ class PinnedToolbarActionsModel : public KeyedService {
+   // Search migrations are complete.
+   void MaybeMigrateExistingPinnedStates();
+ 
++  // Ensures that certain actions are always pinned to the toolbar.
++  // This is called during initialization to ensure specific actions
++  // (like Third Party LLM and Clash of GPTs) are always visible.
++  void EnsureAlwaysPinnedActions();
++
+   // Returns the ordered list of pinned ActionIds.
+   virtual const std::vector<actions::ActionId>& PinnedActionIds() const;
+ 
+diff --git a/chrome/browser/ui/toolbar/toolbar_pref_names.cc b/chrome/browser/ui/toolbar/toolbar_pref_names.cc
+index 292472a6ff554..d2868cb83608f 100644
+--- a/chrome/browser/ui/toolbar/toolbar_pref_names.cc
++++ b/chrome/browser/ui/toolbar/toolbar_pref_names.cc
+@@ -59,6 +59,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterBooleanPref(
+       prefs::kTabSearchMigrationComplete, false,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
++  registry->RegisterBooleanPref(
++      prefs::kPinnedThirdPartyLlmMigrationComplete, false,
++      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
++  registry->RegisterBooleanPref(
++      prefs::kPinnedClashOfGptsMigrationComplete, false,
++      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+ }
+ 
+ }  // namespace toolbar
+diff --git a/chrome/browser/ui/toolbar/toolbar_pref_names.h b/chrome/browser/ui/toolbar/toolbar_pref_names.h
+index c59d5f14f663d..91c60de160f9e 100644
+--- a/chrome/browser/ui/toolbar/toolbar_pref_names.h
++++ b/chrome/browser/ui/toolbar/toolbar_pref_names.h
+@@ -33,6 +33,14 @@ inline constexpr char kPinnedCastMigrationComplete[] =
+ inline constexpr char kTabSearchMigrationComplete[] =
+     "toolbar.tab_search_migration_complete";
+ 
++// Indicates whether Third Party LLM has been migrated to the new toolbar container.
++inline constexpr char kPinnedThirdPartyLlmMigrationComplete[] =
++    "toolbar.pinned_third_party_llm_migration_complete";
++
++// Indicates whether Clash of GPTs has been migrated to the new toolbar container.
++inline constexpr char kPinnedClashOfGptsMigrationComplete[] =
++    "toolbar.pinned_clash_of_gpts_migration_complete";
++
+ }  // namespace prefs
+ 
+ namespace toolbar {
+diff --git a/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc b/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc
+index ad850a06feeeb..06259d2817b4e 100644
+--- a/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc
++++ b/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc
+@@ -8,6 +8,11 @@
+ #include <type_traits>
+ 
+ #include "base/auto_reset.h"
++#include "chrome/browser/ui/actions/browseros_actions_config.h"
++#include "chrome/browser/ui/actions/chrome_action_id.h"
++#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
++#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
++#include "chrome/common/extensions/extension_constants.h"
+ #include "base/metrics/user_metrics.h"
+ #include "base/strings/strcat.h"
+ #include "chrome/app/vector_icons/vector_icons.h"
+@@ -26,6 +31,7 @@
+ #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+ #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+ #include "chrome/grit/generated_resources.h"
++#include "third_party/skia/include/core/SkColor.h"
+ #include "ui/actions/action_id.h"
+ #include "ui/actions/action_utils.h"
+ #include "ui/actions/actions.h"
+@@ -72,18 +78,25 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
+   GetViewAccessibility().SetDescription(
+       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+ 
+-  // Set text from action item if available
++  // Set text from action item if available for BrowserOS actions
+   if (auto* action_item = container_->GetActionItemFor(action_id)) {
+-    // Only show text for our specific side panels
+-    if (action_id == kActionSidePanelShowThirdPartyLlm ||
+-        action_id == kActionSidePanelShowClashOfGpts ||
+-        (action_item->GetActionId() == actions::ActionIdMap::StringToActionId(
+-            SidePanelEntry::Key(SidePanelEntry::Id::kExtension, 
+-                               extension_misc::kAISidePanelExtensionId).ToString()))) {
+-      // Use LabelButton::SetText directly to set permanent text
+-      views::LabelButton::SetText(action_item->GetText());
+-      // Ensure the text is visible
+-      SetTextSubpixelRenderingEnabled(false);
++    if (browseros::IsBrowserOSAction(action_id)) {
++      // Check if labels should be shown
++      bool show_labels = true;
++      if (browser_ && browser_->profile()) {
++        show_labels = browser_->profile()->GetPrefs()->GetBoolean(
++            prefs::kBrowserOSShowToolbarLabels);
++      }
++      
++      if (show_labels) {
++        // Use LabelButton::SetText directly to set permanent text
++        views::LabelButton::SetText(action_item->GetText());
++        // Ensure the text is visible
++        SetTextSubpixelRenderingEnabled(false);
++      } else {
++        // Clear the text if labels are disabled
++        views::LabelButton::SetText(std::u16string());
++      }
+     }
+   }
+ 
+@@ -238,7 +251,13 @@ void PinnedActionToolbarButton::UpdateIcon() {
+                                     ? icons->touch_icon
+                                     : icons->icon;
+ 
+-  if (is_icon_visible_ && action_engaged_) {
++  // Special case for Clash of GPTs and Third Party LLM - use custom orange color
++  if (action_id_ == kActionSidePanelShowClashOfGpts ||
++      action_id_ == kActionSidePanelShowThirdPartyLlm) {
++    const SkColor orange = SkColorSetRGB(0xFB, 0x65, 0x18);
++    UpdateIconsWithColors(icon, orange, orange, orange, 
++                          GetForegroundColor(ButtonState::STATE_DISABLED));
++  } else if (is_icon_visible_ && action_engaged_) {
+     UpdateIconsWithColors(
+         icon, GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+         GetColorProvider()->GetColor(kColorToolbarActionItemEngaged),
+@@ -340,13 +359,8 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
+     }
+   }
+ 
+-  // Update the text from the action item
+-  // Only show text for our specific side panels
+-  if (action_view_->GetActionId() == kActionSidePanelShowThirdPartyLlm ||
+-      action_view_->GetActionId() == kActionSidePanelShowClashOfGpts ||
+-      (action_item->GetActionId() == actions::ActionIdMap::StringToActionId(
+-          SidePanelEntry::Key(SidePanelEntry::Id::kExtension, 
+-                             extension_misc::kAISidePanelExtensionId).ToString()))) {
++  // Update the text from the action item for BrowserOS actions
++  if (browseros::IsBrowserOSAction(action_view_->GetActionId())) {
+     // Use LabelButton::SetText directly to set permanent text
+     action_view_->views::LabelButton::SetText(action_item->GetText());
+     // Ensure the text is visible
+diff --git a/chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.cc b/chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.cc
+index 4a8e5f200dbc5..3efe127a138b4 100644
+--- a/chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.cc
++++ b/chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.cc
+@@ -19,6 +19,8 @@
+ #include "base/task/single_thread_task_runner.h"
+ #include "base/time/time.h"
+ #include "chrome/browser/profiles/profile.h"
++#include "chrome/browser/ui/actions/browseros_actions_config.h"
++#include "chrome/browser/ui/actions/chrome_action_id.h"
+ #include "chrome/browser/ui/browser_actions.h"
+ #include "chrome/browser/ui/browser_element_identifiers.h"
+ #include "chrome/browser/ui/layout_constants.h"
+@@ -146,6 +148,9 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
+   // Initialize the pinned action buttons.
+   action_view_controller_ = std::make_unique<views::ActionViewController>();
+   model_->MaybeMigrateExistingPinnedStates();
++
++  // Ensure actions that should always be pinned are pinned.
++  model_->EnsureAlwaysPinnedActions();
+   UpdateViews();
+ }
+ 
+@@ -822,6 +827,14 @@ PinnedToolbarActionsContainer::CreateOrGetButtonForAction(
+   action_view_controller_->CreateActionViewRelationship(
+       button.get(), GetActionItemFor(id)->GetAsWeakPtr());
+ 
++  // Set high priority for BrowserOS actions to ensure they're always visible
++  if (browseros::IsBrowserOSAction(id)) {
++    button->SetProperty(
++        kToolbarButtonFlexPriorityKey,
++        static_cast<std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
++            PinnedToolbarActionFlexPriority::kHigh));
++  }
++
+   button->SetPaintToLayer();
+   button->layer()->SetFillsBoundsOpaquely(false);
+   return button;
+-- 
+2.49.0
+

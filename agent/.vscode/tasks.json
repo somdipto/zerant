@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Extension (Development)",
+            "type": "npm",
+            "script": "build:dev",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$tsc",
+            "detail": "Build the extension in development mode"
+        },
+        {
+            "label": "Build Extension (Production)",
+            "type": "npm",
+            "script": "build",
+            "group": "build",
+            "problemMatcher": "$tsc",
+            "detail": "Build the extension in production mode"
+        },
+        {
+            "label": "Clean Build",
+            "type": "npm",
+            "script": "clean",
+            "detail": "Remove the dist directory"
+        },
+        {
+            "label": "Run Tests",
+            "type": "npm",
+            "script": "test",
+            "group": "test",
+            "detail": "Run all Jest tests"
+        }
+    ]
+} 

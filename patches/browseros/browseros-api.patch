@@ -1,0 +1,4454 @@
+From 874401a9b5ee9fb525e7fe77dbf26adad80ae72d Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Tue, 22 Jul 2025 21:35:11 -0700
+Subject: [PATCH] patch(M): browseros API
+
+---
+ chrome/browser/extensions/BUILD.gn            |  12 +
+ .../api/browser_os/browser_os_api.cc          | 795 ++++++++++++++++++
+ .../api/browser_os/browser_os_api.h           | 215 +++++
+ .../api/browser_os/browser_os_api_helpers.cc  | 409 +++++++++
+ .../api/browser_os/browser_os_api_helpers.h   |  53 ++
+ .../api/browser_os/browser_os_api_utils.cc    | 221 +++++
+ .../api/browser_os/browser_os_api_utils.h     |  84 ++
+ .../browser_os/browser_os_change_detector.cc  | 271 ++++++
+ .../browser_os/browser_os_change_detector.h   | 120 +++
+ .../browser_os_content_processor.cc           | 727 ++++++++++++++++
+ .../browser_os/browser_os_content_processor.h | 173 ++++
+ .../browser_os_snapshot_processor.cc          | 694 +++++++++++++++
+ .../browser_os_snapshot_processor.h           |  89 ++
+ .../chrome_extensions_browser_api_provider.cc |   8 +
+ .../common/extensions/api/_api_features.json  |  28 +
+ .../extensions/api/_permission_features.json  |   4 +
+ chrome/common/extensions/api/api_sources.gni  |   1 +
+ chrome/common/extensions/api/browser_os.idl   | 289 +++++++
+ .../permissions/chrome_api_permissions.cc     |   1 +
+ .../extension_function_histogram_value.h      |  13 +
+ .../common/mojom/api_permission_id.mojom      |   1 +
+ .../histograms/metadata/extensions/enums.xml  |  10 +
+ 22 files changed, 4218 insertions(+)
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_api.cc
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_api.h
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_api_helpers.cc
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_api_helpers.h
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_api_utils.cc
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_api_utils.h
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_change_detector.cc
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_change_detector.h
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_content_processor.cc
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_content_processor.h
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.cc
+ create mode 100644 chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h
+ create mode 100644 chrome/common/extensions/api/browser_os.idl
+
+diff --git a/chrome/browser/extensions/BUILD.gn b/chrome/browser/extensions/BUILD.gn
+index d50ffdfbcce34..37fc8b1650ca4 100644
+--- a/chrome/browser/extensions/BUILD.gn
++++ b/chrome/browser/extensions/BUILD.gn
+@@ -516,6 +516,18 @@ source_set("extensions") {
+       "api/bookmark_manager_private/bookmark_manager_private_api.h",
+       "api/bookmarks/bookmarks_api.cc",
+       "api/bookmarks/bookmarks_api.h",
++      "api/browser_os/browser_os_api.cc",
++      "api/browser_os/browser_os_api.h",
++      "api/browser_os/browser_os_api_helpers.cc",
++      "api/browser_os/browser_os_api_helpers.h",
++      "api/browser_os/browser_os_api_utils.cc",
++      "api/browser_os/browser_os_api_utils.h",
++      "api/browser_os/browser_os_change_detector.cc",
++      "api/browser_os/browser_os_change_detector.h",
++      "api/browser_os/browser_os_content_processor.cc",
++      "api/browser_os/browser_os_content_processor.h",
++      "api/browser_os/browser_os_snapshot_processor.cc",
++      "api/browser_os/browser_os_snapshot_processor.h",
+       "api/chrome_device_permissions_prompt.h",
+       "api/chrome_extensions_api_client.cc",
+       "api/chrome_extensions_api_client.h",
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_api.cc b/chrome/browser/extensions/api/browser_os/browser_os_api.cc
+new file mode 100644
+index 0000000000000..31d54b9d0fb58
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_api.cc
+@@ -0,0 +1,795 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/extensions/api/browser_os/browser_os_api.h"
++
++#include <set>
++#include <string>
++#include <unordered_map>
++#include <utility>
++#include <vector>
++
++#include "base/functional/bind.h"
++#include "base/json/json_writer.h"
++#include "base/strings/utf_string_conversions.h"
++#include "base/base64.h"
++#include "base/time/time.h"
++#include "base/values.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_helpers.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_utils.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_change_detector.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_content_processor.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h"
++#include "chrome/browser/extensions/extension_tab_util.h"
++#include "chrome/browser/extensions/window_controller.h"
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_finder.h"
++#include "chrome/browser/ui/tabs/tab_strip_model.h"
++#include "chrome/common/extensions/api/browser_os.h"
++#include "content/browser/renderer_host/render_widget_host_impl.h"
++#include "content/public/browser/render_frame_host.h"
++#include "content/public/browser/render_widget_host.h"
++#include "content/public/browser/render_widget_host_view.h"
++#include "content/public/browser/web_contents.h"
++#include "third_party/blink/public/common/input/web_input_event.h"
++#include "third_party/blink/public/common/input/web_mouse_event.h"
++#include "ui/accessibility/ax_action_data.h"
++#include "ui/accessibility/ax_enum_util.h"
++#include "ui/accessibility/ax_mode.h"
++#include "ui/accessibility/ax_node_data.h"
++#include "ui/accessibility/ax_role_properties.h"
++#include "ui/accessibility/ax_tree_update.h"
++#include "ui/base/ime/ime_text_span.h"
++#include "ui/events/base_event_utils.h"
++#include "ui/events/keycodes/dom/dom_code.h"
++#include "ui/events/keycodes/dom/dom_key.h"
++#include "ui/events/keycodes/keyboard_codes.h"
++#include "ui/gfx/geometry/point_f.h"
++#include "ui/gfx/geometry/rect.h"
++#include "ui/gfx/geometry/rect_f.h"
++#include "ui/gfx/range/range.h"
++#include "ui/gfx/codec/png_codec.h"
++#include "ui/gfx/image/image.h"
++#include "ui/snapshot/snapshot.h"
++
++namespace extensions {
++namespace api {
++
++// Static member initialization
++uint32_t BrowserOSGetInteractiveSnapshotFunction::next_snapshot_id_ = 1;
++
++// Constructor and destructor implementations
++BrowserOSGetInteractiveSnapshotFunction::BrowserOSGetInteractiveSnapshotFunction() = default;
++BrowserOSGetInteractiveSnapshotFunction::~BrowserOSGetInteractiveSnapshotFunction() = default;
++
++ExtensionFunction::ResponseAction BrowserOSGetAccessibilityTreeFunction::Run() {
++  std::optional<browser_os::GetAccessibilityTree::Params> params =
++      browser_os::GetAccessibilityTree::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++
++  // Enable accessibility if needed
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++
++  // Request accessibility tree snapshot
++  // Use WebContents with extended properties to get a full tree
++  web_contents->RequestAXTreeSnapshot(
++      base::BindOnce(
++          &BrowserOSGetAccessibilityTreeFunction::OnAccessibilityTreeReceived,
++          this),
++      ui::AXMode(ui::AXMode::kWebContents | ui::AXMode::kExtendedProperties |
++                 ui::AXMode::kInlineTextBoxes),
++      /* max_nodes= */ 0,  // No limit
++      /* timeout= */ base::TimeDelta(),
++      content::WebContents::AXTreeSnapshotPolicy::kAll);
++
++  return RespondLater();
++}
++
++void BrowserOSGetAccessibilityTreeFunction::OnAccessibilityTreeReceived(
++    ui::AXTreeUpdate& tree_update) {
++  browser_os::AccessibilityTree result;
++  result.root_id = tree_update.root_id;
++
++  // Convert AX nodes to API format
++  base::Value::Dict nodes;
++  for (const auto& node_data : tree_update.nodes) {
++    browser_os::AccessibilityNode node;
++    node.id = node_data.id;
++    node.role = ui::ToString(node_data.role);
++
++    if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
++      node.name =
++          node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
++    }
++
++    if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
++      node.value =
++          node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue);
++    }
++
++    // Add child IDs
++    if (!node_data.child_ids.empty()) {
++      node.child_ids.emplace();
++      for (int32_t child_id : node_data.child_ids) {
++        node.child_ids->push_back(child_id);
++      }
++    }
++
++    // Add basic attributes
++    base::Value::Dict attributes;
++    if (node_data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
++      attributes.Set("selected",
++                     node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
++    }
++    // TODO: Add focused attribute when available
++    if (node_data.HasIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel)) {
++      attributes.Set("level",
++                     node_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel));
++    }
++    if (!attributes.empty()) {
++      browser_os::AccessibilityNode::Attributes attr;
++      attr.additional_properties = std::move(attributes);
++      node.attributes = std::move(attr);
++    }
++
++    // Convert to dictionary
++    nodes.Set(base::NumberToString(node_data.id), node.ToValue());
++  }
++
++  result.nodes.additional_properties = std::move(nodes);
++
++  Respond(ArgumentList(
++      browser_os::GetAccessibilityTree::Results::Create(result)));
++}
++
++// Implementation of BrowserOSGetInteractiveSnapshotFunction
++
++ExtensionFunction::ResponseAction BrowserOSGetInteractiveSnapshotFunction::Run() {
++  std::optional<browser_os::GetInteractiveSnapshot::Params> params =
++      browser_os::GetInteractiveSnapshot::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Note: We don't need to get scale factors here!
++  // The accessibility tree provides bounds in CSS pixels (logical pixels),
++  // which is the correct coordinate space for ForwardMouseEvent.
++  // The browser and renderer handle device pixel ratio conversion internally.
++  
++  // Store tab ID for mapping
++  tab_id_ = tab_info->tab_id;
++  
++  // Get viewport size
++  content::RenderWidgetHostView* rwhv = web_contents->GetRenderWidgetHostView();
++  if (rwhv) {
++    viewport_size_ = rwhv->GetVisibleViewportSize();
++    LOG(INFO) << "Viewport size: " << viewport_size_.ToString();
++  }
++
++  // Request accessibility tree snapshot
++  web_contents->RequestAXTreeSnapshot(
++      base::BindOnce(
++          &BrowserOSGetInteractiveSnapshotFunction::OnAccessibilityTreeReceived,
++          this),
++      ui::AXMode(ui::AXMode::kWebContents | ui::AXMode::kExtendedProperties |
++                 ui::AXMode::kInlineTextBoxes),
++      /* max_nodes= */ 0,  // No limit
++      /* timeout= */ base::TimeDelta(),
++      content::WebContents::AXTreeSnapshotPolicy::kAll);
++
++  return RespondLater();
++}
++
++void BrowserOSGetInteractiveSnapshotFunction::OnAccessibilityTreeReceived(
++    ui::AXTreeUpdate& tree_update) {
++  // Simple API layer - just delegates to the processor
++  SnapshotProcessor::ProcessAccessibilityTree(
++      tree_update,
++      tab_id_,
++      next_snapshot_id_++,
++      viewport_size_,
++      base::BindOnce(
++          &BrowserOSGetInteractiveSnapshotFunction::OnSnapshotProcessed,
++          base::WrapRefCounted(this)));
++}
++
++void BrowserOSGetInteractiveSnapshotFunction::OnSnapshotProcessed(
++    SnapshotProcessingResult result) {
++  Respond(ArgumentList(
++      browser_os::GetInteractiveSnapshot::Results::Create(result.snapshot)));
++}
++
++// Implementation of BrowserOSClickFunction
++
++ExtensionFunction::ResponseAction BrowserOSClickFunction::Run() {
++  std::optional<browser_os::Click::Params> params =
++      browser_os::Click::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  int tab_id = tab_info->tab_id;
++
++  // Look up the AX node ID from our nodeId
++  auto tab_it = GetNodeIdMappings().find(tab_id);
++  if (tab_it == GetNodeIdMappings().end()) {
++    return RespondNow(Error("No snapshot data for this tab"));
++  }
++  
++  auto node_it = tab_it->second.find(params->node_id);
++  if (node_it == tab_it->second.end()) {
++    return RespondNow(Error("Node ID not found"));
++  }
++  
++  const NodeInfo& node_info = node_it->second;
++  
++  // Perform click with change detection and retrying
++  ChangeDetectionResult change_result = Click(web_contents, node_info);
++  
++  // Convert result to API response
++  base::Value::Dict response = ChangeDetectionResultToDict(change_result);
++  
++  return RespondNow(WithArguments(std::move(response)));
++}
++
++// Implementation of BrowserOSInputTextFunction
++
++ExtensionFunction::ResponseAction BrowserOSInputTextFunction::Run() {
++  std::optional<browser_os::InputText::Params> params =
++      browser_os::InputText::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  int tab_id = tab_info->tab_id;
++
++  // Look up the AX node ID from our nodeId
++  auto tab_it = GetNodeIdMappings().find(tab_id);
++  if (tab_it == GetNodeIdMappings().end()) {
++    return RespondNow(Error("No snapshot data for this tab"));
++  }
++  
++  auto node_it = tab_it->second.find(params->node_id);
++  if (node_it == tab_it->second.end()) {
++    return RespondNow(Error("Node ID not found"));
++  }
++  
++  const NodeInfo& node_info = node_it->second;
++  
++  
++  // First, click on the element to focus it
++  Click(web_contents, node_info);
++  
++  
++  // Type the text into the focused element
++  Type(web_contents, params->text);
++  
++  return RespondNow(NoArguments());
++}
++
++// Implementation of BrowserOSClearFunction
++
++ExtensionFunction::ResponseAction BrowserOSClearFunction::Run() {
++  std::optional<browser_os::Clear::Params> params =
++      browser_os::Clear::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  int tab_id = tab_info->tab_id;
++
++  // Look up the AX node ID from our nodeId
++  auto tab_it = GetNodeIdMappings().find(tab_id);
++  if (tab_it == GetNodeIdMappings().end()) {
++    return RespondNow(Error("No snapshot data for this tab"));
++  }
++  
++  auto node_it = tab_it->second.find(params->node_id);
++  if (node_it == tab_it->second.end()) {
++    return RespondNow(Error("Node ID not found"));
++  }
++  
++  const NodeInfo& node_info = node_it->second;
++  
++  // First, click on the element to focus it
++  Click(web_contents, node_info);
++  
++  // Get render widget host for keyboard events
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++  
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh) {
++    return RespondNow(Error("No render widget host"));
++  }
++  
++  // Use JavaScript to clear the field, similar to how Puppeteer does it
++  rfh->ExecuteJavaScriptForTests(
++      u"(function() {"
++      u"  var activeElement = document.activeElement;"
++      u"  if (activeElement) {"
++      u"    if (activeElement.value !== undefined) {"
++      u"      activeElement.value = '';"
++      u"    }"
++      u"    if (activeElement.textContent !== undefined && activeElement.isContentEditable) {"
++      u"      activeElement.textContent = '';"
++      u"    }"
++      u"    activeElement.dispatchEvent(new Event('input', {bubbles: true}));"
++      u"    activeElement.dispatchEvent(new Event('change', {bubbles: true}));"
++      u"  }"
++      u"})();",
++      base::NullCallback(),
++      /*honor_js_content_settings=*/false);
++  
++  return RespondNow(NoArguments());
++}
++
++// Implementation of BrowserOSGetPageLoadStatusFunction
++
++ExtensionFunction::ResponseAction BrowserOSGetPageLoadStatusFunction::Run() {
++  std::optional<browser_os::GetPageLoadStatus::Params> params =
++      browser_os::GetPageLoadStatus::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Get the primary main frame
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++  
++  // Build the status object
++  browser_os::PageLoadStatus status;
++  
++  // Check if any resources are still loading
++  status.is_resources_loading = web_contents->IsLoading();
++  
++  // Check if DOMContentLoaded has fired
++  status.is_dom_content_loaded = rfh->IsDOMContentLoaded();
++  
++  // Check if onload has completed (all resources loaded)
++  status.is_page_complete = rfh->IsDocumentOnLoadCompletedInMainFrame();
++  
++  return RespondNow(ArgumentList(
++      browser_os::GetPageLoadStatus::Results::Create(status)));
++}
++
++// Implementation of BrowserOSScrollUpFunction
++
++ExtensionFunction::ResponseAction BrowserOSScrollUpFunction::Run() {
++  std::optional<browser_os::ScrollUp::Params> params =
++      browser_os::ScrollUp::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Get viewport height to scroll by approximately one page
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++  
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh) {
++    return RespondNow(Error("No render widget host"));
++  }
++  
++  content::RenderWidgetHostView* rwhv = rwh->GetView();
++  if (!rwhv) {
++    return RespondNow(Error("No render widget host view"));
++  }
++  
++  gfx::Rect viewport_bounds = rwhv->GetViewBounds();
++  int scroll_amount = viewport_bounds.height() * 0.9;  // 90% of viewport height
++  
++  // Perform scroll up (negative delta_y)
++  Scroll(web_contents, 0, -scroll_amount, true);
++  
++  return RespondNow(NoArguments());
++}
++
++// Implementation of BrowserOSScrollDownFunction
++
++ExtensionFunction::ResponseAction BrowserOSScrollDownFunction::Run() {
++  std::optional<browser_os::ScrollDown::Params> params =
++      browser_os::ScrollDown::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Get viewport height to scroll by approximately one page
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++  
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh) {
++    return RespondNow(Error("No render widget host"));
++  }
++  
++  content::RenderWidgetHostView* rwhv = rwh->GetView();
++  if (!rwhv) {
++    return RespondNow(Error("No render widget host view"));
++  }
++  
++  gfx::Rect viewport_bounds = rwhv->GetViewBounds();
++  int scroll_amount = viewport_bounds.height() * 0.9;  // 90% of viewport height
++  
++  // Perform scroll down (positive delta_y)
++  Scroll(web_contents, 0, scroll_amount, true);
++  
++  return RespondNow(NoArguments());
++}
++
++// Implementation of BrowserOSScrollToNodeFunction
++
++ExtensionFunction::ResponseAction BrowserOSScrollToNodeFunction::Run() {
++  std::optional<browser_os::ScrollToNode::Params> params =
++      browser_os::ScrollToNode::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  int tab_id = tab_info->tab_id;
++  
++  // Look up the AX node ID from our nodeId
++  auto tab_it = GetNodeIdMappings().find(tab_id);
++  if (tab_it == GetNodeIdMappings().end()) {
++    return RespondNow(Error("No snapshot data for this tab"));
++  }
++  
++  auto node_it = tab_it->second.find(params->node_id);
++  if (node_it == tab_it->second.end()) {
++    return RespondNow(Error("Node ID not found"));
++  }
++  
++  const NodeInfo& node_info = node_it->second;
++  
++  // Get viewport bounds to check if node is already in view
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++  
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh) {
++    return RespondNow(Error("No render widget host"));
++  }
++  
++  content::RenderWidgetHostView* rwhv = rwh->GetView();
++  if (!rwhv) {
++    return RespondNow(Error("No render widget host view"));
++  }
++  
++  gfx::Rect viewport_bounds = rwhv->GetViewBounds();
++  
++  // Check if the node is already visible in the viewport
++  // We consider it visible if any part of it is within the viewport
++  bool is_in_view = false;
++  if (node_info.bounds.y() < viewport_bounds.height() && 
++      node_info.bounds.bottom() > 0 &&
++      node_info.bounds.x() < viewport_bounds.width() &&
++      node_info.bounds.right() > 0) {
++    is_in_view = true;
++  }
++  
++  if (!is_in_view) {
++    // Use accessibility action to scroll
++    if (rfh) {
++      ui::AXActionData action_data;
++      action_data.action = ax::mojom::Action::kScrollToMakeVisible;
++      action_data.target_node_id = node_info.ax_node_id;
++      action_data.horizontal_scroll_alignment = ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
++      action_data.vertical_scroll_alignment = ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
++      action_data.scroll_behavior = ax::mojom::ScrollBehavior::kScrollIfVisible;
++      
++      rfh->AccessibilityPerformAction(action_data);
++    }
++  }
++  
++  return RespondNow(ArgumentList(
++      browser_os::ScrollToNode::Results::Create(!is_in_view)));
++}
++
++// Implementation of BrowserOSSendKeysFunction
++
++ExtensionFunction::ResponseAction BrowserOSSendKeysFunction::Run() {
++  std::optional<browser_os::SendKeys::Params> params =
++      browser_os::SendKeys::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Validate the key - use a simple check instead of std::set to avoid exit-time destructor
++  const std::string& key = params->key;
++  bool is_supported = (key == "Enter" || key == "Delete" || key == "Backspace" ||
++                       key == "Tab" || key == "Escape" || key == "ArrowUp" ||
++                       key == "ArrowDown" || key == "ArrowLeft" || key == "ArrowRight" ||
++                       key == "Home" || key == "End" || key == "PageUp" || key == "PageDown");
++  
++  if (!is_supported) {
++    return RespondNow(Error("Unsupported key: " + params->key));
++  }
++  
++  // Send the key
++  KeyPress(web_contents, params->key);
++  
++  return RespondNow(NoArguments());
++}
++
++// Implementation of BrowserOSCaptureScreenshotFunction
++
++ExtensionFunction::ResponseAction BrowserOSCaptureScreenshotFunction::Run() {
++  std::optional<browser_os::CaptureScreenshot::Params> params =
++      browser_os::CaptureScreenshot::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Get the render widget host view
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh) {
++    return RespondNow(Error("No render frame"));
++  }
++  
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh) {
++    return RespondNow(Error("No render widget host"));
++  }
++  
++  content::RenderWidgetHostView* rwhv = rwh->GetView();
++  if (!rwhv) {
++    return RespondNow(Error("No render widget host view"));
++  }
++  
++  // Get the view bounds to determine the size
++  gfx::Rect view_bounds = rwhv->GetViewBounds();
++  
++  // Create a reasonable thumbnail size (e.g., 256x256 or proportional)
++  const int kMaxThumbnailSize = 1024; // 512;//256;
++  gfx::Size thumbnail_size = view_bounds.size();
++  
++  // Scale down proportionally
++  if (thumbnail_size.width() > kMaxThumbnailSize || 
++      thumbnail_size.height() > kMaxThumbnailSize) {
++    float scale = std::min(
++        static_cast<float>(kMaxThumbnailSize) / thumbnail_size.width(),
++        static_cast<float>(kMaxThumbnailSize) / thumbnail_size.height());
++    thumbnail_size = gfx::ScaleToFlooredSize(thumbnail_size, scale);
++  }
++  
++  // For macOS, we need to use a different approach since GrabWindowSnapshot
++  // expects a window, not a view. Let's use CopyFromSurface instead.
++  content::RenderWidgetHostImpl* rwhi = 
++      static_cast<content::RenderWidgetHostImpl*>(rwh);
++  
++  // Request a copy of the surface
++  rwhi->GetView()->CopyFromSurface(
++      gfx::Rect(),  // Empty rect means copy entire surface
++      thumbnail_size,
++      base::BindOnce(&BrowserOSCaptureScreenshotFunction::OnScreenshotCaptured,
++                     this));
++  
++  return RespondLater();
++}
++
++void BrowserOSCaptureScreenshotFunction::OnScreenshotCaptured(
++    const SkBitmap& bitmap) {
++  if (bitmap.empty()) {
++    Respond(Error("Failed to capture screenshot"));
++    return;
++  }
++  
++  // Convert bitmap to PNG
++  auto png_data = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false);
++  if (!png_data.has_value()) {
++    Respond(Error("Failed to encode screenshot"));
++    return;
++  }
++  
++  // Convert to base64 data URL
++  std::string base64_data = base::Base64Encode(png_data.value());
++  
++  std::string data_url = "data:image/png;base64," + base64_data;
++  
++  Respond(ArgumentList(
++      browser_os::CaptureScreenshot::Results::Create(data_url)));
++}
++
++// BrowserOSGetSnapshotFunction implementation
++ExtensionFunction::ResponseAction BrowserOSGetSnapshotFunction::Run() {
++  auto params = browser_os::GetSnapshot::Params::Create(args());
++  EXTENSION_FUNCTION_VALIDATE(params);
++  
++  // Get the target tab
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    return RespondNow(Error(error_message));
++  }
++  
++  content::WebContents* web_contents = tab_info->web_contents;
++  
++  // Request accessibility tree snapshot
++  web_contents->RequestAXTreeSnapshot(
++      base::BindOnce(&BrowserOSGetSnapshotFunction::OnAccessibilityTreeReceived,
++                     this),
++      ui::AXMode(ui::AXMode::kWebContents | ui::AXMode::kExtendedProperties),
++      /* max_nodes= */ 0,  // No limit
++      /* timeout= */ base::TimeDelta(),
++      content::WebContents::AXTreeSnapshotPolicy::kAll);
++  
++  return RespondLater();
++}
++
++void BrowserOSGetSnapshotFunction::OnAccessibilityTreeReceived(
++    ui::AXTreeUpdate& tree_update) {
++  if (!has_callback()) {
++    return;
++  }
++  
++  // Get parameters again
++  auto params = browser_os::GetSnapshot::Params::Create(args());
++  if (!params) {
++    Respond(Error("Invalid parameters"));
++    return;
++  }
++  
++  // Get tab info again for viewport size
++  std::string error_message;
++  auto tab_info = GetTabFromOptionalId(params->tab_id, browser_context(),
++                                       include_incognito_information(),
++                                       &error_message);
++  if (!tab_info) {
++    Respond(Error(error_message));
++    return;
++  }
++  
++  // Get viewport size
++  gfx::Size viewport_size;
++  content::WebContents* web_contents = tab_info->web_contents;
++  content::RenderWidgetHostView* rwhv = web_contents->GetRenderWidgetHostView();
++  if (rwhv) {
++    viewport_size = rwhv->GetVisibleViewportSize();
++  }
++  
++  // Extract options
++  browser_os::SnapshotContext context = browser_os::SnapshotContext::kVisible;
++  std::vector<browser_os::SectionType> include_sections;
++  
++  if (params->options) {
++    context = params->options->context;
++    if (params->options->include_sections.has_value()) {
++      include_sections = params->options->include_sections.value();
++    }
++  }
++  
++  // Process the accessibility tree
++  ContentProcessor::ProcessAccessibilityTree(
++      tree_update,
++      params->type,
++      context,
++      include_sections,
++      viewport_size,
++      base::BindOnce(&BrowserOSGetSnapshotFunction::OnContentProcessed, this));
++}
++
++void BrowserOSGetSnapshotFunction::OnContentProcessed(
++    api::ContentProcessingResult result) {
++  if (!has_callback()) {
++    return;
++  }
++  
++  Respond(ArgumentList(
++      browser_os::GetSnapshot::Results::Create(result.snapshot)));
++}
++
++}  // namespace api
++}  // namespace extensions
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_api.h b/chrome/browser/extensions/api/browser_os/browser_os_api.h
+new file mode 100644
+index 0000000000000..6090d2fbeb6a4
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_api.h
+@@ -0,0 +1,215 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_H_
++#define CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_H_
++
++#include <cstdint>
++
++#include "base/values.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_utils.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_content_processor.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h"
++#include "extensions/browser/extension_function.h"
++#include "third_party/skia/include/core/SkBitmap.h"
++
++namespace content {
++class WebContents;
++}
++
++namespace ui {
++struct AXTreeUpdate;
++}
++
++namespace extensions {
++namespace api {
++
++
++class BrowserOSGetAccessibilityTreeFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.getAccessibilityTree",
++                             BROWSER_OS_GETACCESSIBILITYTREE)
++
++  BrowserOSGetAccessibilityTreeFunction() = default;
++
++ protected:
++  ~BrowserOSGetAccessibilityTreeFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++
++ private:
++  void OnAccessibilityTreeReceived(ui::AXTreeUpdate& tree_update);
++};
++
++class BrowserOSGetInteractiveSnapshotFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.getInteractiveSnapshot",
++                             BROWSER_OS_GETINTERACTIVESNAPSHOT)
++
++  BrowserOSGetInteractiveSnapshotFunction();
++
++ protected:
++  ~BrowserOSGetInteractiveSnapshotFunction() override;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++
++ private:
++  void OnAccessibilityTreeReceived(ui::AXTreeUpdate& tree_update);
++  void OnSnapshotProcessed(SnapshotProcessingResult result);
++  
++  // Counter for snapshot IDs
++  static uint32_t next_snapshot_id_;
++  
++  // Tab ID for storing mappings
++  int tab_id_ = -1;
++  
++  // Viewport size for checking visibility
++  gfx::Size viewport_size_;
++};
++
++class BrowserOSClickFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.click", BROWSER_OS_CLICK)
++
++  BrowserOSClickFunction() = default;
++
++ protected:
++  ~BrowserOSClickFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSInputTextFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.inputText", BROWSER_OS_INPUTTEXT)
++
++  BrowserOSInputTextFunction() = default;
++
++ protected:
++  ~BrowserOSInputTextFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSClearFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.clear", BROWSER_OS_CLEAR)
++
++  BrowserOSClearFunction() = default;
++
++ protected:
++  ~BrowserOSClearFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSGetPageLoadStatusFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.getPageLoadStatus", 
++                             BROWSER_OS_GETPAGELOADSTATUS)
++
++  BrowserOSGetPageLoadStatusFunction() = default;
++
++ protected:
++  ~BrowserOSGetPageLoadStatusFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSScrollUpFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.scrollUp", BROWSER_OS_SCROLLUP)
++
++  BrowserOSScrollUpFunction() = default;
++
++ protected:
++  ~BrowserOSScrollUpFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSScrollDownFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.scrollDown", BROWSER_OS_SCROLLDOWN)
++
++  BrowserOSScrollDownFunction() = default;
++
++ protected:
++  ~BrowserOSScrollDownFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSScrollToNodeFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.scrollToNode", BROWSER_OS_SCROLLTONODE)
++
++  BrowserOSScrollToNodeFunction() = default;
++
++ protected:
++  ~BrowserOSScrollToNodeFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSSendKeysFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.sendKeys", BROWSER_OS_SENDKEYS)
++
++  BrowserOSSendKeysFunction() = default;
++
++ protected:
++  ~BrowserOSSendKeysFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++};
++
++class BrowserOSCaptureScreenshotFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.captureScreenshot", BROWSER_OS_CAPTURESCREENSHOT)
++
++  BrowserOSCaptureScreenshotFunction() = default;
++
++ protected:
++  ~BrowserOSCaptureScreenshotFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++  
++ private:
++  void OnScreenshotCaptured(const SkBitmap& bitmap);
++};
++
++class BrowserOSGetSnapshotFunction : public ExtensionFunction {
++ public:
++  DECLARE_EXTENSION_FUNCTION("browserOS.getSnapshot", BROWSER_OS_GETSNAPSHOT)
++
++  BrowserOSGetSnapshotFunction() = default;
++
++ protected:
++  ~BrowserOSGetSnapshotFunction() override = default;
++
++  // ExtensionFunction:
++  ResponseAction Run() override;
++
++ private:
++  void OnAccessibilityTreeReceived(ui::AXTreeUpdate& tree_update);
++  void OnContentProcessed(
++      api::ContentProcessingResult result);
++};
++
++}  // namespace api
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_H_
+\ No newline at end of file
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_api_helpers.cc b/chrome/browser/extensions/api/browser_os/browser_os_api_helpers.cc
+new file mode 100644
+index 0000000000000..2e2c9a875dd09
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_api_helpers.cc
+@@ -0,0 +1,409 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_helpers.h"
++
++#include "base/strings/string_number_conversions.h"
++#include "base/strings/utf_string_conversions.h"
++#include "base/task/sequenced_task_runner.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_utils.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_change_detector.h"
++#include "components/input/native_web_keyboard_event.h"
++#include "content/public/browser/render_frame_host.h"
++#include "content/browser/renderer_host/render_widget_host_impl.h"
++#include "content/public/browser/render_widget_host.h"
++#include "content/public/browser/render_widget_host_view.h"
++#include "content/public/browser/web_contents.h"
++#include "third_party/blink/public/common/input/web_input_event.h"
++#include "third_party/blink/public/common/input/web_keyboard_event.h"
++#include "third_party/blink/public/common/input/web_mouse_event.h"
++#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
++#include "ui/base/ime/ime_text_span.h"
++#include "ui/events/base_event_utils.h"
++#include "ui/events/keycodes/dom/dom_code.h"
++#include "ui/events/keycodes/dom/dom_key.h"
++#include "ui/events/keycodes/keyboard_codes.h"
++#include "ui/gfx/geometry/point_f.h"
++#include "ui/gfx/range/range.h"
++
++namespace extensions {
++namespace api {
++
++// Helper to create and dispatch mouse events for clicking
++void PointClick(content::WebContents* web_contents, 
++                  const gfx::PointF& point) {
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh)
++    return;
++    
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh)
++    return;
++    
++  content::RenderWidgetHostView* rwhv = rwh->GetView();
++  if (!rwhv)
++    return;
++
++  // Get viewport bounds for screen position calculation
++  gfx::Rect viewport_bounds = rwhv->GetViewBounds();
++  gfx::PointF viewport_origin(viewport_bounds.x(), viewport_bounds.y());
++  
++  // The coordinates are already in widget space (CSS pixels)
++  gfx::PointF widget_point = point;
++
++  // Create mouse down event
++  blink::WebMouseEvent mouse_down;
++  mouse_down.SetType(blink::WebInputEvent::Type::kMouseDown);
++  mouse_down.button = blink::WebPointerProperties::Button::kLeft;
++  mouse_down.click_count = 1;
++  mouse_down.SetPositionInWidget(widget_point.x(), widget_point.y());
++  mouse_down.SetPositionInScreen(widget_point.x() + viewport_origin.x(), 
++                                widget_point.y() + viewport_origin.y());
++  mouse_down.SetTimeStamp(ui::EventTimeForNow());
++  mouse_down.SetModifiers(blink::WebInputEvent::kLeftButtonDown);
++  
++  // Create mouse up event
++  blink::WebMouseEvent mouse_up;
++  mouse_up.SetType(blink::WebInputEvent::Type::kMouseUp);
++  mouse_up.button = blink::WebPointerProperties::Button::kLeft;
++  mouse_up.click_count = 1;
++  mouse_up.SetPositionInWidget(widget_point.x(), widget_point.y());
++  mouse_up.SetPositionInScreen(widget_point.x() + viewport_origin.x(),
++                              widget_point.y() + viewport_origin.y());
++  mouse_up.SetTimeStamp(ui::EventTimeForNow());
++  
++  // Send the events
++  rwh->ForwardMouseEvent(mouse_down);
++  rwh->ForwardMouseEvent(mouse_up);
++}
++
++// Helper to perform HTML-based click using JS (uses ID, class, or tag)
++void HtmlClick(content::WebContents* web_contents,
++                      const NodeInfo& node_info) {
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh)
++    return;
++    
++  // Build the JavaScript to find and click the element
++  std::u16string js_code = u"(function() {";
++  
++  // Try to find element by ID first
++  auto id_it = node_info.attributes.find("id");
++  if (id_it != node_info.attributes.end() && !id_it->second.empty()) {
++    js_code += u"  var element = document.getElementById('" + 
++               base::UTF8ToUTF16(id_it->second) + u"');";
++    js_code += u"  if (element) {";
++    js_code += u"    element.click();";
++    js_code += u"    return 'clicked by id';";
++    js_code += u"  }";
++  }
++  
++  // Try to find by class and tag combination
++  auto class_it = node_info.attributes.find("class");
++  auto tag_it = node_info.attributes.find("html-tag");
++  
++  if (class_it != node_info.attributes.end() && !class_it->second.empty() &&
++      tag_it != node_info.attributes.end() && !tag_it->second.empty()) {
++    // Split class names and create selector
++    std::string class_selector = "." + class_it->second;
++    // Replace spaces with dots for multiple classes
++    for (size_t i = 0; i < class_selector.length(); ++i) {
++      if (class_selector[i] == ' ') {
++        class_selector[i] = '.';
++      }
++    }
++    
++    js_code += u"  var elements = document.querySelectorAll('" + 
++               base::UTF8ToUTF16(tag_it->second + class_selector) + u"');";
++    js_code += u"  if (elements.length > 0) {";
++    js_code += u"    elements[0].click();";
++    js_code += u"    return 'clicked by class and tag';";
++    js_code += u"  }";
++  }
++  
++  // Fallback: try just by tag name if available
++  if (tag_it != node_info.attributes.end() && !tag_it->second.empty()) {
++    js_code += u"  var elements = document.getElementsByTagName('" + 
++               base::UTF8ToUTF16(tag_it->second) + u"');";
++    js_code += u"  if (elements.length > 0) {";
++    js_code += u"    elements[0].click();";
++    js_code += u"    return 'clicked by tag';";
++    js_code += u"  }";
++  }
++  
++  js_code += u"  return 'no element found';";
++  js_code += u"})();";
++  
++  // Execute the JavaScript
++  rfh->ExecuteJavaScriptForTests(
++      js_code,
++      base::NullCallback(),
++      /*honor_js_content_settings=*/false);
++}
++
++// Helper to perform scroll actions using mouse wheel events
++void Scroll(content::WebContents* web_contents,
++                   int delta_x,
++                   int delta_y,
++                   bool precise) {
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh)
++    return;
++    
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh)
++    return;
++    
++  content::RenderWidgetHostView* rwhv = rwh->GetView();
++  if (!rwhv)
++    return;
++
++  // Get viewport bounds and center point
++  gfx::Rect viewport_bounds = rwhv->GetViewBounds();
++  gfx::PointF center_point(viewport_bounds.width() / 2.0f,
++                          viewport_bounds.height() / 2.0f);
++  
++  // Create mouse wheel event
++  blink::WebMouseWheelEvent wheel_event;
++  wheel_event.SetType(blink::WebInputEvent::Type::kMouseWheel);
++  wheel_event.SetPositionInWidget(center_point.x(), center_point.y());
++  wheel_event.SetPositionInScreen(center_point.x() + viewport_bounds.x(),
++                                 center_point.y() + viewport_bounds.y());
++  wheel_event.SetTimeStamp(ui::EventTimeForNow());
++  
++  // Set the scroll deltas
++  wheel_event.delta_x = delta_x;
++  wheel_event.delta_y = delta_y;
++  
++  // Set wheel tick values (120 = one notch)
++  wheel_event.wheel_ticks_x = delta_x / 120.0f;
++  wheel_event.wheel_ticks_y = delta_y / 120.0f;
++  
++  // Phase information for smooth scrolling
++  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
++  
++  // Precise scrolling for touchpad, non-precise for mouse wheel
++  if (precise) {
++    // For precise scrolling, deltas are in pixels
++    wheel_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
++  } else {
++    // For non-precise scrolling, deltas are in lines
++    wheel_event.delta_units = ui::ScrollGranularity::kScrollByLine;
++  }
++  
++  // Send the wheel event
++  rwh->ForwardWheelEvent(wheel_event);
++  
++  // Send phase ended event for smooth scrolling
++  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseEnded;
++  wheel_event.delta_x = 0;
++  wheel_event.delta_y = 0;
++  wheel_event.wheel_ticks_x = 0;
++  wheel_event.wheel_ticks_y = 0;
++  rwh->ForwardWheelEvent(wheel_event);
++}
++
++// Helper to send special key events
++void KeyPress(content::WebContents* web_contents,
++                    const std::string& key) {
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh)
++    return;
++    
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh)
++    return;
++
++  // Map key names to Windows key codes and DOM codes/keys
++  ui::KeyboardCode windows_key_code;
++  ui::DomCode dom_code;
++  ui::DomKey dom_key;
++  
++  // Use if-else chain to avoid static initialization
++  if (key == "Enter") {
++    windows_key_code = ui::VKEY_RETURN;
++    dom_code = ui::DomCode::ENTER;
++    dom_key = ui::DomKey::ENTER;
++  } else if (key == "Delete") {
++    windows_key_code = ui::VKEY_DELETE;
++    dom_code = ui::DomCode::DEL;
++    dom_key = ui::DomKey::DEL;
++  } else if (key == "Backspace") {
++    windows_key_code = ui::VKEY_BACK;
++    dom_code = ui::DomCode::BACKSPACE;
++    dom_key = ui::DomKey::BACKSPACE;
++  } else if (key == "Tab") {
++    windows_key_code = ui::VKEY_TAB;
++    dom_code = ui::DomCode::TAB;
++    dom_key = ui::DomKey::TAB;
++  } else if (key == "Escape") {
++    windows_key_code = ui::VKEY_ESCAPE;
++    dom_code = ui::DomCode::ESCAPE;
++    dom_key = ui::DomKey::ESCAPE;
++  } else if (key == "ArrowUp") {
++    windows_key_code = ui::VKEY_UP;
++    dom_code = ui::DomCode::ARROW_UP;
++    dom_key = ui::DomKey::ARROW_UP;
++  } else if (key == "ArrowDown") {
++    windows_key_code = ui::VKEY_DOWN;
++    dom_code = ui::DomCode::ARROW_DOWN;
++    dom_key = ui::DomKey::ARROW_DOWN;
++  } else if (key == "ArrowLeft") {
++    windows_key_code = ui::VKEY_LEFT;
++    dom_code = ui::DomCode::ARROW_LEFT;
++    dom_key = ui::DomKey::ARROW_LEFT;
++  } else if (key == "ArrowRight") {
++    windows_key_code = ui::VKEY_RIGHT;
++    dom_code = ui::DomCode::ARROW_RIGHT;
++    dom_key = ui::DomKey::ARROW_RIGHT;
++  } else if (key == "Home") {
++    windows_key_code = ui::VKEY_HOME;
++    dom_code = ui::DomCode::HOME;
++    dom_key = ui::DomKey::HOME;
++  } else if (key == "End") {
++    windows_key_code = ui::VKEY_END;
++    dom_code = ui::DomCode::END;
++    dom_key = ui::DomKey::END;
++  } else if (key == "PageUp") {
++    windows_key_code = ui::VKEY_PRIOR;
++    dom_code = ui::DomCode::PAGE_UP;
++    dom_key = ui::DomKey::PAGE_UP;
++  } else if (key == "PageDown") {
++    windows_key_code = ui::VKEY_NEXT;
++    dom_code = ui::DomCode::PAGE_DOWN;
++    dom_key = ui::DomKey::PAGE_DOWN;
++  } else {
++    return;  // Unsupported key
++  }
++  
++  // Create keyboard event
++  input::NativeWebKeyboardEvent key_down(
++      blink::WebInputEvent::Type::kKeyDown,
++      blink::WebInputEvent::kNoModifiers,
++      ui::EventTimeForNow());
++  
++  key_down.windows_key_code = windows_key_code;
++  key_down.native_key_code = windows_key_code;
++  key_down.dom_code = static_cast<int>(dom_code);
++  key_down.dom_key = static_cast<int>(dom_key);
++  
++  // Send key down
++  rwh->ForwardKeyboardEvent(key_down);
++  
++  // For Enter key, also send char event
++  // This is for `input` elements on web pages expect this to trigger submit
++  if (key == "Enter") {
++    input::NativeWebKeyboardEvent char_event(
++        blink::WebInputEvent::Type::kChar,
++        blink::WebInputEvent::kNoModifiers,
++        ui::EventTimeForNow());
++    
++    char_event.windows_key_code = windows_key_code;
++    char_event.native_key_code = windows_key_code;
++    char_event.dom_code = static_cast<int>(dom_code);
++    char_event.dom_key = static_cast<int>(dom_key);
++    char_event.text[0] = '\r';  // Carriage return character
++    char_event.unmodified_text[0] = '\r';
++    
++    rwh->ForwardKeyboardEvent(char_event);
++  }
++  
++  // For most keys, also send key up
++  if (key != "Tab") {  // Tab usually doesn't need key up for focus change
++    input::NativeWebKeyboardEvent key_up(
++        blink::WebInputEvent::Type::kKeyUp,
++        blink::WebInputEvent::kNoModifiers,
++        ui::EventTimeForNow());
++    
++    key_up.windows_key_code = windows_key_code;
++    key_up.native_key_code = windows_key_code;
++    key_up.dom_code = static_cast<int>(dom_code);
++    key_up.dom_key = static_cast<int>(dom_key);
++    
++    rwh->ForwardKeyboardEvent(key_up);
++  }
++}
++
++// Helper to type text into a focused element
++void Type(content::WebContents* web_contents,
++          const std::string& text) {
++  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
++  if (!rfh)
++    return;
++    
++  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
++  if (!rwh)
++    return;
++  
++  // Convert text to UTF16
++  std::u16string text16 = base::UTF8ToUTF16(text);
++  
++  // Add a small delay to ensure the element is focused after click
++  // Then send the text using ImeCommitText
++  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
++      FROM_HERE,
++      base::BindOnce(
++          [](content::RenderWidgetHost* rwh, const std::u16string& text) {
++            if (!rwh)
++              return;
++            
++            content::RenderWidgetHostImpl* rwhi = 
++                static_cast<content::RenderWidgetHostImpl*>(rwh);
++            
++            // Ensure the widget has focus
++            rwhi->Focus();
++            
++            // Try multiple approaches to input text
++            // 1. First try ImeSetComposition to simulate typing
++            rwhi->ImeSetComposition(text,
++                                   std::vector<ui::ImeTextSpan>(),
++                                   gfx::Range::InvalidRange(),
++                                   text.length(),  // selection_start at end
++                                   text.length()); // selection_end at end
++            
++            // 2. Then commit the text
++            rwhi->ImeCommitText(text,
++                                std::vector<ui::ImeTextSpan>(),
++                                gfx::Range::InvalidRange(),
++                                0);  // relative_cursor_pos = 0 means after the text
++            
++            // 3. Finish composing to ensure text is committed
++            rwhi->ImeFinishComposingText(false);
++            
++          },
++          rwh, text16),
++      base::Milliseconds(100));  // Increase delay to 100ms for better focus handling
++}
++
++// Helper to perform a click with change detection and retrying
++ChangeDetectionResult Click(content::WebContents* web_contents,
++                           const NodeInfo& node_info) {
++  // Create change detector and start monitoring
++  auto change_detector = std::make_unique<BrowserOSChangeDetector>(web_contents);
++  change_detector->StartMonitoring(node_info.ax_tree_id);
++  
++  // Perform the click action using coordinate-based click
++  gfx::PointF click_point(
++      node_info.bounds.x() + node_info.bounds.width() / 2.0f,
++      node_info.bounds.y() + node_info.bounds.height() / 2.0f);
++  PointClick(web_contents, click_point);
++  
++  // Wait for changes with timeout
++  ChangeDetectionResult change_result = 
++      change_detector->WaitForChanges(base::Milliseconds(500));
++  
++  // If no change detected via coordinate click, try HTML click as fallback
++  if (!change_result.detected) {
++    VLOG(1) << "No change detected with coordinate click, trying HTML click";
++    HtmlClick(web_contents, node_info);
++    
++    // Wait again for changes
++    change_result = change_detector->WaitForChanges(base::Milliseconds(300));
++  }
++  
++  return change_result;
++}
++
++}  // namespace api
++}  // namespace extensions
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_api_helpers.h b/chrome/browser/extensions/api/browser_os/browser_os_api_helpers.h
+new file mode 100644
+index 0000000000000..ab8eb164a11c3
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_api_helpers.h
+@@ -0,0 +1,53 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_HELPERS_H_
++#define CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_HELPERS_H_
++
++#include <string>
++
++#include "base/functional/callback.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_change_detector.h"
++#include "ui/gfx/geometry/point_f.h"
++
++namespace content {
++class WebContents;
++}  // namespace content
++
++namespace extensions {
++namespace api {
++
++struct NodeInfo;
++
++// Helper to create and dispatch mouse events for clicking
++void PointClick(content::WebContents* web_contents, 
++                  const gfx::PointF& point);
++
++// Helper to perform HTML-based click using JS (uses ID, class, or tag)
++void HtmlClick(content::WebContents* web_contents,
++                      const NodeInfo& node_info);
++
++// Helper to perform scroll actions using mouse wheel events
++void Scroll(content::WebContents* web_contents,
++                   int delta_x,
++                   int delta_y,
++                   bool precise = false);
++
++// Helper to send special key events
++void KeyPress(content::WebContents* web_contents,
++                    const std::string& key);
++
++// Helper to type text into a focused element
++void Type(content::WebContents* web_contents,
++          const std::string& text);
++
++// Helper to perform a click with change detection and retrying
++// This combines change detection logic with click actions (coordinate and HTML)
++ChangeDetectionResult Click(content::WebContents* web_contents,
++                           const NodeInfo& node_info);
++
++}  // namespace api
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_HELPERS_H_
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_api_utils.cc b/chrome/browser/extensions/api/browser_os/browser_os_api_utils.cc
+new file mode 100644
+index 0000000000000..1b2f83a233844
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_api_utils.cc
+@@ -0,0 +1,221 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_utils.h"
++
++#include "base/hash/hash.h"
++#include "base/no_destructor.h"
++#include "base/strings/string_number_conversions.h"
++#include "base/strings/utf_string_conversions.h"
++#include "chrome/browser/extensions/extension_tab_util.h"
++#include "chrome/browser/extensions/window_controller.h"
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_finder.h"
++#include "chrome/browser/ui/tabs/tab_strip_model.h"
++#include "content/public/browser/web_contents.h"
++#include "ui/accessibility/ax_role_properties.h"
++
++namespace extensions {
++namespace api {
++
++// NodeInfo implementation
++NodeInfo::NodeInfo() : ax_node_id(0), ax_tree_id() {}
++NodeInfo::~NodeInfo() = default;
++NodeInfo::NodeInfo(const NodeInfo&) = default;
++NodeInfo& NodeInfo::operator=(const NodeInfo&) = default;
++NodeInfo::NodeInfo(NodeInfo&&) = default;
++NodeInfo& NodeInfo::operator=(NodeInfo&&) = default;
++
++// Global node ID mappings storage
++// Use NoDestructor to avoid exit-time destructor
++std::unordered_map<int, std::unordered_map<uint32_t, NodeInfo>>& 
++GetNodeIdMappings() {
++  static base::NoDestructor<std::unordered_map<int, std::unordered_map<uint32_t, NodeInfo>>> 
++      g_node_id_mappings;
++  return *g_node_id_mappings;
++}
++
++std::optional<TabInfo> GetTabFromOptionalId(
++    std::optional<int> tab_id_param,
++    content::BrowserContext* browser_context,
++    bool include_incognito_information,
++    std::string* error_message) {
++  content::WebContents* web_contents = nullptr;
++  int tab_id = -1;
++  
++  if (tab_id_param) {
++    // Get specific tab by ID
++    WindowController* controller = nullptr;
++    int tab_index = -1;
++    if (!ExtensionTabUtil::GetTabById(*tab_id_param, browser_context,
++                                      include_incognito_information,
++                                      &controller, &web_contents,
++                                      &tab_index)) {
++      if (error_message) {
++        *error_message = "Tab not found";
++      }
++      return std::nullopt;
++    }
++    tab_id = *tab_id_param;
++  } else {
++    // Get active tab
++    Browser* browser = chrome::FindLastActive();
++    if (!browser) {
++      if (error_message) {
++        *error_message = "No active browser";
++      }
++      return std::nullopt;
++    }
++
++    web_contents = browser->tab_strip_model()->GetActiveWebContents();
++    if (!web_contents) {
++      if (error_message) {
++        *error_message = "No active tab";
++      }
++      return std::nullopt;
++    }
++    tab_id = ExtensionTabUtil::GetTabId(web_contents);
++  }
++
++  return TabInfo(web_contents, tab_id);
++}
++
++// Helper to determine if a node is interactive (clickable/typeable/selectable)
++browser_os::InteractiveNodeType GetInteractiveNodeType(
++    const ui::AXNodeData& node_data) {
++  
++  // Skip invisible or ignored nodes early
++  if (node_data.IsInvisibleOrIgnored()) {
++    return browser_os::InteractiveNodeType::kOther;
++  }
++
++  // Use built-in IsTextField() and related methods for typeable elements
++  if (node_data.IsTextField() || 
++      node_data.IsPasswordField() || 
++      node_data.IsAtomicTextField() ||
++      node_data.IsNonAtomicTextField() ||
++      node_data.IsSpinnerTextField()) {
++    return browser_os::InteractiveNodeType::kTypeable;
++  }
++
++  // Use built-in IsSelectable() for selectable elements
++  if (node_data.IsSelectable()) {
++    return browser_os::InteractiveNodeType::kSelectable;
++  }
++  
++  // Use built-in IsClickable() method
++  if (node_data.IsClickable()) {
++    return browser_os::InteractiveNodeType::kClickable;
++  }
++  
++  // Additional check for combobox and list options which might not be caught by IsSelectable
++  using Role = ax::mojom::Role;
++  if (node_data.role == Role::kComboBoxSelect ||
++      node_data.role == Role::kComboBoxMenuButton ||
++      node_data.role == Role::kComboBoxGrouping ||
++      node_data.role == Role::kListBox ||
++      node_data.role == Role::kListBoxOption ||
++      node_data.role == Role::kMenuListOption ||
++      node_data.role == Role::kMenuItem ||
++      node_data.role == Role::kMenuItemCheckBox ||
++      node_data.role == Role::kMenuItemRadio) {
++    return browser_os::InteractiveNodeType::kSelectable;
++  }
++  
++  return browser_os::InteractiveNodeType::kOther;
++}
++
++// Helper to get the HTML tag name from AX role
++std::string GetTagFromRole(ax::mojom::Role role) {
++  switch (role) {
++    case ax::mojom::Role::kButton:
++      return "button";
++    case ax::mojom::Role::kLink:
++      return "a";
++    case ax::mojom::Role::kTextField:
++    case ax::mojom::Role::kSearchBox:
++      return "input";
++    case ax::mojom::Role::kTextFieldWithComboBox:
++      return "input";
++    case ax::mojom::Role::kComboBoxSelect:
++      return "select";
++    case ax::mojom::Role::kCheckBox:
++      return "input";
++    case ax::mojom::Role::kRadioButton:
++      return "input";
++    case ax::mojom::Role::kImage:
++      return "img";
++    case ax::mojom::Role::kHeading:
++      return "h1";  // Could be h1-h6
++    case ax::mojom::Role::kParagraph:
++      return "p";
++    case ax::mojom::Role::kListItem:
++      return "li";
++    case ax::mojom::Role::kList:
++      return "ul";
++    case ax::mojom::Role::kForm:
++      return "form";
++    case ax::mojom::Role::kTable:
++      return "table";
++    default:
++      return "div";
++  }
++}
++
++// Helper to convert ChangeType enum to string
++std::string ChangeTypeToString(ChangeType change_type) {
++  switch (change_type) {
++    case ChangeType::kDomChanged:
++      return "dom_changed";
++    case ChangeType::kPopupOpened:
++      return "popup_opened";
++    case ChangeType::kNewTabOpened:
++      return "new_tab_opened";
++    case ChangeType::kDialogShown:
++      return "dialog_shown";
++    case ChangeType::kFocusChanged:
++      return "focus_changed";
++    case ChangeType::kElementExpanded:
++      return "element_expanded";
++    case ChangeType::kNone:
++    default:
++      return "unknown";
++  }
++}
++
++// Helper to convert ChangeDetectionResult to API response
++base::Value::Dict ChangeDetectionResultToDict(const ChangeDetectionResult& result) {
++  base::Value::Dict response;
++  response.Set("success", true);
++  response.Set("changeDetected", result.detected);
++  
++  if (result.detected) {
++    // Convert primary change type to string
++    response.Set("primaryChange", ChangeTypeToString(result.primary_change));
++    response.Set("timeToChangeMs", 
++                static_cast<int>(result.time_to_change.InMilliseconds()));
++    
++    // Add all detected changes
++    base::Value::List all_changes;
++    for (const auto& change : result.all_changes) {
++      std::string change_str = ChangeTypeToString(change);
++      if (change_str != "unknown") {
++        all_changes.Append(change_str);
++      }
++    }
++    response.Set("allChanges", std::move(all_changes));
++    
++    // Add action required hints
++    if (result.primary_change == ChangeType::kNewTabOpened) {
++      response.Set("actionRequired", "switch_to_new_tab");
++    } else if (result.primary_change == ChangeType::kPopupOpened) {
++      response.Set("actionRequired", "interact_with_popup");
++    }
++  }
++  
++  return response;
++}
++
++}  // namespace api
++}  // namespace extensions
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_api_utils.h b/chrome/browser/extensions/api/browser_os/browser_os_api_utils.h
+new file mode 100644
+index 0000000000000..403633772e2fe
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_api_utils.h
+@@ -0,0 +1,84 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_UTILS_H_
++#define CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_UTILS_H_
++
++#include <optional>
++#include <string>
++#include <unordered_map>
++
++#include "base/memory/raw_ptr.h"
++#include "base/values.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_change_detector.h"
++#include "chrome/common/extensions/api/browser_os.h"
++#include "ui/accessibility/ax_node_data.h"
++#include "ui/accessibility/ax_tree_id.h"
++#include "ui/gfx/geometry/rect_f.h"
++
++namespace content {
++class BrowserContext;
++class RenderWidgetHost;
++class WebContents;
++}  // namespace content
++
++namespace extensions {
++
++class WindowController;
++
++namespace api {
++
++// Result structure for tab retrieval
++struct TabInfo {
++  raw_ptr<content::WebContents> web_contents;
++  int tab_id;
++  
++  TabInfo(content::WebContents* wc, int id) 
++      : web_contents(wc), tab_id(id) {}
++};
++
++// Stores mapping information for a node
++struct NodeInfo {
++  NodeInfo();
++  ~NodeInfo();
++  NodeInfo(const NodeInfo&);
++  NodeInfo& operator=(const NodeInfo&);
++  NodeInfo(NodeInfo&&);
++  NodeInfo& operator=(NodeInfo&&);
++
++  int32_t ax_node_id;
++  ui::AXTreeID ax_tree_id;  // Tree ID for change detection
++  gfx::RectF bounds;  // Absolute bounds in CSS pixels
++  std::unordered_map<std::string, std::string> attributes;  // All computed attributes
++};
++
++// Global node ID mappings storage
++std::unordered_map<int, std::unordered_map<uint32_t, NodeInfo>>& 
++GetNodeIdMappings();
++
++// Helper to get WebContents and tab ID from optional tab_id parameter
++// Returns nullptr if tab is not found, with error message set
++std::optional<TabInfo> GetTabFromOptionalId(
++    std::optional<int> tab_id_param,
++    content::BrowserContext* browser_context,
++    bool include_incognito_information,
++    std::string* error_message);
++
++// Helper to determine if a node is interactive (clickable/typable)
++browser_os::InteractiveNodeType GetInteractiveNodeType(
++    const ui::AXNodeData& node_data);
++
++// Helper to get the HTML tag name from AX role
++std::string GetTagFromRole(ax::mojom::Role role);
++
++// Helper to convert ChangeType enum to string
++std::string ChangeTypeToString(ChangeType change_type);
++
++// Helper to convert ChangeDetectionResult to API response
++base::Value::Dict ChangeDetectionResultToDict(const ChangeDetectionResult& result);
++
++}  // namespace api
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_API_UTILS_H_
+\ No newline at end of file
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_change_detector.cc b/chrome/browser/extensions/api/browser_os/browser_os_change_detector.cc
+new file mode 100644
+index 0000000000000..7962fb78b6e48
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_change_detector.cc
+@@ -0,0 +1,271 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/extensions/api/browser_os/browser_os_change_detector.h"
++
++#include "base/functional/bind.h"
++#include "base/logging.h"
++#include "base/run_loop.h"
++#include "content/public/browser/focused_node_details.h"
++#include "content/public/browser/render_frame_host.h"
++#include "content/public/browser/web_contents.h"
++#include "ui/accessibility/ax_enums.mojom.h"
++#include "ui/accessibility/ax_node_data.h"
++#include "ui/accessibility/ax_tree_update.h"
++#include "ui/accessibility/ax_updates_and_events.h"
++
++namespace extensions {
++namespace api {
++
++// ChangeDetectionResult implementation
++ChangeDetectionResult::ChangeDetectionResult() = default;
++ChangeDetectionResult::~ChangeDetectionResult() = default;
++ChangeDetectionResult::ChangeDetectionResult(const ChangeDetectionResult&) = default;
++ChangeDetectionResult& ChangeDetectionResult::operator=(const ChangeDetectionResult&) = default;
++ChangeDetectionResult::ChangeDetectionResult(ChangeDetectionResult&&) = default;
++ChangeDetectionResult& ChangeDetectionResult::operator=(ChangeDetectionResult&&) = default;
++
++BrowserOSChangeDetector::BrowserOSChangeDetector(
++    content::WebContents* web_contents)
++    : content::WebContentsObserver(web_contents) {}
++
++BrowserOSChangeDetector::~BrowserOSChangeDetector() {
++  LOG(INFO) << "BrowserOSChangeDetector destroyed";
++  StopMonitoring();
++}
++
++void BrowserOSChangeDetector::StartMonitoring(
++    const ui::AXTreeID& initial_tree_id) {
++  DCHECK(!monitoring_active_);
++  
++  monitoring_active_ = true;
++  change_detected_ = false;
++  initial_tree_id_ = initial_tree_id;
++  current_tree_id_ = initial_tree_id;
++  detected_changes_.clear();
++  start_time_ = base::TimeTicks::Now();
++  time_to_first_change_ = base::TimeDelta();
++  
++  VLOG(1) << "Started monitoring for changes, initial tree ID: " 
++          << initial_tree_id.ToString();
++}
++
++ChangeDetectionResult BrowserOSChangeDetector::WaitForChanges(
++    base::TimeDelta timeout) {
++  DCHECK(monitoring_active_);
++  
++  // If changes already detected, return immediately
++  if (change_detected_) {
++    return GetResult();
++  }
++  
++  // Set up a run loop to wait for changes or timeout
++  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
++  wait_callback_ = run_loop.QuitClosure();
++  
++  // Start timeout timer
++  timeout_timer_.Start(FROM_HERE, timeout,
++                      base::BindOnce(&BrowserOSChangeDetector::OnTimeout,
++                                    weak_factory_.GetWeakPtr()));
++  
++  // Wait for changes or timeout
++  run_loop.Run();
++  
++  // Clean up
++  timeout_timer_.Stop();
++  wait_callback_.Reset();
++  
++  return GetResult();
++}
++
++ChangeDetectionResult BrowserOSChangeDetector::GetResult() const {
++  ChangeDetectionResult result;
++  result.detected = change_detected_;
++  result.all_changes = detected_changes_;
++  result.new_tree_id = current_tree_id_;
++  result.time_to_change = time_to_first_change_;
++  
++  // Determine primary change type
++  if (!detected_changes_.empty()) {
++    VLOG(1) << "BrowserOSChangeDetector detected changes: "
++              << static_cast<int>(detected_changes_.size());
++    // Priority order for primary change
++    if (detected_changes_.count(ChangeType::kNewTabOpened)) {
++      result.primary_change = ChangeType::kNewTabOpened;
++    } else if (detected_changes_.count(ChangeType::kPopupOpened)) {
++      result.primary_change = ChangeType::kPopupOpened;
++    } else if (detected_changes_.count(ChangeType::kDialogShown)) {
++      result.primary_change = ChangeType::kDialogShown;
++    } else if (detected_changes_.count(ChangeType::kElementExpanded)) {
++      result.primary_change = ChangeType::kElementExpanded;
++    } else if (detected_changes_.count(ChangeType::kDomChanged)) {
++      result.primary_change = ChangeType::kDomChanged;
++    } else if (detected_changes_.count(ChangeType::kFocusChanged)) {
++      result.primary_change = ChangeType::kFocusChanged;
++    }
++  }
++  else {
++    LOG(INFO) << "BrowserOSChangeDetector empty detected changes";
++  }
++  
++  return result;
++}
++
++void BrowserOSChangeDetector::AccessibilityEventReceived(
++    const ui::AXUpdatesAndEvents& details) {
++  if (!monitoring_active_) {
++    return;
++  }
++  
++  ProcessAccessibilityEvent(details);
++}
++
++void BrowserOSChangeDetector::ProcessAccessibilityEvent(
++    const ui::AXUpdatesAndEvents& details) {
++  bool significant_change = false;
++  
++  // Process each tree update
++  for (size_t i = 0; i < details.updates.size(); ++i) {
++    const ui::AXTreeUpdate& update = details.updates[i];
++    
++    // Check if tree ID changed
++    if (update.has_tree_data && update.tree_data.tree_id != initial_tree_id_) {
++      current_tree_id_ = update.tree_data.tree_id;
++      significant_change = true;
++      VLOG(1) << "Tree ID changed from " << initial_tree_id_.ToString() 
++              << " to " << current_tree_id_.ToString();
++    }
++    
++    // Check for specific event types from the corresponding event
++    if (i < details.events.size()) {
++      const ui::AXEvent& event = details.events[i];
++      switch (event.event_type) {
++        case ax::mojom::Event::kChildrenChanged:
++        case ax::mojom::Event::kLayoutComplete:
++        case ax::mojom::Event::kLoadComplete:
++          detected_changes_.insert(ChangeType::kDomChanged);
++          significant_change = true;
++          break;
++          
++        case ax::mojom::Event::kFocus:
++        case ax::mojom::Event::kFocusContext:
++        case ax::mojom::Event::kDocumentSelectionChanged:
++          detected_changes_.insert(ChangeType::kFocusChanged);
++          significant_change = true;
++          break;
++          
++        case ax::mojom::Event::kExpandedChanged:
++        case ax::mojom::Event::kRowExpanded:
++        case ax::mojom::Event::kRowCollapsed:
++          detected_changes_.insert(ChangeType::kElementExpanded);
++          significant_change = true;
++          break;
++          
++        default:
++          break;
++      }
++    }
++    
++    // Check for popup/dialog indicators in node data
++    for (const auto& node : update.nodes) {
++      if (node.role == ax::mojom::Role::kDialog ||
++          node.role == ax::mojom::Role::kAlertDialog ||
++          node.role == ax::mojom::Role::kAlert) {
++        // Check if this is a new node (not in initial tree)
++        if (!node.IsInvisibleOrIgnored()) {
++          detected_changes_.insert(ChangeType::kPopupOpened);
++          significant_change = true;
++        }
++      }
++      
++      if (node.role == ax::mojom::Role::kMenu ||
++          node.role == ax::mojom::Role::kMenuBar ||
++          node.role == ax::mojom::Role::kMenuListPopup) {
++        if (!node.IsInvisibleOrIgnored()) {
++          detected_changes_.insert(ChangeType::kPopupOpened);
++          significant_change = true;
++        }
++      }
++    }
++  }
++  
++  if (significant_change && !change_detected_) {
++    change_detected_ = true;
++    time_to_first_change_ = base::TimeTicks::Now() - start_time_;
++    VLOG(1) << "Change detected after " << time_to_first_change_.InMilliseconds() << " ms";
++    
++    // If waiting, quit the run loop
++    if (wait_callback_) {
++      std::move(wait_callback_).Run();
++    }
++  }
++}
++
++void BrowserOSChangeDetector::DidOpenRequestedURL(
++    content::WebContents* new_contents,
++    content::RenderFrameHost* source_render_frame_host,
++    const GURL& url,
++    const content::Referrer& referrer,
++    WindowOpenDisposition disposition,
++    ui::PageTransition transition,
++    bool started_from_context_menu,
++    bool renderer_initiated) {
++  if (!monitoring_active_) {
++    return;
++  }
++  
++  if (disposition == WindowOpenDisposition::NEW_POPUP ||
++      disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
++      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
++      disposition == WindowOpenDisposition::NEW_WINDOW) {
++    detected_changes_.insert(ChangeType::kNewTabOpened);
++    change_detected_ = true;
++    
++    if (!time_to_first_change_.is_positive()) {
++      time_to_first_change_ = base::TimeTicks::Now() - start_time_;
++    }
++    
++    VLOG(1) << "New tab/window detected with disposition: " 
++            << static_cast<int>(disposition);
++    
++    if (wait_callback_) {
++      std::move(wait_callback_).Run();
++    }
++  }
++}
++
++void BrowserOSChangeDetector::OnFocusChangedInPage(
++    content::FocusedNodeDetails* details) {
++  if (!monitoring_active_ || !details) {
++    return;
++  }
++  
++  detected_changes_.insert(ChangeType::kFocusChanged);
++  
++  if (!change_detected_) {
++    change_detected_ = true;
++    time_to_first_change_ = base::TimeTicks::Now() - start_time_;
++    
++    if (wait_callback_) {
++      std::move(wait_callback_).Run();
++    }
++  }
++}
++
++void BrowserOSChangeDetector::OnTimeout() {
++  VLOG(1) << "Change detection timeout reached";
++  
++  if (wait_callback_) {
++    std::move(wait_callback_).Run();
++  }
++}
++
++void BrowserOSChangeDetector::StopMonitoring() {
++  monitoring_active_ = false;
++  timeout_timer_.Stop();
++  wait_callback_.Reset();
++}
++
++}  // namespace api
++}  // namespace extensions
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_change_detector.h b/chrome/browser/extensions/api/browser_os/browser_os_change_detector.h
+new file mode 100644
+index 0000000000000..f4a902e1b4970
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_change_detector.h
+@@ -0,0 +1,120 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_CHANGE_DETECTOR_H_
++#define CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_CHANGE_DETECTOR_H_
++
++#include <set>
++#include <string>
++
++#include "base/functional/callback.h"
++#include "base/memory/weak_ptr.h"
++#include "base/time/time.h"
++#include "base/timer/timer.h"
++#include "content/public/browser/web_contents_observer.h"
++#include "ui/accessibility/ax_enums.mojom.h"
++#include "ui/accessibility/ax_tree_id.h"
++
++namespace content {
++class WebContents;
++}  // namespace content
++
++namespace ui {
++struct AXUpdatesAndEvents;
++}  // namespace ui
++
++namespace extensions {
++namespace api {
++
++// Types of changes that can be detected after user actions
++enum class ChangeType {
++  kNone,              // No change detected
++  kDomChanged,        // Regular DOM updates
++  kPopupOpened,       // Modal/dropdown/menu appeared
++  kNewTabOpened,      // New tab/window created
++  kDialogShown,       // JS alert/confirm/prompt
++  kFocusChanged,      // Focus moved to different element
++  kElementExpanded,   // Dropdown/accordion expanded
++};
++
++// Result of change detection
++struct ChangeDetectionResult {
++  ChangeDetectionResult();
++  ~ChangeDetectionResult();
++  ChangeDetectionResult(const ChangeDetectionResult&);
++  ChangeDetectionResult& operator=(const ChangeDetectionResult&);
++  ChangeDetectionResult(ChangeDetectionResult&&);
++  ChangeDetectionResult& operator=(ChangeDetectionResult&&);
++
++  bool detected = false;
++  ChangeType primary_change = ChangeType::kNone;
++  std::set<ChangeType> all_changes;
++  ui::AXTreeID new_tree_id;
++  int new_tab_id = -1;
++  std::string dialog_type;
++  int popup_node_id = -1;
++  base::TimeDelta time_to_change;
++};
++
++// Detects changes in the DOM after user actions using accessibility events
++class BrowserOSChangeDetector : public content::WebContentsObserver {
++ public:
++  explicit BrowserOSChangeDetector(content::WebContents* web_contents);
++  ~BrowserOSChangeDetector() override;
++
++  BrowserOSChangeDetector(const BrowserOSChangeDetector&) = delete;
++  BrowserOSChangeDetector& operator=(const BrowserOSChangeDetector&) = delete;
++
++  // Start monitoring for changes with a specific tree ID
++  void StartMonitoring(const ui::AXTreeID& initial_tree_id);
++
++  // Wait for changes with timeout, returns result
++  ChangeDetectionResult WaitForChanges(base::TimeDelta timeout);
++
++  // Check if changes were detected (non-blocking)
++  bool HasChangesDetected() const { return change_detected_; }
++
++  // Get the result without waiting
++  ChangeDetectionResult GetResult() const;
++
++ private:
++  // WebContentsObserver overrides
++  void AccessibilityEventReceived(
++      const ui::AXUpdatesAndEvents& details) override;
++  void DidOpenRequestedURL(content::WebContents* new_contents,
++                          content::RenderFrameHost* source_render_frame_host,
++                          const GURL& url,
++                          const content::Referrer& referrer,
++                          WindowOpenDisposition disposition,
++                          ui::PageTransition transition,
++                          bool started_from_context_menu,
++                          bool renderer_initiated) override;
++  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override;
++
++  // Helper methods
++  void OnTimeout();
++  void ProcessAccessibilityEvent(const ui::AXUpdatesAndEvents& details);
++  void StopMonitoring();
++
++  // State tracking
++  bool monitoring_active_ = false;
++  bool change_detected_ = false;
++  ui::AXTreeID initial_tree_id_;
++  ui::AXTreeID current_tree_id_;
++  std::set<ChangeType> detected_changes_;
++  base::TimeTicks start_time_;
++  base::TimeDelta time_to_first_change_;
++  
++  // Timer for timeout handling
++  base::OneShotTimer timeout_timer_;
++  base::OnceClosure wait_callback_;
++
++  // Weak pointer factory
++  base::WeakPtrFactory<BrowserOSChangeDetector> weak_factory_{this};
++};
++
++}  // namespace api
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_CHANGE_DETECTOR_H_
+\ No newline at end of file
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_content_processor.cc b/chrome/browser/extensions/api/browser_os/browser_os_content_processor.cc
+new file mode 100644
+index 0000000000000..7a35c0fea9de8
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_content_processor.cc
+@@ -0,0 +1,727 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/extensions/api/browser_os/browser_os_content_processor.h"
++
++#include <algorithm>
++#include <queue>
++#include <utility>
++
++#include "base/functional/bind.h"
++#include "base/logging.h"
++#include "base/strings/string_util.h"
++#include "base/task/thread_pool.h"
++#include "base/time/time.h"
++#include "ui/accessibility/ax_enum_util.h"
++#include "ui/accessibility/ax_node_data.h"
++#include "ui/accessibility/ax_role_properties.h"
++#include "ui/accessibility/ax_tree_update.h"
++#include "ui/gfx/geometry/rect_conversions.h"
++
++namespace extensions {
++namespace api {
++
++namespace {
++
++// Constants for safety limits
++constexpr size_t kMaxLinksPerSection = 1000;
++constexpr size_t kMaxTextLength = 100000;
++
++// Helper to clean text for output
++std::string CleanTextForOutput(const std::string& text) {
++  std::string cleaned = std::string(base::TrimWhitespaceASCII(text, base::TRIM_ALL));
++  
++  // Replace multiple spaces with single space
++  std::string result;
++  bool prev_space = false;
++  for (char c : cleaned) {
++    if (std::isspace(c)) {
++      if (!prev_space) {
++        result += ' ';
++        prev_space = true;
++      }
++    } else {
++      result += c;
++      prev_space = false;
++    }
++  }
++  
++  return result;
++}
++
++// Helper to determine if URL is external
++bool IsExternalUrl(const std::string& url) {
++  if (url.empty()) return false;
++  
++  // Check for common external URL patterns
++  return url.find("http://") == 0 || 
++         url.find("https://") == 0 ||
++         url.find("//") == 0;
++}
++
++// Convert SectionType enum to string
++std::string SectionTypeToString(browser_os::SectionType type) {
++  switch (type) {
++    case browser_os::SectionType::kMain:
++      return "main";
++    case browser_os::SectionType::kNavigation:
++      return "navigation";
++    case browser_os::SectionType::kFooter:
++      return "footer";
++    case browser_os::SectionType::kHeader:
++      return "header";
++    case browser_os::SectionType::kArticle:
++      return "article";
++    case browser_os::SectionType::kAside:
++      return "aside";
++    case browser_os::SectionType::kComplementary:
++      return "complementary";
++    case browser_os::SectionType::kContentinfo:
++      return "contentinfo";
++    case browser_os::SectionType::kForm:
++      return "form";
++    case browser_os::SectionType::kSearch:
++      return "search";
++    case browser_os::SectionType::kRegion:
++      return "region";
++    case browser_os::SectionType::kOther:
++    default:
++      return "other";
++  }
++}
++
++}  // namespace
++
++// NodeInfo implementation
++ContentProcessor::NodeInfo::NodeInfo() = default;
++ContentProcessor::NodeInfo::NodeInfo(const NodeInfo&) = default;
++ContentProcessor::NodeInfo::NodeInfo(NodeInfo&&) = default;
++ContentProcessor::NodeInfo& ContentProcessor::NodeInfo::operator=(const NodeInfo&) = default;
++ContentProcessor::NodeInfo& ContentProcessor::NodeInfo::operator=(NodeInfo&&) = default;
++ContentProcessor::NodeInfo::~NodeInfo() = default;
++
++// SectionInfo implementation
++ContentProcessor::SectionInfo::SectionInfo() = default;
++ContentProcessor::SectionInfo::SectionInfo(SectionInfo&&) = default;
++ContentProcessor::SectionInfo& ContentProcessor::SectionInfo::operator=(SectionInfo&&) = default;
++ContentProcessor::SectionInfo::~SectionInfo() = default;
++
++// ProcessingContext implementation
++ContentProcessor::ProcessingContext::ProcessingContext() = default;
++ContentProcessor::ProcessingContext::~ProcessingContext() = default;
++
++// ============================================================================
++// Section Detection and Caching Implementation
++// ============================================================================
++
++// Get section type from node attributes (for section roots)
++browser_os::SectionType ContentProcessor::GetSectionTypeFromNode(
++    const ui::AXNodeData& node) {
++  // Check ARIA landmark roles
++  const std::string& role = ui::ToString(node.role);
++  if (role == "navigation") {
++    return browser_os::SectionType::kNavigation;
++  } else if (role == "main") {
++    return browser_os::SectionType::kMain;
++  } else if (role == "complementary" || role == "aside") {
++    return browser_os::SectionType::kAside;
++  } else if (role == "contentinfo" || role == "footer") {
++    return browser_os::SectionType::kFooter;
++  } else if (role == "banner" || role == "header") {
++    return browser_os::SectionType::kHeader;
++  } else if (role == "article") {
++    return browser_os::SectionType::kArticle;
++  } else if (role == "form") {
++    return browser_os::SectionType::kForm;
++  } else if (role == "search") {
++    return browser_os::SectionType::kSearch;
++  } else if (role == "region") {
++    return browser_os::SectionType::kRegion;
++  }
++  
++  // Check HTML tags
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kHtmlTag)) {
++    const std::string& tag = node.GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
++    if (tag == "nav") {
++      return browser_os::SectionType::kNavigation;
++    } else if (tag == "main") {
++      return browser_os::SectionType::kMain;
++    } else if (tag == "aside") {
++      return browser_os::SectionType::kAside;
++    } else if (tag == "footer") {
++      return browser_os::SectionType::kFooter;
++    } else if (tag == "header") {
++      return browser_os::SectionType::kHeader;
++    } else if (tag == "article") {
++      return browser_os::SectionType::kArticle;
++    } else if (tag == "form") {
++      return browser_os::SectionType::kForm;
++    }
++  }
++  
++  return browser_os::SectionType::kNone;  // Not a section root
++}
++
++// Cache a node's section for fast lookup
++void ContentProcessor::CacheNodeSection(
++    int32_t node_id,
++    browser_os::SectionType section_type,
++    scoped_refptr<ProcessingContext> context) {
++  base::AutoLock lock(context->section_cache_lock);
++  context->node_to_section_cache[node_id] = section_type;
++}
++
++// Determine which section a node belongs to with caching
++browser_os::SectionType ContentProcessor::DetermineNodeSection(
++    int32_t node_id,
++    const std::unordered_map<int32_t, ui::AXNodeData>& node_map,
++    scoped_refptr<ProcessingContext> context) {
++  
++  // Fast path: check cache first
++  {
++    base::AutoLock lock(context->section_cache_lock);
++    auto cached_it = context->node_to_section_cache.find(node_id);
++    if (cached_it != context->node_to_section_cache.end()) {
++      return cached_it->second;
++    }
++  }
++  
++  // Find the node
++  auto node_it = node_map.find(node_id);
++  if (node_it == node_map.end()) {
++    return browser_os::SectionType::kOther;
++  }
++  
++  // Check if this node itself defines a section
++  browser_os::SectionType node_section = GetSectionTypeFromNode(node_it->second);
++  if (node_section != browser_os::SectionType::kNone) {
++    // This is a section root - cache it
++    CacheNodeSection(node_id, node_section, context);
++    {
++      base::AutoLock lock(context->section_cache_lock);
++      context->section_root_nodes[node_id] = node_section;
++    }
++    return node_section;
++  }
++  
++  // Walk up the tree to find section
++  std::vector<int32_t> path;
++  path.reserve(20);  // Pre-allocate for typical depth
++  
++  int32_t current_id = node_id;
++  const int kMaxDepth = 100;
++  int depth = 0;
++  
++  while (current_id >= 0 && depth < kMaxDepth) {
++    path.push_back(current_id);
++    
++    // Check cache during walk
++    {
++      base::AutoLock lock(context->section_cache_lock);
++      auto cached_it = context->node_to_section_cache.find(current_id);
++      if (cached_it != context->node_to_section_cache.end()) {
++        // Found cached ancestor - cache entire path
++        browser_os::SectionType section = cached_it->second;
++        for (int32_t path_node_id : path) {
++          context->node_to_section_cache[path_node_id] = section;
++        }
++        return section;
++      }
++      
++      // Check if this is a known section root
++      auto root_it = context->section_root_nodes.find(current_id);
++      if (root_it != context->section_root_nodes.end()) {
++        // Found section root - cache entire path
++        browser_os::SectionType section = root_it->second;
++        for (int32_t path_node_id : path) {
++          context->node_to_section_cache[path_node_id] = section;
++        }
++        return section;
++      }
++    }
++    
++    // Move to parent
++    auto current_it = node_map.find(current_id);
++    if (current_it == node_map.end()) {
++      break;
++    }
++    
++    current_id = current_it->second.relative_bounds.offset_container_id;
++    depth++;
++  }
++  
++  // Default to "other" section and cache the path
++  browser_os::SectionType default_section = browser_os::SectionType::kOther;
++  {
++    base::AutoLock lock(context->section_cache_lock);
++    for (int32_t path_node_id : path) {
++      context->node_to_section_cache[path_node_id] = default_section;
++    }
++  }
++  
++  return default_section;
++}
++
++// Helper to get section type from node
++browser_os::SectionType ContentProcessor::GetSectionType(const NodeInfo& node) {
++  // Check ARIA landmark roles
++  if (node.role == "navigation") {
++    return browser_os::SectionType::kNavigation;
++  } else if (node.role == "main") {
++    return browser_os::SectionType::kMain;
++  } else if (node.role == "complementary" || node.role == "aside") {
++    return browser_os::SectionType::kAside;
++  } else if (node.role == "contentinfo" || node.role == "footer") {
++    return browser_os::SectionType::kFooter;
++  } else if (node.role == "banner" || node.role == "header") {
++    return browser_os::SectionType::kHeader;
++  } else if (node.role == "article") {
++    return browser_os::SectionType::kArticle;
++  } else if (node.role == "form") {
++    return browser_os::SectionType::kForm;
++  } else if (node.role == "search") {
++    return browser_os::SectionType::kSearch;
++  } else if (node.role == "region") {
++    return browser_os::SectionType::kRegion;
++  }
++  
++  // Check HTML tags from attributes
++  auto tag_it = node.attributes.find("html-tag");
++  if (tag_it != node.attributes.end()) {
++    const std::string& tag = tag_it->second;
++    if (tag == "nav") {
++      return browser_os::SectionType::kNavigation;
++    } else if (tag == "main") {
++      return browser_os::SectionType::kMain;
++    } else if (tag == "aside") {
++      return browser_os::SectionType::kAside;
++    } else if (tag == "footer") {
++      return browser_os::SectionType::kFooter;
++    } else if (tag == "header") {
++      return browser_os::SectionType::kHeader;
++    } else if (tag == "article") {
++      return browser_os::SectionType::kArticle;
++    } else if (tag == "form") {
++      return browser_os::SectionType::kForm;
++    }
++  }
++  
++  return browser_os::SectionType::kOther;
++}
++
++// ============================================================================
++// Thread-Safe Section Content Management
++// ============================================================================
++
++// Add text content to a section (thread-safe)
++void ContentProcessor::AddTextToSection(
++    browser_os::SectionType section_type,
++    const std::string& text,
++    scoped_refptr<ProcessingContext> context) {
++  
++  if (text.empty()) {
++    return;
++  }
++  
++  base::AutoLock lock(context->sections_lock);
++  
++  // Get or create section
++  auto& section_ptr = context->sections[section_type];
++  if (!section_ptr) {
++    section_ptr = std::make_unique<SectionInfo>();
++    section_ptr->type = section_type;
++  }
++  
++  // Add text with newline separator if needed
++  if (!section_ptr->text_content.empty()) {
++    section_ptr->text_content += "\n";
++  }
++  section_ptr->text_content += text;
++  
++  // Enforce size limit
++  if (section_ptr->text_content.length() > kMaxTextLength) {
++    section_ptr->text_content.resize(kMaxTextLength);
++  }
++}
++
++// Add link to a section (thread-safe)
++void ContentProcessor::AddLinkToSection(
++    browser_os::SectionType section_type,
++    browser_os::LinkInfo link,
++    scoped_refptr<ProcessingContext> context) {
++  
++  base::AutoLock lock(context->sections_lock);
++  
++  // Get or create section
++  auto& section_ptr = context->sections[section_type];
++  if (!section_ptr) {
++    section_ptr = std::make_unique<SectionInfo>();
++    section_ptr->type = section_type;
++  }
++  
++  // Add link with limit check
++  if (section_ptr->links.size() < kMaxLinksPerSection) {
++    section_ptr->links.push_back(std::move(link));
++  }
++}
++
++// Helper to check if node is visible
++bool ContentProcessor::IsNodeVisible(const NodeInfo& node, const gfx::Rect& viewport_bounds) {
++  if (viewport_bounds.IsEmpty()) {
++    return true;  // No viewport restriction
++  }
++  
++  // Check if node bounds intersect with viewport
++  return viewport_bounds.Intersects(node.bounds);
++}
++
++// Helper to extract text from node
++std::string ContentProcessor::ExtractNodeText(const NodeInfo& node) {
++  std::vector<std::string> text_parts;
++  
++  // Get name
++  if (!node.name.empty()) {
++    text_parts.push_back(node.name);
++  }
++  
++  // Get value for input elements
++  if (!node.value.empty()) {
++    text_parts.push_back(node.value);
++  }
++  
++  // Get placeholder
++  auto placeholder_it = node.attributes.find("placeholder");
++  if (placeholder_it != node.attributes.end() && !placeholder_it->second.empty()) {
++    text_parts.push_back(placeholder_it->second);
++  }
++  
++  // Join all text parts
++  std::string result = base::JoinString(text_parts, " ");
++  return CleanTextForOutput(result);
++}
++
++// Helper to extract link info
++browser_os::LinkInfo ContentProcessor::ExtractLinkInfo(const NodeInfo& node) {
++  browser_os::LinkInfo link;
++  
++  // Get URL
++  link.url = node.url;
++  
++  // Get link text (name or inner text)
++  link.text = node.name;
++  
++  // Get title attribute
++  auto title_it = node.attributes.find("title");
++  if (title_it != node.attributes.end()) {
++    link.title = title_it->second;
++  }
++  
++  // Determine if external
++  link.is_external = IsExternalUrl(link.url);
++  
++  // Add additional attributes
++  browser_os::LinkInfo::Attributes attrs;
++  attrs.additional_properties.Set("role", node.role);
++  if (node.attributes.find("html-tag") != node.attributes.end()) {
++    attrs.additional_properties.Set("tag", node.attributes.at("html-tag"));
++  }
++  link.attributes = std::move(attrs);
++  
++  return link;
++}
++
++// Helper to check if node is a link
++bool ContentProcessor::IsLink(const NodeInfo& node) {
++  return (node.role == "link" || !node.url.empty()) &&
++         node.url != "#";  // Skip empty fragment links
++}
++
++// Helper to check if node has text content
++bool ContentProcessor::IsTextNode(const NodeInfo& node) {
++  // Include nodes with text content
++  return !node.name.empty() || !node.value.empty() ||
++         node.attributes.find("placeholder") != node.attributes.end();
++}
++
++
++// ============================================================================
++// Parallel Batch Processing with Integrated Section Detection
++// ============================================================================
++
++// Process a batch of nodes in parallel with section detection
++void ContentProcessor::ProcessNodeBatchParallel(
++    const std::vector<ui::AXNodeData>& batch,
++    scoped_refptr<ProcessingContext> context) {
++  
++  // Process each node in the batch
++  for (const auto& ax_node : batch) {
++    // Skip invisible or ignored nodes
++    if (ax_node.IsInvisibleOrIgnored()) {
++      continue;
++    }
++    
++    // Skip if visibility filtering is enabled and node is not visible
++    if (context->snapshot_context == browser_os::SnapshotContext::kVisible) {
++      gfx::Rect viewport_bounds(context->viewport_size);
++      gfx::Rect node_bounds = gfx::ToEnclosingRect(ax_node.relative_bounds.bounds);
++      if (!viewport_bounds.IsEmpty() && !viewport_bounds.Intersects(node_bounds)) {
++        continue;
++      }
++    }
++    
++    // Determine which section this node belongs to
++    browser_os::SectionType section_type = DetermineNodeSection(
++        ax_node.id, context->node_map, context);
++    
++    // Check if we should include this section
++    if (!context->include_sections.empty()) {
++      bool should_include = false;
++      for (const auto& included : context->include_sections) {
++        if (included == section_type) {
++          should_include = true;
++          break;
++        }
++      }
++      if (!should_include) {
++        continue;
++      }
++    }
++    
++    // Process based on snapshot type
++    if (context->snapshot_type == browser_os::SnapshotType::kText) {
++      // Extract text content
++      std::string text = ExtractTextFromAXNode(ax_node);
++      if (!text.empty()) {
++        AddTextToSection(section_type, text, context);
++      }
++    } else if (context->snapshot_type == browser_os::SnapshotType::kLinks) {
++      // Check if this is a link
++      if (IsLinkNode(ax_node)) {
++        browser_os::LinkInfo link = ExtractLinkFromAXNode(ax_node);
++        // Only add links that have a non-empty URL
++        if (!link.url.empty()) {
++          AddLinkToSection(section_type, std::move(link), context);
++        }
++      }
++    }
++  }
++}
++
++// Helper to extract text from AXNodeData
++std::string ContentProcessor::ExtractTextFromAXNode(const ui::AXNodeData& node) {
++  std::vector<std::string> text_parts;
++  
++  // Get name
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
++    text_parts.push_back(node.GetStringAttribute(ax::mojom::StringAttribute::kName));
++  }
++  
++  // Get value for input elements
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
++    text_parts.push_back(node.GetStringAttribute(ax::mojom::StringAttribute::kValue));
++  }
++  
++  // Get placeholder
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kPlaceholder)) {
++    text_parts.push_back(node.GetStringAttribute(ax::mojom::StringAttribute::kPlaceholder));
++  }
++  
++  // Join all text parts
++  std::string result = base::JoinString(text_parts, " ");
++  return CleanTextForOutput(result);
++}
++
++// Helper to check if node is a link
++bool ContentProcessor::IsLinkNode(const ui::AXNodeData& node) {
++  // Use the official IsLink function from ax_role_properties
++  if (!ui::IsLink(node.role)) {
++    return false;
++  }
++  
++  // Also check for valid URL (skip empty fragment links)
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
++    const std::string& url = node.GetStringAttribute(ax::mojom::StringAttribute::kUrl);
++    return !url.empty() && url != "#";
++  }
++  
++  // Link role without URL is still a valid link (might have onclick handler)
++  return true;
++}
++
++// Helper to extract link info from AXNodeData
++browser_os::LinkInfo ContentProcessor::ExtractLinkFromAXNode(const ui::AXNodeData& node) {
++  browser_os::LinkInfo link;
++  
++  // Get URL
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
++    link.url = node.GetStringAttribute(ax::mojom::StringAttribute::kUrl);
++  }
++  
++  // Get link text
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
++    link.text = node.GetStringAttribute(ax::mojom::StringAttribute::kName);
++  }
++  
++  // Get title attribute
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kTooltip)) {
++    link.title = node.GetStringAttribute(ax::mojom::StringAttribute::kTooltip);
++  }
++  
++  // Determine if external
++  link.is_external = IsExternalUrl(link.url);
++  
++  // Add additional attributes
++  browser_os::LinkInfo::Attributes attrs;
++  attrs.additional_properties.Set("role", ui::ToString(node.role));
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kHtmlTag)) {
++    attrs.additional_properties.Set("tag", 
++        node.GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
++  }
++  link.attributes = std::move(attrs);
++  
++  return link;
++}
++
++
++// Callback when batch is processed
++void ContentProcessor::OnBatchProcessed(
++    scoped_refptr<ProcessingContext> context) {
++  
++  // Decrement pending batches atomically
++  int remaining = context->pending_batches.fetch_sub(1) - 1;
++  
++  // Check if all batches are complete
++  if (remaining == 0) {
++    OnAllBatchesComplete(context);
++  }
++}
++
++// Called when all batches are complete
++void ContentProcessor::OnAllBatchesComplete(scoped_refptr<ProcessingContext> context) {
++  // All processing is already done in parallel batches!
++  // Just need to convert sections to API format
++  
++  // Build result snapshot
++  browser_os::Snapshot snapshot;
++  snapshot.type = context->snapshot_type;
++  snapshot.context = context->snapshot_context;
++  snapshot.timestamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
++  
++  // Convert sections to API format
++  {
++    base::AutoLock lock(context->sections_lock);
++    for (const auto& [section_type, section_ptr] : context->sections) {
++      if (!section_ptr) continue;
++      
++      browser_os::SnapshotSection api_section;
++      api_section.type = SectionTypeToString(section_type);
++      
++      // Always create both results (one will be empty)
++      browser_os::TextSnapshotResult text_result;
++      browser_os::LinksSnapshotResult links_result;
++      
++      // Populate based on type
++      if (context->snapshot_type == browser_os::SnapshotType::kText) {
++        text_result.text = std::move(section_ptr->text_content);
++        text_result.character_count = text_result.text.length();
++      } else if (context->snapshot_type == browser_os::SnapshotType::kLinks) {
++        links_result.links = std::move(section_ptr->links);
++      }
++      
++      api_section.text_result = std::move(text_result);
++      api_section.links_result = std::move(links_result);
++      
++      snapshot.sections.push_back(std::move(api_section));
++    }
++  }
++  
++  // Calculate processing time
++  base::TimeDelta processing_time = base::Time::Now() - context->start_time;
++  snapshot.processing_time_ms = processing_time.InMilliseconds();
++  
++  LOG(INFO) << "[PERF] Content snapshot processed in " 
++            << processing_time.InMilliseconds() << " ms"
++            << " (sections: " << snapshot.sections.size() << ")";
++  
++  // Create result
++  ContentProcessingResult result;
++  result.snapshot = std::move(snapshot);
++  result.nodes_processed = context->node_map.size();
++  result.processing_time_ms = processing_time.InMilliseconds();
++  
++  // Run callback
++  std::move(context->callback).Run(std::move(result));
++}
++
++// Main processing function
++void ContentProcessor::ProcessAccessibilityTree(
++    const ui::AXTreeUpdate& tree_update,
++    browser_os::SnapshotType type,
++    browser_os::SnapshotContext context,
++    const std::vector<browser_os::SectionType>& include_sections,
++    const gfx::Size& viewport_size,
++    base::OnceCallback<void(ContentProcessingResult)> callback) {
++  
++  // Create processing context
++  auto processing_context = base::MakeRefCounted<ProcessingContext>();
++  processing_context->tree_update = tree_update;
++  processing_context->snapshot_type = type;
++  processing_context->snapshot_context = context;
++  processing_context->include_sections = include_sections;
++  processing_context->viewport_size = viewport_size;
++  processing_context->callback = std::move(callback);
++  processing_context->start_time = base::Time::Now();
++  
++  // Build node map upfront (read-only after this)
++  for (const auto& node : tree_update.nodes) {
++    processing_context->node_map[node.id] = node;
++  }
++  
++  // Pre-identify section roots for faster lookup
++  for (const auto& node : tree_update.nodes) {
++    browser_os::SectionType section_type = GetSectionTypeFromNode(node);
++    if (section_type != browser_os::SectionType::kNone) {
++      base::AutoLock lock(processing_context->section_cache_lock);
++      processing_context->section_root_nodes[node.id] = section_type;
++      processing_context->node_to_section_cache[node.id] = section_type;
++    }
++  }
++  
++  // Handle empty case
++  if (tree_update.nodes.empty()) {
++    ContentProcessingResult result;
++    result.snapshot.type = type;
++    result.snapshot.context = context;
++    result.snapshot.timestamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
++    result.snapshot.processing_time_ms = 0;
++    result.nodes_processed = 0;
++    std::move(processing_context->callback).Run(std::move(result));
++    return;
++  }
++  
++  // Process nodes in batches
++  const size_t batch_size = 100;
++  size_t num_batches = (tree_update.nodes.size() + batch_size - 1) / batch_size;
++  processing_context->pending_batches = num_batches;
++  
++  for (size_t i = 0; i < tree_update.nodes.size(); i += batch_size) {
++    size_t end = std::min(i + batch_size, tree_update.nodes.size());
++    std::vector<ui::AXNodeData> batch(
++        tree_update.nodes.begin() + i,
++        tree_update.nodes.begin() + end);
++    
++    // Post task to ThreadPool with reply
++    base::ThreadPool::PostTaskAndReply(
++        FROM_HERE,
++        {base::TaskPriority::USER_VISIBLE},
++        base::BindOnce(&ContentProcessor::ProcessNodeBatchParallel,
++                       std::move(batch),
++                       processing_context),
++        base::BindOnce(&ContentProcessor::OnBatchProcessed,
++                       processing_context));
++  }
++}
++
++}  // namespace api
++}  // namespace extensions
+\ No newline at end of file
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_content_processor.h b/chrome/browser/extensions/api/browser_os/browser_os_content_processor.h
+new file mode 100644
+index 0000000000000..e553cd8e5ddb9
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_content_processor.h
+@@ -0,0 +1,173 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_CONTENT_PROCESSOR_H_
++#define CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_CONTENT_PROCESSOR_H_
++
++#include <atomic>
++#include <cstdint>
++#include <string>
++#include <unordered_map>
++#include <unordered_set>
++#include <vector>
++
++#include "base/functional/callback.h"
++#include "base/memory/ref_counted.h"
++#include "chrome/common/extensions/api/browser_os.h"
++#include "ui/accessibility/ax_tree_update.h"
++#include "ui/gfx/geometry/rect.h"
++
++namespace ui {
++struct AXNodeData;
++}  // namespace ui
++
++namespace extensions {
++namespace api {
++
++// Result of content processing
++struct ContentProcessingResult {
++  browser_os::Snapshot snapshot;
++  int nodes_processed = 0;
++  int64_t processing_time_ms = 0;
++};
++
++// Processes accessibility trees to extract content (text/links) with parallel processing
++class ContentProcessor {
++ public:
++  // Node information for batch processing
++  struct NodeInfo {
++    NodeInfo();
++    NodeInfo(const NodeInfo&);
++    NodeInfo(NodeInfo&&);
++    NodeInfo& operator=(const NodeInfo&);
++    NodeInfo& operator=(NodeInfo&&);
++    ~NodeInfo();
++
++    int32_t id;
++    std::string role;
++    std::string name;
++    std::string value;
++    std::string url;
++    gfx::Rect bounds;
++    std::vector<int32_t> child_ids;
++    // Additional attributes
++    std::unordered_map<std::string, std::string> attributes;
++  };
++
++  // Section information
++  struct SectionInfo {
++    SectionInfo();
++    SectionInfo(const SectionInfo&) = delete;
++    SectionInfo(SectionInfo&&);
++    SectionInfo& operator=(const SectionInfo&) = delete;
++    SectionInfo& operator=(SectionInfo&&);
++    ~SectionInfo();
++
++    browser_os::SectionType type;
++    std::string label;
++    // Text content for this section
++    std::string text_content;
++    // Links found in this section
++    std::vector<browser_os::LinkInfo> links;
++  };
++
++  ContentProcessor() = default;
++  ~ContentProcessor() = default;
++
++  // Main processing function - handles all threading internally
++  static void ProcessAccessibilityTree(
++      const ui::AXTreeUpdate& tree_update,
++      browser_os::SnapshotType type,
++      browser_os::SnapshotContext context,
++      const std::vector<browser_os::SectionType>& include_sections,
++      const gfx::Size& viewport_size,
++      base::OnceCallback<void(ContentProcessingResult)> callback);
++
++
++ private:
++  // Internal processing context for thread safety
++  struct ProcessingContext : public base::RefCountedThreadSafe<ProcessingContext> {
++    ProcessingContext();
++
++    // Input data
++    ui::AXTreeUpdate tree_update;
++    browser_os::SnapshotType snapshot_type;
++    browser_os::SnapshotContext snapshot_context;
++    std::vector<browser_os::SectionType> include_sections;
++    gfx::Size viewport_size;
++    base::OnceCallback<void(ContentProcessingResult)> callback;
++
++    // Processing state
++    std::atomic<int> pending_batches{0};
++    base::Time start_time;
++    
++    // Thread-safe section management
++    mutable base::Lock sections_lock;
++    std::unordered_map<browser_os::SectionType, std::unique_ptr<SectionInfo>> sections;
++    
++    // Thread-safe caching for section detection
++    mutable base::Lock section_cache_lock;
++    std::unordered_map<int32_t, browser_os::SectionType> node_to_section_cache;
++    std::unordered_map<int32_t, browser_os::SectionType> section_root_nodes;
++    
++    // Node map built from tree_update (read-only after construction)
++    std::unordered_map<int32_t, ui::AXNodeData> node_map;
++
++   private:
++    friend class base::RefCountedThreadSafe<ProcessingContext>;
++    ~ProcessingContext();
++  };
++
++  // Helper functions
++  static browser_os::SectionType GetSectionType(const NodeInfo& node);
++  static bool IsNodeVisible(const NodeInfo& node, const gfx::Rect& viewport_bounds);
++  static std::string ExtractNodeText(const NodeInfo& node);
++  static browser_os::LinkInfo ExtractLinkInfo(const NodeInfo& node);
++  static bool IsLink(const NodeInfo& node);
++  static bool IsTextNode(const NodeInfo& node);
++  
++  // Section detection and caching
++  static browser_os::SectionType DetermineNodeSection(
++      int32_t node_id,
++      const std::unordered_map<int32_t, ui::AXNodeData>& node_map,
++      scoped_refptr<ProcessingContext> context);
++  static void CacheNodeSection(
++      int32_t node_id,
++      browser_os::SectionType section_type,
++      scoped_refptr<ProcessingContext> context);
++  static browser_os::SectionType GetSectionTypeFromNode(
++      const ui::AXNodeData& node);
++  
++  // Thread-safe section content processing
++  static void AddTextToSection(
++      browser_os::SectionType section_type,
++      const std::string& text,
++      scoped_refptr<ProcessingContext> context);
++  static void AddLinkToSection(
++      browser_os::SectionType section_type,
++      browser_os::LinkInfo link,
++      scoped_refptr<ProcessingContext> context);
++  
++  // Batch processing with integrated section detection
++  static void ProcessNodeBatchParallel(
++      const std::vector<ui::AXNodeData>& batch,
++      scoped_refptr<ProcessingContext> context);
++  
++  // Helper functions for parallel processing
++  static std::string ExtractTextFromAXNode(const ui::AXNodeData& node);
++  static bool IsLinkNode(const ui::AXNodeData& node);
++  static browser_os::LinkInfo ExtractLinkFromAXNode(const ui::AXNodeData& node);
++
++  // Batch processing callbacks
++  static void OnBatchProcessed(scoped_refptr<ProcessingContext> context);
++  static void OnAllBatchesComplete(scoped_refptr<ProcessingContext> context);
++
++  ContentProcessor(const ContentProcessor&) = delete;
++  ContentProcessor& operator=(const ContentProcessor&) = delete;
++};
++
++}  // namespace api
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_CONTENT_PROCESSOR_H_
+\ No newline at end of file
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.cc b/chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.cc
+new file mode 100644
+index 0000000000000..ee9da99ed9bc7
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.cc
+@@ -0,0 +1,694 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h"
++
++#include <algorithm>
++#include <atomic>
++#include <cctype>
++#include <functional>
++#include <future>
++#include <memory>
++#include <queue>
++#include <sstream>
++#include <unordered_set>
++#include <utility>
++
++#include "base/functional/bind.h"
++#include "base/logging.h"
++#include "base/memory/raw_ptr.h"
++#include "base/memory/ref_counted.h"
++#include "base/strings/string_util.h"
++#include "base/task/thread_pool.h"
++#include "base/time/time.h"
++#include "chrome/browser/extensions/api/browser_os/browser_os_api_utils.h"
++#include "ui/accessibility/ax_enum_util.h"
++#include "ui/accessibility/ax_node_data.h"
++#include "ui/accessibility/ax_tree_id.h"
++#include "ui/accessibility/ax_tree_update.h"
++#include "ui/gfx/geometry/rect.h"
++#include "ui/gfx/geometry/rect_conversions.h"
++#include "ui/gfx/geometry/rect_f.h"
++#include "ui/gfx/geometry/transform.h"
++
++namespace extensions {
++namespace api {
++
++// Helper to compute absolute bounds from relative bounds by walking up the tree
++// If bounds_cache is provided, it will be used to cache computed bounds
++static gfx::RectF ComputeAbsoluteBoundsFromRelative(
++    const ui::AXNodeData& node_data,
++    const std::unordered_map<int32_t, ui::AXNodeData>& node_map,
++    std::unordered_map<int32_t, gfx::RectF>* bounds_cache = nullptr) {
++  // Check cache first if provided
++  if (bounds_cache) {
++    auto cache_it = bounds_cache->find(node_data.id);
++    if (cache_it != bounds_cache->end()) {
++      return cache_it->second;
++    }
++  }
++  // Compute absolute bounds by walking up the tree
++  gfx::RectF absolute_bounds = node_data.relative_bounds.bounds;
++  gfx::Transform accumulated_transform;
++  
++  // Apply this node's transform if it has one
++  if (node_data.relative_bounds.transform) {
++    accumulated_transform = *node_data.relative_bounds.transform;
++  }
++  
++  // Walk up the tree to compute absolute position
++  int32_t current_container_id = node_data.relative_bounds.offset_container_id;
++  int walk_depth = 0;
++  
++  while (current_container_id >= 0 && walk_depth < 100) {  // Prevent infinite loops
++    auto container_it = node_map.find(current_container_id);
++    if (container_it == node_map.end()) {
++      break;
++    }
++    
++    const ui::AXNodeData& container = container_it->second;
++    
++    // Offset by container's position
++    absolute_bounds.Offset(container.relative_bounds.bounds.x(),
++                         container.relative_bounds.bounds.y());
++    
++    // Apply container's transform if any
++    if (container.relative_bounds.transform) {
++      gfx::Transform container_transform = *container.relative_bounds.transform;
++      container_transform.PostConcat(accumulated_transform);
++      accumulated_transform = container_transform;
++    }
++    
++    // Account for scroll offset if container has it
++    if (container.HasIntAttribute(ax::mojom::IntAttribute::kScrollX) ||
++        container.HasIntAttribute(ax::mojom::IntAttribute::kScrollY)) {
++      int scroll_x = container.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
++      int scroll_y = container.GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
++      absolute_bounds.Offset(-scroll_x, -scroll_y);
++    }
++    
++    // Move to next container
++    current_container_id = container.relative_bounds.offset_container_id;
++    walk_depth++;
++  }
++  
++  // Apply accumulated transform
++  if (!accumulated_transform.IsIdentity()) {
++    absolute_bounds = accumulated_transform.MapRect(absolute_bounds);
++  }
++  
++  // Store in cache if provided
++  if (bounds_cache) {
++    (*bounds_cache)[node_data.id] = absolute_bounds;
++  }
++  
++  return absolute_bounds;
++}
++
++// ProcessedNode implementation
++SnapshotProcessor::ProcessedNode::ProcessedNode()
++    : node_data(nullptr), node_id(0) {}
++
++SnapshotProcessor::ProcessedNode::ProcessedNode(const ProcessedNode&) = default;
++SnapshotProcessor::ProcessedNode::ProcessedNode(ProcessedNode&&) = default;
++SnapshotProcessor::ProcessedNode& 
++SnapshotProcessor::ProcessedNode::operator=(const ProcessedNode&) = default;
++SnapshotProcessor::ProcessedNode& 
++SnapshotProcessor::ProcessedNode::operator=(ProcessedNode&&) = default;
++SnapshotProcessor::ProcessedNode::~ProcessedNode() = default;
++
++
++namespace {
++
++// Check if a node should create a section (container roles)
++[[maybe_unused]]
++bool IsContainer(ax::mojom::Role role) {
++  return role == ax::mojom::Role::kMain ||
++         role == ax::mojom::Role::kArticle ||
++         role == ax::mojom::Role::kSection ||
++         role == ax::mojom::Role::kNavigation ||
++         role == ax::mojom::Role::kForm ||
++         role == ax::mojom::Role::kDialog ||
++         role == ax::mojom::Role::kSearch ||
++         role == ax::mojom::Role::kRegion ||
++         role == ax::mojom::Role::kBanner ||      // header
++         role == ax::mojom::Role::kContentInfo || // footer
++         role == ax::mojom::Role::kComplementary || // aside
++         role == ax::mojom::Role::kHeading ||
++         role == ax::mojom::Role::kList ||
++         role == ax::mojom::Role::kListItem ||    // product cards
++         role == ax::mojom::Role::kGrid ||
++         role == ax::mojom::Role::kTable;
++}
++
++// Get a readable name for the section
++[[maybe_unused]]
++std::string GetSectionName(const ui::AXNodeData& node) {
++  std::string name;
++  if (node.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
++    name = node.GetStringAttribute(ax::mojom::StringAttribute::kName);
++  }
++  
++  // Add role description
++  std::string role_desc;
++  switch (node.role) {
++    case ax::mojom::Role::kNavigation:
++      role_desc = "navigation";
++      break;
++    case ax::mojom::Role::kMain:
++      role_desc = "main";
++      break;
++    case ax::mojom::Role::kBanner:
++      role_desc = "header";
++      break;
++    case ax::mojom::Role::kContentInfo:
++      role_desc = "footer";
++      break;
++    case ax::mojom::Role::kForm:
++      role_desc = "form";
++      break;
++    case ax::mojom::Role::kList:
++      role_desc = "list";
++      break;
++    case ax::mojom::Role::kListItem:
++      role_desc = "listitem";
++      break;
++    case ax::mojom::Role::kHeading:
++      role_desc = "heading";
++      break;
++    default:
++      role_desc = "section";  // Generic fallback
++  }
++  
++  if (!name.empty()) {
++    return name + " (" + role_desc + ")";
++  } else {
++    // Capitalize first letter
++    if (!role_desc.empty()) {
++      role_desc[0] = std::toupper(role_desc[0]);
++    }
++    return role_desc;
++  }
++}
++
++// Helper to sanitize strings to ensure valid UTF-8 by keeping only printable ASCII
++std::string SanitizeStringForOutput(const std::string& input) {
++  std::string output;
++  output.reserve(input.size());
++  
++  for (char c : input) {
++    // Only include printable ASCII and whitespace
++    if ((c >= 32 && c <= 126) || c == '\t' || c == '\n') {
++      output.push_back(c);
++    } else {
++      output.push_back(' ');  // Replace non-printable with space
++    }
++  }
++  
++  return output;
++}
++
++// Helper to determine if a node should be skipped for the interactive snapshot
++bool ShouldSkipNode(const ui::AXNodeData& node_data) {
++  // Skip invisible or ignored nodes
++  if (node_data.IsInvisibleOrIgnored()) {
++    return true;
++  }
++  
++  // Get the interactive type and skip if it's not interactive
++  browser_os::InteractiveNodeType node_type = GetInteractiveNodeType(node_data);
++  if (node_type == browser_os::InteractiveNodeType::kOther) {
++    return true;
++  }
++  
++  return false;
++}
++
++}  // namespace
++
++// Internal structure for managing async processing
++struct SnapshotProcessor::ProcessingContext 
++    : public base::RefCountedThreadSafe<ProcessingContext> {
++  browser_os::InteractiveSnapshot snapshot;
++  std::unordered_map<int32_t, ui::AXNodeData> node_map;
++  std::unordered_map<int32_t, int32_t> parent_map;  // child_id -> parent_id  
++  std::unordered_map<int32_t, std::vector<int32_t>> children_map;  // parent_id -> child_ids
++  int tab_id;
++  ui::AXTreeID tree_id;  // Tree ID for change detection
++  base::TimeTicks start_time;
++  size_t total_nodes;
++  size_t processed_batches;
++  size_t total_batches;
++  gfx::Rect viewport_bounds;
++  base::OnceCallback<void(SnapshotProcessingResult)> callback;
++  
++ private:
++  friend class base::RefCountedThreadSafe<ProcessingContext>;
++  ~ProcessingContext() = default;
++};
++
++// Helper to collect text from a node's subtree
++std::string CollectTextFromNode(
++    int32_t node_id,
++    const std::unordered_map<int32_t, ui::AXNodeData>& node_map,
++    int max_chars = 200) {
++  
++  auto node_it = node_map.find(node_id);
++  if (node_it == node_map.end()) {
++    return "";
++  }
++  
++  std::vector<std::string> text_parts;
++  
++  // BFS to collect text from this node and its children
++  std::queue<int32_t> queue;
++  queue.push(node_id);
++  int chars_collected = 0;
++  
++  while (!queue.empty() && chars_collected < max_chars) {
++    int32_t current_id = queue.front();
++    queue.pop();
++    
++    auto current_it = node_map.find(current_id);
++    if (current_it == node_map.end()) continue;
++    
++    const ui::AXNodeData& current = current_it->second;
++    
++    // Collect text from this node
++    if (current.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
++      std::string text = current.GetStringAttribute(ax::mojom::StringAttribute::kName);
++      text = std::string(base::TrimWhitespaceASCII(text, base::TRIM_ALL));
++      if (!text.empty()) {
++        std::string clean_text = SanitizeStringForOutput(text);
++        if (!clean_text.empty()) {
++          text_parts.push_back(clean_text);
++          chars_collected += clean_text.length();
++        }
++      }
++    }
++    
++    // Add children to queue
++    for (int32_t child_id : current.child_ids) {
++      queue.push(child_id);
++    }
++  }
++  
++  std::string result = base::JoinString(text_parts, " ");
++  if (result.length() > static_cast<size_t>(max_chars)) {
++    result = result.substr(0, max_chars - 3) + "...";
++  }
++  return result;
++}
++
++// Helper to build path using offset_container_id and return depth
++std::pair<std::string, int> BuildPathAndDepth(
++    int32_t node_id,
++    const std::unordered_map<int32_t, ui::AXNodeData>& node_map) {
++  
++  std::vector<std::string> path_parts;
++  int32_t current_id = node_id;
++  int depth = 0;
++  const int max_depth = 10;
++  
++  while (current_id >= 0 && depth < max_depth) {
++    auto node_it = node_map.find(current_id);
++    if (node_it == node_map.end()) break;
++    
++    const ui::AXNodeData& node = node_it->second;
++    
++    // Just append the role
++    path_parts.push_back(ui::ToString(node.role));
++    
++    // Move to offset container
++    current_id = node.relative_bounds.offset_container_id;
++    depth++;
++  }
++  
++  // Reverse to get top-down path
++  std::reverse(path_parts.begin(), path_parts.end());
++  return std::make_pair(base::JoinString(path_parts, " > "), depth);
++}
++
++// Helper to populate all attributes for a node
++void PopulateNodeAttributes(
++    const ui::AXNodeData& node_data,
++    std::unordered_map<std::string, std::string>& attributes) {
++  
++  // Add role as string
++  attributes["role"] = ui::ToString(node_data.role);
++  
++  // Add value attribute for inputs
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
++    std::string value = node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue);
++    attributes["value"] = SanitizeStringForOutput(value);
++  }
++  
++  // Add HTML tag if available
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kHtmlTag)) {
++    attributes["html-tag"] = node_data.GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
++  }
++  
++  // Add role description
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription)) {
++    std::string role_desc = node_data.GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
++    attributes["role-description"] = SanitizeStringForOutput(role_desc);
++  }
++  
++  // Add input type
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kInputType)) {
++    std::string input_type = node_data.GetStringAttribute(ax::mojom::StringAttribute::kInputType);
++    attributes["input-type"] = SanitizeStringForOutput(input_type);
++  }
++  
++  // Add tooltip
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kTooltip)) {
++    std::string tooltip = node_data.GetStringAttribute(ax::mojom::StringAttribute::kTooltip);
++    attributes["tooltip"] = SanitizeStringForOutput(tooltip);
++  }
++  
++  // Add placeholder for input fields
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kPlaceholder)) {
++    std::string placeholder = node_data.GetStringAttribute(ax::mojom::StringAttribute::kPlaceholder);
++    attributes["placeholder"] = SanitizeStringForOutput(placeholder);
++  }
++  
++  // Add description for more context
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
++    std::string description = node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
++    attributes["description"] = SanitizeStringForOutput(description);
++  }
++  
++  // Add URL for links
++  // if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
++  //   std::string url = node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl);
++  //   attributes["url"] = SanitizeStringForOutput(url);
++  // }
++  
++  // Add checked state description
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kCheckedStateDescription)) {
++    std::string checked_desc = node_data.GetStringAttribute(ax::mojom::StringAttribute::kCheckedStateDescription);
++    attributes["checked-state"] = SanitizeStringForOutput(checked_desc);
++  }
++  
++  // Add autocomplete hint
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete)) {
++    std::string autocomplete = node_data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete);
++    attributes["autocomplete"] = SanitizeStringForOutput(autocomplete);
++  }
++  
++  // Add HTML ID for form associations
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kHtmlId)) {
++    std::string html_id = node_data.GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
++    attributes["id"] = SanitizeStringForOutput(html_id);
++  }
++  
++  // Add HTML class names
++  if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kClassName)) {
++    std::string class_name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kClassName);
++    attributes["class"] = SanitizeStringForOutput(class_name);
++  }
++}
++
++// Process a batch of nodes
++std::vector<SnapshotProcessor::ProcessedNode> SnapshotProcessor::ProcessNodeBatch(
++    const std::vector<ui::AXNodeData>& nodes_to_process,
++    const std::unordered_map<int32_t, ui::AXNodeData>& node_map,
++    uint32_t start_node_id,
++    const gfx::Rect& doc_viewport_bounds) {
++  std::vector<ProcessedNode> results;
++  results.reserve(nodes_to_process.size());
++  
++  // Local caches for this batch
++  std::unordered_map<int32_t, gfx::RectF> bounds_cache;
++  std::unordered_map<int32_t, uint64_t> path_cache;
++  
++  uint32_t current_node_id = start_node_id;
++  
++  for (const auto& node_data : nodes_to_process) {
++    // Skip invisible, ignored, or non-interactive elements
++    if (ShouldSkipNode(node_data)) {
++      continue;
++    }
++    
++    // Double-check invisibility (already done in ShouldSkipNode, but being explicit)
++    if (node_data.IsInvisibleOrIgnored()) {
++      continue;
++    }
++    
++    // Get the interactive node type
++    browser_os::InteractiveNodeType node_type = GetInteractiveNodeType(node_data);
++    
++    ProcessedNode data;
++    data.node_data = &node_data;
++    data.node_id = current_node_id++;
++    data.node_type = node_type;
++    
++    // Get accessible name
++    if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
++      std::string name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
++      data.name = SanitizeStringForOutput(name);
++    }
++
++    // Compute absolute bounds with caching
++    data.absolute_bounds = ComputeAbsoluteBoundsFromRelative(
++        node_data, node_map, &bounds_cache);
++    
++    // Populate all attributes using helper function
++    PopulateNodeAttributes(node_data, data.attributes);
++    
++    // Add context from parent node
++    int32_t parent_id = node_data.relative_bounds.offset_container_id;
++    if (parent_id >= 0) {
++      std::string context = CollectTextFromNode(parent_id, node_map, 200);
++      if (!context.empty()) {
++        data.attributes["context"] = context;
++      }
++    }
++    
++    // Add path and depth using offset_container_id chain
++    auto [path, depth] = BuildPathAndDepth(node_data.id, node_map);
++    if (!path.empty()) {
++      data.attributes["path"] = path;
++    }
++    data.attributes["depth"] = std::to_string(depth);
++    
++    // Check if node is in viewport
++    // TODO: Fix this logic. still not accurate in terms of saying if in view port or not
++    bool in_viewport = false;
++    if (!doc_viewport_bounds.IsEmpty()) {
++      // Convert absolute bounds to integer rect for intersection test
++      gfx::Rect node_rect = gfx::ToEnclosingRect(data.absolute_bounds);
++      in_viewport = doc_viewport_bounds.Intersects(node_rect);
++    }
++    data.attributes["in_viewport"] = in_viewport ? "true" : "false";
++    
++    results.push_back(std::move(data));
++  }
++  
++  return results;
++}
++
++// Helper to handle batch processing results
++void SnapshotProcessor::OnBatchProcessed(
++    scoped_refptr<ProcessingContext> context,
++    std::vector<ProcessedNode> batch_results) {
++  // Process batch results
++  for (const auto& node_data : batch_results) {
++    // Store mapping from our nodeId to AX node ID, bounds, and attributes
++    NodeInfo info;
++    info.ax_node_id = node_data.node_data->id;
++    info.ax_tree_id = context->tree_id;  // Store tree ID for change detection
++    info.bounds = node_data.absolute_bounds;
++    info.attributes = node_data.attributes;  // Store all computed attributes
++    GetNodeIdMappings()[context->tab_id][node_data.node_id] = info;
++    
++    // Log the mapping for debugging
++    VLOG(2) << "Node ID Mapping: Interactive nodeId=" << node_data.node_id 
++            << " -> AX node ID=" << info.ax_node_id 
++            << " (name: " << node_data.name << ")";
++    
++    // Create interactive node
++    browser_os::InteractiveNode interactive_node;
++    interactive_node.node_id = node_data.node_id;
++    interactive_node.type = node_data.node_type;
++    interactive_node.name = node_data.name;
++    
++    // Set the bounding rectangle
++    browser_os::Rect rect;
++    rect.x = node_data.absolute_bounds.x();
++    rect.y = node_data.absolute_bounds.y();
++    rect.width = node_data.absolute_bounds.width();
++    rect.height = node_data.absolute_bounds.height();
++    interactive_node.rect = std::move(rect);
++    
++    // Create attributes dictionary by iterating over all key-value pairs
++    if (!node_data.attributes.empty()) {
++      browser_os::InteractiveNode::Attributes attributes;
++      
++      // Iterate over all attributes and add them to the dictionary
++      for (const auto& [key, value] : node_data.attributes) {
++        attributes.additional_properties.Set(key, value);
++      }
++      
++      interactive_node.attributes = std::move(attributes);
++    }
++    
++    context->snapshot.elements.push_back(std::move(interactive_node));
++  }
++  
++  context->processed_batches++;
++  
++  // Check if all batches are complete
++  if (context->processed_batches == context->total_batches) {
++    // Sort elements by node_id to maintain consistent ordering
++    std::sort(context->snapshot.elements.begin(), 
++              context->snapshot.elements.end(),
++              [](const browser_os::InteractiveNode& a, 
++                 const browser_os::InteractiveNode& b) {
++                return a.node_id < b.node_id;
++              });
++
++    // Leave hierarchical_structure empty for now as requested
++    context->snapshot.hierarchical_structure = "";
++
++    base::TimeDelta processing_time = base::TimeTicks::Now() - context->start_time;
++    LOG(INFO) << "[PERF] Interactive snapshot processed in " 
++              << processing_time.InMilliseconds() << " ms"
++              << " (nodes: " << context->snapshot.elements.size() << ")";
++
++    // Set processing time in the snapshot
++    context->snapshot.processing_time_ms = processing_time.InMilliseconds();
++
++    SnapshotProcessingResult result;
++    result.snapshot = std::move(context->snapshot);
++    result.nodes_processed = context->total_nodes;
++    result.processing_time_ms = processing_time.InMilliseconds();
++    
++    // Run callback (context will be deleted when last ref is released)
++    std::move(context->callback).Run(std::move(result));
++  }
++}
++
++// Main processing function
++void SnapshotProcessor::ProcessAccessibilityTree(
++    const ui::AXTreeUpdate& tree_update,
++    int tab_id,
++    uint32_t snapshot_id,
++    const gfx::Size& viewport_size,
++    base::OnceCallback<void(SnapshotProcessingResult)> callback) {
++  base::TimeTicks start_time = base::TimeTicks::Now();
++  
++  
++  // Build node ID map, parent map and children map for efficient lookup
++  std::unordered_map<int32_t, ui::AXNodeData> node_map;
++  std::unordered_map<int32_t, int32_t> parent_map;
++  std::unordered_map<int32_t, std::vector<int32_t>> children_map;
++  
++  for (const auto& node : tree_update.nodes) {
++    node_map[node.id] = node;
++    // Build parent and children relationships
++    for (int32_t child_id : node.child_ids) {
++      parent_map[child_id] = node.id;
++      children_map[node.id].push_back(child_id);
++    }
++  }
++  
++  // Prepare processing context using RefCounted
++  auto context = base::MakeRefCounted<ProcessingContext>();
++  context->snapshot.snapshot_id = snapshot_id;
++  context->snapshot.timestamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
++  context->tab_id = tab_id;
++  context->node_map = std::move(node_map);
++  context->parent_map = std::move(parent_map); 
++  context->children_map = std::move(children_map);
++  context->start_time = start_time;
++  
++  // Store the tree ID for change detection
++  if (tree_update.has_tree_data) {
++    context->tree_id = tree_update.tree_data.tree_id;
++  }
++  
++  // Convert viewport size to document viewport bounds
++  // Find the root node and get its scroll offset
++  gfx::Rect doc_viewport_bounds;
++  if (!viewport_size.IsEmpty() && tree_update.has_tree_data && tree_update.root_id != 0) {
++    auto root_it = node_map.find(tree_update.root_id);
++    if (root_it != node_map.end()) {
++      const ui::AXNodeData& root_node = root_it->second;
++      int scroll_x = root_node.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
++      int scroll_y = root_node.GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
++      
++      // Create viewport in document coordinates
++      // Position is based on scroll offset, size is the visible viewport size
++      doc_viewport_bounds = gfx::Rect(scroll_x, scroll_y, 
++                                      viewport_size.width(), 
++                                      viewport_size.height());
++      
++      LOG(INFO) << "Viewport size: " << viewport_size.ToString();
++      LOG(INFO) << "Root scroll offset: (" << scroll_x << ", " << scroll_y << ")";
++      LOG(INFO) << "Document viewport bounds: " << doc_viewport_bounds.ToString();
++    }
++  }
++  
++  context->viewport_bounds = doc_viewport_bounds;
++  context->callback = std::move(callback);
++  context->processed_batches = 0;
++  
++  // Clear previous mappings for this tab
++  GetNodeIdMappings()[tab_id].clear();
++
++  // Collect all nodes to process and filter
++  std::vector<ui::AXNodeData> nodes_to_process;
++  for (const auto& node : tree_update.nodes) {
++    // Skip invisible, ignored, or non-interactive nodes
++    if (ShouldSkipNode(node)) {
++      continue;
++    }
++    nodes_to_process.push_back(node);
++  }
++  
++  context->total_nodes = nodes_to_process.size();
++  
++  // Handle empty case
++  if (nodes_to_process.empty()) {
++    base::TimeDelta processing_time = base::TimeTicks::Now() - start_time;
++    context->snapshot.processing_time_ms = processing_time.InMilliseconds();
++    
++    SnapshotProcessingResult result;
++    result.snapshot = std::move(context->snapshot);
++    result.nodes_processed = 0;
++    result.processing_time_ms = processing_time.InMilliseconds();
++    std::move(context->callback).Run(std::move(result));
++    return;
++  }
++  
++  // Process nodes in batches using ThreadPool
++  const size_t batch_size = 100;  // Process 100 nodes per batch
++  size_t num_batches = (nodes_to_process.size() + batch_size - 1) / batch_size;
++  context->total_batches = num_batches;
++  
++  for (size_t i = 0; i < nodes_to_process.size(); i += batch_size) {
++    size_t end = std::min(i + batch_size, nodes_to_process.size());
++    std::vector<ui::AXNodeData> batch(
++        std::make_move_iterator(nodes_to_process.begin() + i),
++        std::make_move_iterator(nodes_to_process.begin() + end));
++    uint32_t start_node_id = i + 1;  // Node IDs start at 1
++    
++    // Post task to ThreadPool and handle result on UI thread
++    base::ThreadPool::PostTaskAndReplyWithResult(
++        FROM_HERE,
++        {base::TaskPriority::USER_VISIBLE},
++        base::BindOnce(&SnapshotProcessor::ProcessNodeBatch, 
++                       std::move(batch), 
++                       context->node_map, 
++                       start_node_id,
++                       context->viewport_bounds),
++        base::BindOnce(&SnapshotProcessor::OnBatchProcessed,
++                       context));
++  }
++}
++
++
++}  // namespace api
++}  // namespace extensions
+diff --git a/chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h b/chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h
+new file mode 100644
+index 0000000000000..5e1114c40fe89
+--- /dev/null
++++ b/chrome/browser/extensions/api/browser_os/browser_os_snapshot_processor.h
+@@ -0,0 +1,89 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_SNAPSHOT_PROCESSOR_H_
++#define CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_SNAPSHOT_PROCESSOR_H_
++
++#include <cstdint>
++#include <string>
++#include <unordered_map>
++#include <vector>
++
++#include "base/functional/callback.h"
++#include "base/memory/raw_ptr.h"
++#include "chrome/common/extensions/api/browser_os.h"
++#include "ui/gfx/geometry/rect_f.h"
++
++namespace ui {
++struct AXNodeData;
++struct AXTreeUpdate;
++}  // namespace ui
++
++namespace extensions {
++namespace api {
++
++// Result of snapshot processing
++struct SnapshotProcessingResult {
++  browser_os::InteractiveSnapshot snapshot;
++  int nodes_processed = 0;
++  int64_t processing_time_ms = 0;
++};
++
++// Processes accessibility trees into interactive snapshots with parallel processing
++class SnapshotProcessor {
++ public:
++  // Structure to hold data for a processed node
++  struct ProcessedNode {
++    ProcessedNode();
++    ProcessedNode(const ProcessedNode&);
++    ProcessedNode(ProcessedNode&&);
++    ProcessedNode& operator=(const ProcessedNode&);
++    ProcessedNode& operator=(ProcessedNode&&);
++    ~ProcessedNode();
++    
++    raw_ptr<const ui::AXNodeData> node_data;
++    uint32_t node_id;
++    browser_os::InteractiveNodeType node_type;
++    std::string name;
++    gfx::RectF absolute_bounds;
++    // All attributes stored as key-value pairs
++    std::unordered_map<std::string, std::string> attributes;
++  };
++
++  SnapshotProcessor() = default;
++  ~SnapshotProcessor() = default;
++
++  // Main processing function - handles all threading internally
++  // This function processes the accessibility tree into an interactive snapshot
++  // using parallel processing on the thread pool.
++  static void ProcessAccessibilityTree(
++      const ui::AXTreeUpdate& tree_update,
++      int tab_id,
++      uint32_t snapshot_id,
++      const gfx::Size& viewport_size,
++      base::OnceCallback<void(SnapshotProcessingResult)> callback);
++
++  // Process a batch of nodes (exposed for testing)
++  static std::vector<ProcessedNode> ProcessNodeBatch(
++      const std::vector<ui::AXNodeData>& nodes_to_process,
++      const std::unordered_map<int32_t, ui::AXNodeData>& node_map,
++      uint32_t start_node_id,
++      const gfx::Rect& doc_viewport_bounds);
++
++ private:
++  // Internal processing context
++  struct ProcessingContext;
++  
++  // Batch processing callback
++  static void OnBatchProcessed(scoped_refptr<ProcessingContext> context,
++                               std::vector<ProcessedNode> batch_results);
++
++  SnapshotProcessor(const SnapshotProcessor&) = delete;
++  SnapshotProcessor& operator=(const SnapshotProcessor&) = delete;
++};
++
++}  // namespace api
++}  // namespace extensions
++
++#endif  // CHROME_BROWSER_EXTENSIONS_API_BROWSER_OS_BROWSER_OS_SNAPSHOT_PROCESSOR_H_
+\ No newline at end of file
+diff --git a/chrome/browser/extensions/chrome_extensions_browser_api_provider.cc b/chrome/browser/extensions/chrome_extensions_browser_api_provider.cc
+index 9c73fc6067b2f..6b3227c786686 100644
+--- a/chrome/browser/extensions/chrome_extensions_browser_api_provider.cc
++++ b/chrome/browser/extensions/chrome_extensions_browser_api_provider.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
+ 
++#include "chrome/browser/extensions/api/browser_os/browser_os_api.h"
+ #include "chrome/browser/extensions/api/generated_api_registration.h"
+ #include "extensions/browser/extension_function_registry.h"
+ #include "extensions/buildflags/buildflags.h"
+@@ -21,6 +22,13 @@ void ChromeExtensionsBrowserAPIProvider::RegisterExtensionFunctions(
+   // Commands
+   registry->RegisterFunction<GetAllCommandsFunction>();
+ 
++  // Browser OS API
++  registry->RegisterFunction<api::BrowserOSGetAccessibilityTreeFunction>();
++  registry->RegisterFunction<api::BrowserOSGetInteractiveSnapshotFunction>();
++  registry->RegisterFunction<api::BrowserOSClickFunction>();
++  registry->RegisterFunction<api::BrowserOSInputTextFunction>();
++  registry->RegisterFunction<api::BrowserOSClearFunction>();
++
+   // Generated APIs from Chrome.
+   api::ChromeGeneratedFunctionRegistry::RegisterAll(registry);
+ }
+diff --git a/chrome/common/extensions/api/_api_features.json b/chrome/common/extensions/api/_api_features.json
+index 846a910323217..e78e1125f61cd 100644
+--- a/chrome/common/extensions/api/_api_features.json
++++ b/chrome/common/extensions/api/_api_features.json
+@@ -179,6 +179,34 @@
+     ],
+     "contexts": ["privileged_extension"]
+   }],
++  "browserOS": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
++  "browserOS.getAccessibilityTree": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
++  "browserOS.getInteractiveSnapshot": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
++  "browserOS.getPageStructure": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
++  "browserOS.click": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
++  "browserOS.inputText": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
++  "browserOS.clear": {
++    "dependencies": ["permission:browserOS"],
++    "contexts": ["privileged_extension"]
++  },
+   "browsingData": {
+     "dependencies": ["permission:browsingData"],
+     "contexts": ["privileged_extension"]
+diff --git a/chrome/common/extensions/api/_permission_features.json b/chrome/common/extensions/api/_permission_features.json
+index 93ae24f9a0972..01742801dc6b5 100644
+--- a/chrome/common/extensions/api/_permission_features.json
++++ b/chrome/common/extensions/api/_permission_features.json
+@@ -91,6 +91,10 @@
+     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+     "location": "component"
+   },
++  "browserOS": {
++    "channel": "stable",
++    "extension_types": ["extension", "platform_app"]
++  },
+   "browsingData": {
+     "channel": "stable",
+     "extension_types": ["extension", "legacy_packaged_app"]
+diff --git a/chrome/common/extensions/api/api_sources.gni b/chrome/common/extensions/api/api_sources.gni
+index cb1b525b39038..c57c8b74785f0 100644
+--- a/chrome/common/extensions/api/api_sources.gni
++++ b/chrome/common/extensions/api/api_sources.gni
+@@ -48,6 +48,7 @@ if (enable_extensions) {
+     "bookmark_manager_private.json",
+     "bookmarks.json",
+     "braille_display_private.idl",
++    "browser_os.idl",
+     "chrome_web_view_internal.json",
+     "command_line_private.json",
+     "content_settings.json",
+diff --git a/chrome/common/extensions/api/browser_os.idl b/chrome/common/extensions/api/browser_os.idl
+new file mode 100644
+index 0000000000000..6934ee144987d
+--- /dev/null
++++ b/chrome/common/extensions/api/browser_os.idl
+@@ -0,0 +1,289 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// browserOS API for accessing system-level browser functionality
++namespace browserOS {
++  dictionary AccessibilityNode {
++    long id;
++    DOMString role;
++    DOMString? name;
++    DOMString? value;
++    object? attributes;
++    long[]? childIds;
++  };
++
++  dictionary AccessibilityTree {
++    // The ID of the root node
++    long rootId;
++    
++    // Map of node IDs to AccessibilityNode objects
++    object nodes;
++  };
++
++  // Interactive element types
++  enum InteractiveNodeType {
++    clickable,
++    typeable,
++    selectable,
++    other
++  };
++
++  // Rectangle bounds
++  dictionary Rect {
++    double x;
++    double y;
++    double width;
++    double height;
++  };
++
++  // Interactive node in the snapshot
++  dictionary InteractiveNode {
++    long nodeId;
++    InteractiveNodeType type;
++    DOMString? name;
++    // Bounding rectangle of the node
++    Rect? rect;
++    // Flexible attributes dictionary for extensibility
++    // Can include: tag, axValue, htmlTag, role, context, path, and any future attributes
++    object? attributes;
++  };
++
++  // Snapshot of interactive elements
++  dictionary InteractiveSnapshot {
++    long snapshotId;
++    double timestamp;
++    InteractiveNode[] elements;
++    // Hierarchical text representation with context
++    DOMString? hierarchicalStructure;
++    // Performance metrics
++    long processingTimeMs;
++  };
++
++  // Options for getInteractiveSnapshot
++  dictionary InteractiveSnapshotOptions {
++    boolean? viewportOnly;
++  };
++
++  // Page load status information
++  dictionary PageLoadStatus {
++    boolean isResourcesLoading;
++    boolean isDOMContentLoaded;
++    boolean isPageComplete;
++  };
++
++  // Response from click action with change detection
++  dictionary ClickResponse {
++    boolean success;
++    boolean changeDetected;
++    DOMString? primaryChange;
++    long? timeToChangeMs;
++    DOMString[]? allChanges;
++    DOMString? actionRequired;
++  };
++
++  callback GetAccessibilityTreeCallback = void(AccessibilityTree tree);
++  callback GetInteractiveSnapshotCallback = void(InteractiveSnapshot snapshot);
++  callback ClickCallback = void(ClickResponse response);
++  callback InputTextCallback = void();
++  callback ClearCallback = void();
++  callback GetPageLoadStatusCallback = void(PageLoadStatus status);
++  callback ScrollCallback = void();
++  callback ScrollToNodeCallback = void(boolean scrolled);
++  callback SendKeysCallback = void();
++  callback CaptureScreenshotCallback = void(DOMString dataUrl);
++
++  // Snapshot extraction types
++  enum SnapshotType {
++    text,
++    links
++  };
++
++  // Context for snapshot extraction
++  enum SnapshotContext {
++    visible,
++    full
++  };
++
++  // Section types based on ARIA landmarks
++  enum SectionType {
++    main,
++    navigation,
++    footer,
++    header,
++    article,
++    aside,
++    complementary,
++    contentinfo,
++    form,
++    search,
++    region,
++    other
++  };
++
++  // Text snapshot result for a section
++  dictionary TextSnapshotResult {
++    DOMString text;
++    long characterCount;
++  };
++
++  // Link information
++  dictionary LinkInfo {
++    DOMString text;
++    DOMString url;
++    DOMString? title;
++    object? attributes;
++    boolean isExternal;
++  };
++
++  // Links snapshot result for a section
++  dictionary LinksSnapshotResult {
++    LinkInfo[] links;
++  };
++
++  // Section with all possible snapshot results
++  dictionary SnapshotSection {
++    DOMString type;
++    // Text result - only populated for text snapshots
++    TextSnapshotResult textResult;
++    // Links result - only populated for links snapshots  
++    LinksSnapshotResult linksResult;
++  };
++
++  // Main snapshot result
++  dictionary Snapshot {
++    SnapshotType type;
++    SnapshotContext context;
++    double timestamp;
++    SnapshotSection[] sections;
++    long processingTimeMs;
++  };
++
++  // Options for getSnapshot
++  dictionary SnapshotOptions {
++    // Defaults to visible if not specified
++    SnapshotContext context;
++    SectionType[]? includeSections;
++  };
++
++  callback GetSnapshotCallback = void(Snapshot snapshot);
++
++  interface Functions {
++    // Gets the full accessibility tree for a tab
++    // |tabId|: The tab to get the accessibility tree for. Defaults to active tab.
++    // |callback|: Called with the accessibility tree data.
++    static void getAccessibilityTree(
++        optional long tabId,
++        GetAccessibilityTreeCallback callback);
++
++    // Gets a snapshot of interactive elements on the page
++    // |tabId|: The tab to get the snapshot for. Defaults to active tab.
++    // |options|: Options for the snapshot.
++    // |callback|: Called with the interactive snapshot data.
++    static void getInteractiveSnapshot(
++        optional long tabId,
++        optional InteractiveSnapshotOptions options,
++        GetInteractiveSnapshotCallback callback);
++
++
++    // Clicks on an element by its nodeId from the interactive snapshot
++    // |tabId|: The tab containing the element. Defaults to active tab.
++    // |nodeId|: The nodeId from the interactive snapshot.
++    // |callback|: Called when the click is complete.
++    static void click(
++        optional long tabId,
++        long nodeId,
++        ClickCallback callback);
++
++    // Inputs text into an element by its nodeId
++    // |tabId|: The tab containing the element. Defaults to active tab.
++    // |nodeId|: The nodeId from the interactive snapshot.
++    // |text|: The text to input.
++    // |callback|: Called when the input is complete.
++    static void inputText(
++        optional long tabId,
++        long nodeId,
++        DOMString text,
++        InputTextCallback callback);
++
++    // Clears the content of an input element by its nodeId
++    // |tabId|: The tab containing the element. Defaults to active tab.
++    // |nodeId|: The nodeId from the interactive snapshot.
++    // |callback|: Called when the clear is complete.
++    static void clear(
++        optional long tabId,
++        long nodeId,
++        ClearCallback callback);
++
++    // Gets the page load status for a tab
++    // |tabId|: The tab to check. Defaults to active tab.
++    // |callback|: Called with the page load status.
++    static void getPageLoadStatus(
++        optional long tabId,
++        GetPageLoadStatusCallback callback);
++
++    // Scrolls the page up by approximately one viewport height
++    // |tabId|: The tab to scroll. Defaults to active tab.
++    // |callback|: Called when the scroll is complete.
++    static void scrollUp(
++        optional long tabId,
++        ScrollCallback callback);
++
++    // Scrolls the page down by approximately one viewport height
++    // |tabId|: The tab to scroll. Defaults to active tab.
++    // |callback|: Called when the scroll is complete.
++    static void scrollDown(
++        optional long tabId,
++        ScrollCallback callback);
++
++    // Scrolls the page to bring the specified node into view
++    // |tabId|: The tab to scroll. Defaults to active tab.
++    // |nodeId|: The node ID from getInteractiveSnapshot to scroll to.
++    // |callback|: Called with whether scrolling was needed (false if already in view).
++    static void scrollToNode(
++        optional long tabId,
++        long nodeId,
++        ScrollToNodeCallback callback);
++
++    // Sends special key events to the active element in a tab
++    // |tabId|: The tab to send keys to. Defaults to active tab.
++    // |key|: The special key to send. Supported keys:
++    //   - "Enter": Submit forms, activate buttons, insert line break
++    //   - "Delete": Delete character after cursor
++    //   - "Backspace": Delete character before cursor
++    //   - "Tab": Move focus to next element
++    //   - "Escape": Cancel operations, close dialogs
++    //   - "ArrowUp": Move cursor/selection up
++    //   - "ArrowDown": Move cursor/selection down
++    //   - "ArrowLeft": Move cursor/selection left
++    //   - "ArrowRight": Move cursor/selection right
++    //   - "Home": Move to beginning of line/document
++    //   - "End": Move to end of line/document
++    //   - "PageUp": Scroll up one page
++    //   - "PageDown": Scroll down one page
++    // |callback|: Called when the key has been sent.
++    static void sendKeys(
++        optional long tabId,
++        DOMString key,
++        SendKeysCallback callback);
++        
++    // Captures a screenshot of the tab as a thumbnail
++    // |tabId|: The tab to capture. Defaults to active tab.
++    // |callback|: Called with the screenshot as a data URL.
++    static void captureScreenshot(
++        optional long tabId,
++        CaptureScreenshotCallback callback);
++
++    // Gets a content snapshot of the specified type from the page
++    // |tabId|: The tab to get the snapshot from. Defaults to active tab.
++    // |type|: The type of snapshot to extract (text or links).
++    // |options|: Options for the snapshot extraction.
++    // |callback|: Called with the snapshot data.
++    static void getSnapshot(
++        optional long tabId,
++        SnapshotType type,
++        optional SnapshotOptions options,
++        GetSnapshotCallback callback);
++  };
++};
++
+diff --git a/chrome/common/extensions/permissions/chrome_api_permissions.cc b/chrome/common/extensions/permissions/chrome_api_permissions.cc
+index 7eba27856109e..141f5f93d7213 100644
+--- a/chrome/common/extensions/permissions/chrome_api_permissions.cc
++++ b/chrome/common/extensions/permissions/chrome_api_permissions.cc
+@@ -69,6 +69,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
+     {APIPermissionID::kBookmark, "bookmarks"},
+     {APIPermissionID::kBrailleDisplayPrivate, "brailleDisplayPrivate",
+      APIPermissionInfo::kFlagCannotBeOptional},
++    {APIPermissionID::kBrowserOS, "browserOS"},
+     {APIPermissionID::kBrowsingData, "browsingData",
+      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+     {APIPermissionID::kCertificateProvider, "certificateProvider",
+diff --git a/extensions/browser/extension_function_histogram_value.h b/extensions/browser/extension_function_histogram_value.h
+index daced4aed4d50..965512eee1a46 100644
+--- a/extensions/browser/extension_function_histogram_value.h
++++ b/extensions/browser/extension_function_histogram_value.h
+@@ -1997,6 +1997,19 @@ enum HistogramValue {
+   EXPERIMENTALACTOR_STARTTASK = 1934,
+   EXPERIMENTALACTOR_EXECUTEACTION = 1935,
+   EXPERIMENTALACTOR_STOPTASK = 1936,
++  BROWSER_OS_GETACCESSIBILITYTREE = 1937,
++  BROWSER_OS_GETINTERACTIVESNAPSHOT = 1938,
++  BROWSER_OS_CLICK = 1939,
++  BROWSER_OS_INPUTTEXT = 1940,
++  BROWSER_OS_CLEAR = 1941,
++  BROWSER_OS_GETPAGELOADSTATUS = 1942,
++  BROWSER_OS_SCROLLUP = 1943,
++  BROWSER_OS_SCROLLDOWN = 1944,
++  BROWSER_OS_SCROLLTONODE = 1945,
++  BROWSER_OS_SENDKEYS = 1946,
++  BROWSER_OS_GETPAGESTRUCTURE = 1947,
++  BROWSER_OS_CAPTURESCREENSHOT = 1948,
++  BROWSER_OS_GETSNAPSHOT = 1949,
+   // Last entry: Add new entries above, then run:
+   // tools/metrics/histograms/update_extension_histograms.py
+   ENUM_BOUNDARY
+diff --git a/extensions/common/mojom/api_permission_id.mojom b/extensions/common/mojom/api_permission_id.mojom
+index 96be0882a86cb..6e99ceae68be8 100644
+--- a/extensions/common/mojom/api_permission_id.mojom
++++ b/extensions/common/mojom/api_permission_id.mojom
+@@ -287,6 +287,7 @@ enum APIPermissionID {
+   kExperimentalAiData = 260,
+   kOmniboxDirectInput = 261,
+   kExperimentalActor = 262,
++  kBrowserOS = 263,
+ 
+   // Add new entries at the end of the enum and be sure to update the
+   // "ExtensionPermission3" enum in
+diff --git a/tools/metrics/histograms/metadata/extensions/enums.xml b/tools/metrics/histograms/metadata/extensions/enums.xml
+index 3eea7f9d144a7..7af6e83dedf57 100644
+--- a/tools/metrics/histograms/metadata/extensions/enums.xml
++++ b/tools/metrics/histograms/metadata/extensions/enums.xml
+@@ -2819,6 +2819,16 @@ Called by update_extension_histograms.py.-->
+   <int value="1934" label="EXPERIMENTALACTOR_STARTTASK"/>
+   <int value="1935" label="EXPERIMENTALACTOR_EXECUTEACTION"/>
+   <int value="1936" label="EXPERIMENTALACTOR_STOPTASK"/>
++  <int value="1937" label="BROWSER_OS_GETACCESSIBILITYTREE"/>
++  <int value="1938" label="BROWSER_OS_GETINTERACTIVESNAPSHOT"/>
++  <int value="1939" label="BROWSER_OS_CLICK"/>
++  <int value="1940" label="BROWSER_OS_INPUTTEXT"/>
++  <int value="1941" label="BROWSER_OS_CLEAR"/>
++  <int value="1942" label="BROWSER_OS_GETPAGELOADSTATUS"/>
++  <int value="1943" label="BROWSER_OS_SCROLLUP"/>
++  <int value="1944" label="BROWSER_OS_SCROLLDOWN"/>
++  <int value="1945" label="BROWSER_OS_SCROLLTONODE"/>
++  <int value="1946" label="BROWSER_OS_SENDKEYS"/>
+ </enum>
+ 
+ <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
+-- 
+2.49.0
+

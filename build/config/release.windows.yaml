@@ -1,0 +1,43 @@
+# Nxtscape Windows Release Build Configuration
+build:
+  type: release
+  architecture: x64 # Windows default architecture
+  # No universal builds on Windows
+
+gn_flags:
+  file: build/config/gn/flags.windows.release.gn
+
+steps:
+  clean: true
+  git_setup: true
+  apply_patches: true
+  build: true
+  sign: true # Enable signing with eSigner CKA
+  package: true
+
+paths:
+  root_dir: .
+  # chromium_src: C:\Users\YourName\chromium\src
+
+# Environment-specific settings
+env:
+  PYTHONPATH: scripts
+
+# Signing configuration (using eSigner CKA certificate in Windows store)
+signing:
+  certificate_name: "FELAFAX, INC." # Your certificate subject name from SSL.com
+  # Or use environment variable:
+  # require_env_vars:
+  #   - WINDOWS_CERTIFICATE_NAME
+
+# Notification settings
+notifications:
+  slack: true
+
+# Build options
+build_options:
+  # Build mini_installer for creating installer package
+  build_mini_installer: true
+  # Create both installer and portable ZIP
+  create_portable: true
+  create_installer: true

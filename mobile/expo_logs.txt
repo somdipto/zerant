@@ -1,0 +1,7 @@
+Starting project at /home/sodan/Desktop/x/BrowserOS-main/mobile
+› Port 8081 is running this app in another window
+  /home/sodan/Desktop/x/BrowserOS-main/mobile (pid 223149)
+Input is required, but 'npx expo' is in non-interactive mode.
+Required input:
+> Use port 8083 instead?
+› Skipping dev server

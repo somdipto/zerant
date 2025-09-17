@@ -1,0 +1,38 @@
+# Nxtscape Release Build Configuration
+build:
+  type: release
+  # architecture: arm64  # Default single architecture
+  architectures: [x64, arm64] # List for multi-architecture builds
+  universal: true # Create universal binary from multiple architectures
+
+gn_flags:
+  file: build/config/gn/flags.macos.release.gn
+
+steps:
+  clean: false
+  git_setup: false
+  apply_patches: false
+  build: false
+  sign: true
+  package: false
+
+paths:
+  root_dir: .
+  # chromium_src: ../chromium-src
+
+# Environment-specific settings
+env:
+  PYTHONPATH: scripts
+
+# Signing configuration (requires environment variables)
+signing:
+  require_env_vars:
+    - MACOS_CERTIFICATE_NAME
+    - PROD_MACOS_NOTARIZATION_APPLE_ID
+    - PROD_MACOS_NOTARIZATION_TEAM_ID
+    - PROD_MACOS_NOTARIZATION_PWD
+
+# Notification settings
+notifications:
+  slack: true # Enable Slack notifications for release builds
+

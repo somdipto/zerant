@@ -1,0 +1,148 @@
+Requirements
+Only use LangChain chat adapters and streaming
+For tools, define your own format, don't use LangChain Tools that are abstractions and you don't know what is going on inside. This could be adding a bunch of shit messages.
+We should again have our own message manager with System, Human, and AI messages. We cleanly control the context that goes into the LLM and the format of the messages.
+Keep the prompts simple and easily editable – don't create format sections and random things. It should just be one long string and you should know what is going on.
+Use XML in the prompts to provide examples.
+We should start testing Ollama from the very beginning.
+Adding features should be very easy – like you can add a tool very easily and make the LLM call the tool at the right point.
+Support back-and-forth conversation from the beginning. At the beginning of each conversation, check if it is a new task or an old task.
+Have a storage tool for the agent which uses chrome.storage.local.
+Keep things stateless – like tools are not appending to the main message manager, they just return the result and the main agent adds it to the message manager.
+
+Background
+
+Current directory structure
+Keep the background – try to remove as much junk as possible that is not needed
+Keep content
+Delete all agents and create new agent/
+Question: what should the new agent structure look like?
+Keep browser/ as is – use the same APIs
+Delete NxtScape.ts and clean up all the unused code
+Keep high level structure still the same so that you don’t have to change background/index.ts
+Keep existing runtime/MessageManager.ts 
+Create new tools
+Question: what is the minimal set of tools to start from? – just implement tools required for browse agent – navigate, switch tabs.
+
+Old structure
+src/
+├── background/
+│   └── index.ts
+├── config/
+│   └── visionConfig.ts
+├── content/
+│   └── index.ts
+├── lib/
+│   ├── agent/
+
+│   │   ├── AnswerAgent.ts
+│   │   ├── BaseAgent.ts
+│   │   ├── BrowseAgent.ts
+│   │   ├── ClassificationAgent.ts
+│   │   ├── IntentPredictionAgent.ts
+│   │   ├── PlannerAgent.ts
+│   │   ├── ProductivityAgent.ts
+│   │   ├── ValidatorAgent.ts
+│   │   └── index.ts
+│   ├── browser/
+│   │   ├── BrowserContext.ts
+│   │   ├── BrowserDSAdapter.ts
+│   │   ├── BrowserPage.ts
+│   │   └── Utils.ts
+│   ├── config/
+│   ├── core/
+│   │   └── NxtScape.ts
+│   ├── dom/
+│   ├── events/
+│   ├── graph/
+│   │   ├── AgentGraph.ts
+│   │   ├── AgentGraphState.ts
+│   │   └── index.ts
+│   ├── llm/
+│   │   └── factory/
+│   │       ├── settings/
+│   │       ├── utils/
+│   │       ├── LangChainProviderFactory.ts
+│   │       └── index.ts
+│   ├── orchestrators/
+│   │   ├── IntentPredictionOrchestrator.ts
+│   │   ├── Orchestrator.ts
+│   │   └── index.ts
+│   ├── prompt/
+│   │   ├── BasePrompt.ts
+│   │   ├── BrowseAgentPrompt.ts
+│   │   ├── IntentPredictionPrompt.ts
+│   │   ├── PlannerToolPrompt.ts
+│   │   ├── ProductivityAgentPrompt.ts
+│   │   ├── ValidatorToolPrompt.ts
+│   │   └── index.ts
+│   ├── runtime/
+│   │   ├── Errors.ts
+│   │   ├── ExecutionContext.ts
+│   │   ├── MessageManager.ts
+│   │   ├── PortMessaging.ts
+│   │   └── index.ts
+│   └── tools_old/
+│       ├── answer/
+│       ├── base/
+│       ├── bookmarks/
+│       ├── browser-navigation/
+│       ├── history/
+│       ├── sessions/
+│       ├── tab/
+│       ├── utility/
+│       │   └── ToolUtils.ts
+│       └── index.ts
+
+
+
+
+New structure
+src/
+├── background/
+│   └── index.ts
+├── content/
+│   └── index.ts
+├── lib/
+│   ├── agent/
+│   ├── browser/
+│   │   ├── BrowserContext.ts
+│   │   ├── BrowserDSAdapter.ts
+│   │   ├── BrowserPage.ts
+│   │   └── Utils.ts
+│   ├── config/
+│   ├── core/
+│   │   └── NxtScape.ts
+│   ├── dom/
+│   ├── events/
+│   ├── llm/
+│   ├── prompt/
+│   ├── runtime/
+│   │   ├── Errors.ts
+│   │   ├── ExecutionContext.ts
+│   │   ├── MessageManager.ts
+│   │   ├── PortMessaging.ts
+│   │   └── index.ts
+│   └── tools/
+
+
+What should the new agent structure look like?
+
+There is largely a single agent – that has access to many tools. 
+(v0.2) You can also add sub-agent, which can execute some task and add only the result back to the message manager.
+
+There is a single main message thread. And each tool has the option of create a new message thread (fork/brand new)
+Example is Extract Tool – that doesn’t require the previous message history. You just create a new message thread, put “you are an extract agent”, you then put page context, it extracts and gives the result back.
+
+Planner
+
+Planner and validator can be made required for all tasks. 
+Planners can also be super quick. For planning steps, ask the agent to output as XML, instead of a pure text plan. You can parse the XML. 
+Validator can be super quick if it is browser tasks
+
+The tool can make a call to LLM as well – that is what Claude Code did.
+
+
+Message Manager
+
+

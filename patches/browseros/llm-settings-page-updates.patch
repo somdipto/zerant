@@ -1,0 +1,1505 @@
+From 68099aba7baceaf76faebb634a5e86658fdf1b28 Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Thu, 21 Aug 2025 11:42:22 -0700
+Subject: [PATCH] llm settings page: updates
+
+---
+ chrome/browser/resources/settings/BUILD.gn    |   1 +
+ .../settings/nxtscape_page/models_data.html   |   0
+ .../settings/nxtscape_page/models_data.ts     | 279 +++++++++
+ .../settings/nxtscape_page/nxtscape_page.html | 370 +++++++++++-
+ .../settings/nxtscape_page/nxtscape_page.ts   | 543 +++++++++++++++++-
+ 5 files changed, 1164 insertions(+), 29 deletions(-)
+ create mode 100644 chrome/browser/resources/settings/nxtscape_page/models_data.html
+ create mode 100644 chrome/browser/resources/settings/nxtscape_page/models_data.ts
+
+diff --git a/chrome/browser/resources/settings/BUILD.gn b/chrome/browser/resources/settings/BUILD.gn
+index c7a1069d49c2b..45911df3d14f9 100644
+--- a/chrome/browser/resources/settings/BUILD.gn
++++ b/chrome/browser/resources/settings/BUILD.gn
+@@ -56,6 +56,7 @@ build_webui("build") {
+   web_component_files = [
+     "a11y_page/a11y_page.ts",
+     "about_page/about_page.ts",
++    "nxtscape_page/models_data.ts",
+     "nxtscape_page/nxtscape_page.ts",
+     "browseros_prefs_page/browseros_prefs_page.ts",
+     "ai_page/ai_compare_subpage.ts",
+diff --git a/chrome/browser/resources/settings/nxtscape_page/models_data.html b/chrome/browser/resources/settings/nxtscape_page/models_data.html
+new file mode 100644
+index 0000000000000..e69de29bb2d1d
+diff --git a/chrome/browser/resources/settings/nxtscape_page/models_data.ts b/chrome/browser/resources/settings/nxtscape_page/models_data.ts
+new file mode 100644
+index 0000000000000..36638c1910a09
+--- /dev/null
++++ b/chrome/browser/resources/settings/nxtscape_page/models_data.ts
+@@ -0,0 +1,279 @@
++// Model data interface
++export interface ModelInfo {
++  model_id: string;
++  context_length: number;
++}
++
++export interface ModelsData {
++  openai?: ModelInfo[];
++  claude?: ModelInfo[];
++  anthropic?: ModelInfo[];
++  gemini?: ModelInfo[];
++  google_gemini?: ModelInfo[];
++  openrouter?: ModelInfo[];
++  ollama?: ModelInfo[];
++  lmstudio?: ModelInfo[];
++}
++
++// Direct export of models data
++export const MODELS_DATA: ModelsData = {
++  openai: [
++    { model_id: 'gpt-5-nano', context_length: 400000 },
++    { model_id: 'gpt-5', context_length: 400000 },
++    { model_id: 'gpt-5-mini', context_length: 400000 },
++    { model_id: 'o1-mini', context_length: 128000 },
++    { model_id: 'o1', context_length: 200000 },
++    { model_id: 'o3-mini', context_length: 200000 },
++    { model_id: 'o1-pro', context_length: 200000 },
++    { model_id: 'o3', context_length: 200000 },
++    { model_id: 'o4-mini', context_length: 200000 },
++    { model_id: 'gpt-4.1', context_length: 1047576 },
++    { model_id: 'gpt-4.1-mini', context_length: 1047576 },
++    { model_id: 'gpt-4.1-nano', context_length: 1047576 },
++    { model_id: 'o3-pro', context_length: 200000 },
++  ],
++  claude: [
++    { model_id: 'claude-opus-4-1-20250805', context_length: 200000 },
++    { model_id: 'claude-opus-4-20250514', context_length: 200000 },
++    { model_id: 'claude-sonnet-4-20250514', context_length: 200000 },
++    { model_id: 'claude-3-7-sonnet-20250219', context_length: 200000 },
++    { model_id: 'claude-3-5-sonnet-20241022', context_length: 200000 },
++    { model_id: 'claude-3-5-haiku-20241022', context_length: 200000 },
++    { model_id: 'claude-3-5-sonnet-20240620', context_length: 200000 },
++    { model_id: 'claude-3-haiku-20240307', context_length: 200000 },
++    { model_id: 'claude-3-opus-20240229', context_length: 200000 },
++  ],
++  gemini: [
++    { model_id: 'gemini-1.5-pro-latest', context_length: 2000000 },
++    { model_id: 'gemini-1.5-pro-002', context_length: 2000000 },
++    { model_id: 'gemini-1.5-pro', context_length: 2000000 },
++    { model_id: 'gemini-1.5-flash-latest', context_length: 1000000 },
++    { model_id: 'gemini-1.5-flash', context_length: 1000000 },
++    { model_id: 'gemini-1.5-flash-002', context_length: 1000000 },
++    { model_id: 'gemini-1.5-flash-8b', context_length: 1000000 },
++    { model_id: 'gemini-1.5-flash-8b-001', context_length: 1000000 },
++    { model_id: 'gemini-1.5-flash-8b-latest', context_length: 1000000 },
++    { model_id: 'gemini-2.5-pro-preview-03-25', context_length: 1048576 },
++    { model_id: 'gemini-2.5-flash-preview-05-20', context_length: 1048576 },
++    { model_id: 'gemini-2.5-flash', context_length: 1048576 },
++    { model_id: 'gemini-2.5-flash-lite-preview-06-17', context_length: 1048576 },
++    { model_id: 'gemini-2.5-pro-preview-05-06', context_length: 1048576 },
++    { model_id: 'gemini-2.5-pro-preview-06-05', context_length: 1048576 },
++    { model_id: 'gemini-2.5-pro', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-exp', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-001', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-exp-image-generation', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-lite-001', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-lite', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-preview-image-generation', context_length: 32768 },
++    { model_id: 'gemini-2.0-flash-lite-preview-02-05', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-lite-preview', context_length: 1048576 },
++    { model_id: 'gemini-2.0-pro-exp', context_length: 1048576 },
++    { model_id: 'gemini-2.0-pro-exp-02-05', context_length: 1048576 },
++    { model_id: 'gemini-exp-1206', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-thinking-exp-01-21', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-thinking-exp', context_length: 1048576 },
++    { model_id: 'gemini-2.0-flash-thinking-exp-1219', context_length: 1048576 },
++    { model_id: 'gemini-2.5-flash-preview-tts', context_length: 8192 },
++    { model_id: 'gemini-2.5-pro-preview-tts', context_length: 8192 },
++    { model_id: 'learnlm-2.0-flash-experimental', context_length: 1048576 },
++    { model_id: 'gemma-3-1b-it', context_length: 32768 },
++    { model_id: 'gemma-3-4b-it', context_length: 131072 },
++    { model_id: 'gemma-3-12b-it', context_length: 96000 },
++    { model_id: 'gemma-3-27b-it', context_length: 96000 },
++    { model_id: 'gemma-3n-e4b-it', context_length: 32768 },
++    { model_id: 'gemma-3n-e2b-it', context_length: 8192 },
++    { model_id: 'gemini-2.5-flash-lite', context_length: 1048576 },
++  ],
++  openrouter: [
++    { model_id: 'deepseek/deepseek-chat-v3.1', context_length: 163840 },
++    { model_id: 'deepseek/deepseek-v3.1-base', context_length: 163840 },
++    { model_id: 'mistralai/mistral-medium-3.1', context_length: 262144 },
++    { model_id: 'baidu/ernie-4.5-21b-a3b', context_length: 120000 },
++    { model_id: 'baidu/ernie-4.5-vl-28b-a3b', context_length: 30000 },
++    { model_id: 'z-ai/glm-4.5v', context_length: 65536 },
++    { model_id: 'ai21/jamba-mini-1.7', context_length: 256000 },
++    { model_id: 'ai21/jamba-large-1.7', context_length: 256000 },
++    { model_id: 'openai/gpt-5-chat', context_length: 400000 },
++    { model_id: 'openai/gpt-5', context_length: 400000 },
++    { model_id: 'openai/gpt-5-mini', context_length: 400000 },
++    { model_id: 'openai/gpt-5-nano', context_length: 400000 },
++    { model_id: 'openai/gpt-oss-120b', context_length: 131000 },
++    { model_id: 'openai/gpt-oss-20b:free', context_length: 131072 },
++    { model_id: 'openai/gpt-oss-20b', context_length: 131000 },
++    { model_id: 'anthropic/claude-opus-4.1', context_length: 200000 },
++    { model_id: 'anthropic/claude-opus-4', context_length: 200000 },
++    { model_id: 'anthropic/claude-sonnet-4', context_length: 200000 },
++    { model_id: 'anthropic/claude-3.7-sonnet', context_length: 200000 },
++    { model_id: 'anthropic/claude-3.7-sonnet:thinking', context_length: 200000 },
++    { model_id: 'anthropic/claude-3.5-haiku-20241022', context_length: 200000 },
++    { model_id: 'anthropic/claude-3.5-haiku', context_length: 200000 },
++    { model_id: 'anthropic/claude-3.5-sonnet', context_length: 200000 },
++    { model_id: 'mistralai/codestral-2508', context_length: 256000 },
++    { model_id: 'mistralai/codestral-2501', context_length: 262144 },
++    { model_id: 'mistralai/mistral-large-2411', context_length: 131072 },
++    { model_id: 'mistralai/mistral-large-2407', context_length: 131072 },
++    { model_id: 'mistralai/pixtral-large-2411', context_length: 131072 },
++    { model_id: 'mistralai/pixtral-12b', context_length: 32768 },
++    { model_id: 'google/gemini-2.5-flash-lite', context_length: 1048576 },
++    { model_id: 'google/gemini-2.5-flash', context_length: 1048576 },
++    { model_id: 'google/gemini-2.5-pro', context_length: 1048576 },
++    { model_id: 'google/gemini-2.0-flash-001', context_length: 1048576 },
++    { model_id: 'google/gemini-2.0-flash-exp:free', context_length: 1048576 },
++    { model_id: 'google/gemini-flash-1.5-8b', context_length: 1000000 },
++    { model_id: 'qwen/qwq-32b-preview', context_length: 32768 },
++    { model_id: 'qwen/qwq-32b:free', context_length: 32768 },
++    { model_id: 'qwen/qwq-32b', context_length: 131072 },
++    { model_id: 'qwen/qwen-2.5-coder-32b-instruct:free', context_length: 32768 },
++    { model_id: 'qwen/qwen-2.5-coder-32b-instruct', context_length: 32768 },
++    { model_id: 'qwen/qwen-2.5-72b-instruct:free', context_length: 32768 },
++    { model_id: 'qwen/qwen-2.5-72b-instruct', context_length: 32768 },
++    { model_id: 'qwen/qwen-2.5-7b-instruct', context_length: 65536 },
++    { model_id: 'meta-llama/llama-3.3-70b-instruct:free', context_length: 65536 },
++    { model_id: 'meta-llama/llama-3.3-70b-instruct', context_length: 131072 },
++    { model_id: 'meta-llama/llama-3.2-90b-vision-instruct', context_length: 131072 },
++    { model_id: 'meta-llama/llama-3.2-11b-vision-instruct:free', context_length: 131072 },
++    { model_id: 'meta-llama/llama-3.2-11b-vision-instruct', context_length: 131072 },
++    { model_id: 'meta-llama/llama-3.2-3b-instruct:free', context_length: 131072 },
++    { model_id: 'meta-llama/llama-3.2-3b-instruct', context_length: 20000 },
++    { model_id: 'meta-llama/llama-3.2-1b-instruct', context_length: 131072 },
++    { model_id: 'deepseek/deepseek-r1:free', context_length: 163840 },
++    { model_id: 'deepseek/deepseek-r1', context_length: 163840 },
++    { model_id: 'deepseek/deepseek-chat', context_length: 163840 },
++    { model_id: 'x-ai/grok-2-vision-1212', context_length: 32768 },
++    { model_id: 'x-ai/grok-2-1212', context_length: 131072 },
++    { model_id: 'openai/o1-mini', context_length: 128000 },
++    { model_id: 'openai/o1', context_length: 200000 },
++    { model_id: 'openai/o1-pro', context_length: 200000 },
++    { model_id: 'openai/o3-mini', context_length: 200000 },
++    { model_id: 'openai/o3', context_length: 200000 },
++    { model_id: 'openai/gpt-4o-2024-11-20', context_length: 128000 },
++    { model_id: 'openai/gpt-4o-mini-search-preview', context_length: 128000 },
++    { model_id: 'openai/gpt-4o-search-preview', context_length: 128000 },
++  ],
++  lmstudio: [
++    // OpenAI GPT-OSS
++    { model_id: 'openai/gpt-oss-120b', context_length: 131072 },
++    { model_id: 'openai/gpt-oss-20b', context_length: 131072 },
++    
++    // Qwen3 Models
++    { model_id: 'qwen/qwen3-4b-thinking-2507', context_length: 32768 },
++    { model_id: 'qwen/qwen3-4b-2507', context_length: 32768 },
++    { model_id: 'qwen/qwen3-coder-30b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-30b-a3b-2507', context_length: 32768 },
++    { model_id: 'qwen/qwen3-coder-480b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-235b-a22b-2507', context_length: 32768 },
++    { model_id: 'qwen/qwen3-235b-a22b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-32b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-30b-a3b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-1.7b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-4b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-14b', context_length: 32768 },
++    { model_id: 'qwen/qwen3-8b', context_length: 32768 },
++    
++    // Mistral Models
++    { model_id: 'mistralai/devstral-small-2507', context_length: 128000 },
++    { model_id: 'mistralai/mistral-small-3.2', context_length: 128000 },
++    { model_id: 'mistralai/magistral-small', context_length: 128000 },
++    { model_id: 'mistralai/devstral-small-2505', context_length: 128000 },
++    { model_id: 'mistralai/mistral-nemo-instruct-2407', context_length: 128000 },
++    { model_id: 'mistralai/mathstral-7b-v0.1', context_length: 32768 },
++    { model_id: 'mistralai/codestral-22b-v0.1', context_length: 32768 },
++    { model_id: 'mistralai/mistral-7b-instruct-v0.3', context_length: 32768 },
++    
++    
++    // Google Gemma Models
++    { model_id: 'google/gemma-3n-e4b', context_length: 8192 },
++    { model_id: 'google/gemma-3-27b', context_length: 8192 },
++    { model_id: 'google/gemma-3-12b', context_length: 8192 },
++    { model_id: 'google/gemma-3-4b', context_length: 8192 },
++    { model_id: 'google/gemma-3-1b', context_length: 8192 },
++    
++    // DeepSeek Models
++    { model_id: 'deepseek/deepseek-r1-0528-qwen3-8b', context_length: 128000 },
++    { model_id: 'lmstudio-community/deepseek-r1-distill-llama-8b', context_length: 131072 },
++    { model_id: 'lmstudio-community/deepseek-r1-distill-qwen-7b', context_length: 131072 },
++    
++    // Microsoft Phi Models
++    { model_id: 'microsoft/phi-4-mini-reasoning', context_length: 16384 },
++    { model_id: 'microsoft/phi-4-reasoning-plus', context_length: 16384 },
++    { model_id: 'microsoft/phi-4', context_length: 16384 },
++    
++    // Qwen2.5 Models
++    { model_id: 'qwen/qwen2.5-vl-7b', context_length: 32768 },
++    { model_id: 'qwen/qwen2.5-coder-14b', context_length: 128000 },
++    { model_id: 'qwen/qwen2.5-coder-32b', context_length: 128000 },
++    
++    // Meta Llama
++    { model_id: 'meta/llama-3.3-70b', context_length: 131072 },
++  ],
++  ollama: [
++    // OpenAI gpt-oss
++    { model_id: 'gpt-oss:20b', context_length: 4096 },
++    { model_id: 'gpt-oss:120b', context_length: 4096 },
++
++    // DeepSeek R1
++    { model_id: 'deepseek-r1:7b', context_length: 4096 },
++    { model_id: 'deepseek-r1:8b', context_length: 4096 },
++    { model_id: 'deepseek-r1:14b', context_length: 4096 },
++    { model_id: 'deepseek-r1:32b', context_length: 4096 },
++    { model_id: 'deepseek-r1:70b', context_length: 4096 },
++    { model_id: 'deepseek-r1:671b', context_length: 4096 },
++
++    // Qwen3
++    { model_id: 'qwen3:0.6b', context_length: 4096 },
++    { model_id: 'qwen3:1.7b', context_length: 4096 },
++    { model_id: 'qwen3:4b', context_length: 4096 },
++    { model_id: 'qwen3:8b', context_length: 4096 },
++    { model_id: 'qwen3:14b', context_length: 4096 },
++    { model_id: 'qwen3:30b', context_length: 4096 },
++    { model_id: 'qwen3:32b', context_length: 4096 },
++    { model_id: 'qwen3:235b', context_length: 4096 },
++
++    // Llama 3.x
++    { model_id: 'llama3.1:8b', context_length: 4096 },
++    { model_id: 'llama3.1:70b', context_length: 4096 },
++    { model_id: 'llama3.1:405b', context_length: 4096 },
++    { model_id: 'llama3.2:1b', context_length: 4096 },
++    { model_id: 'llama3.2:3b', context_length: 4096 },
++    { model_id: 'llama3.3:70b', context_length: 4096 },
++
++    // Qwen2.5 (dense + coder)
++    { model_id: 'qwen2.5:7b', context_length: 4096 },
++    { model_id: 'qwen2.5:14b', context_length: 4096 },
++    { model_id: 'qwen2.5:32b', context_length: 4096 },
++    { model_id: 'qwen2.5:72b', context_length: 4096 },
++    { model_id: 'qwen2.5-coder:7b', context_length: 4096 },
++    { model_id: 'qwen2.5-coder:14b', context_length: 4096 },
++    { model_id: 'qwen2.5-coder:32b', context_length: 4096 },
++  ],
++};
++
++// Helper function to get models for a provider type
++export function getModelsForProvider(providerType: string): ModelInfo[] {
++  switch (providerType) {
++    case 'openai':
++      return MODELS_DATA.openai || [];
++    case 'anthropic':
++      return MODELS_DATA.claude || [];
++    case 'google_gemini':
++      return MODELS_DATA.gemini || [];
++    case 'openrouter':
++      return MODELS_DATA.openrouter || [];
++    case 'openai_compatible':
++      // For LM Studio and other OpenAI compatible providers
++      return MODELS_DATA.lmstudio || [];
++    case 'ollama':
++      return MODELS_DATA.ollama || [];
++    default:
++      return [];
++  }
++}
++
++// Helper to get context length for a specific model
++export function getModelContextLength(providerType: string, modelId: string): number | undefined {
++  const models = getModelsForProvider(providerType);
++  const model = models.find(m => m.model_id === modelId);
++  return model?.context_length;
++}
+diff --git a/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html
+index 9a429f31f43a0..6680e841cbb1e 100644
+--- a/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html
++++ b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html
+@@ -111,6 +111,94 @@
+       .provider-card.browseros {
+         background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+       }
++      
++      /* Templates section styles */
++      .templates-section {
++        background: var(--cr-card-background-color);
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 8px;
++        margin-bottom: 16px;
++        overflow: hidden;
++      }
++      
++      .templates-header {
++        display: flex;
++        align-items: center;
++        justify-content: space-between;
++        padding: 12px 16px;
++        cursor: pointer;
++        user-select: none;
++        transition: background 0.2s ease;
++      }
++      
++      .templates-header:hover {
++        background: var(--cr-hover-background-color);
++      }
++      
++      .templates-title {
++        display: flex;
++        align-items: center;
++        gap: 8px;
++        font-size: 14px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++      }
++      
++      .templates-expand-icon {
++        transition: transform 0.2s ease;
++      }
++      
++      .templates-expand-icon.expanded {
++        transform: rotate(90deg);
++      }
++      
++      .templates-grid {
++        display: grid;
++        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
++        gap: 12px;
++        padding: 16px;
++        border-top: 1px solid var(--cr-separator-color);
++      }
++      
++      .template-card {
++        background: var(--cr-card-background-color);
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 6px;
++        padding: 12px 16px;
++        transition: all 0.2s ease;
++        display: flex;
++        flex-direction: row;
++        align-items: center;
++        justify-content: space-between;
++      }
++      
++      .template-card:hover {
++        border-color: var(--cr-focus-outline-color);
++        box-shadow: var(--cr-card-shadow);
++      }
++      
++      .template-name {
++        font-size: 14px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++      }
++      
++      .template-setup-btn {
++        padding: 4px 12px;
++        font-size: 12px;
++        background: transparent;
++        color: var(--cr-link-color);
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 4px;
++        cursor: pointer;
++        transition: all 0.2s ease;
++        white-space: nowrap;
++      }
++      
++      .template-setup-btn:hover {
++        border-color: var(--cr-focus-outline-color);
++        background: var(--cr-hover-background-color);
++      }
+ 
+       .provider-card-content {
+         display: flex;
+@@ -161,6 +249,10 @@
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       }
+ 
++      .provider-card-icon.openai {
++        background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
++      }
++      
+       .provider-card-icon.openai_compatible {
+         background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+       }
+@@ -220,6 +312,23 @@
+         background: var(--google-blue-50);
+         color: var(--google-blue-700);
+       }
++      
++      .provider-badge.draft {
++        background: var(--google-yellow-50);
++        color: var(--google-yellow-900);
++      }
++      
++      .setup-hint {
++        font-size: 12px;
++        color: var(--google-green-700);
++        background: var(--google-green-50);
++        padding: 4px 8px;
++        border-radius: 4px;
++        margin-top: 8px;
++        display: inline-flex;
++        align-items: center;
++        gap: 4px;
++      }
+ 
+       @media (prefers-color-scheme: dark) {
+         .provider-badge.default {
+@@ -231,6 +340,16 @@
+           background: rgba(138, 180, 248, 0.15);
+           color: var(--google-blue-300);
+         }
++        
++        .provider-badge.draft {
++          background: rgba(251, 188, 4, 0.15);
++          color: var(--google-yellow-300);
++        }
++        
++        .setup-hint {
++          background: rgba(129, 201, 149, 0.1);
++          color: var(--google-green-300);
++        }
+       }
+ 
+       .provider-card-subtitle {
+@@ -289,6 +408,11 @@
+         display: block;
+         animation: slideDown 0.3s ease-out;
+       }
++      
++      .provider-form-card.highlight {
++        border-color: var(--cr-focus-outline-color);
++        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
++      }
+ 
+       @keyframes slideDown {
+         from {
+@@ -300,6 +424,18 @@
+           transform: translateY(0);
+         }
+       }
++      
++      @keyframes pulse {
++        0% {
++          box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
++        }
++        70% {
++          box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
++        }
++        100% {
++          box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
++        }
++      }
+ 
+       .form-title {
+         font-size: 16px;
+@@ -400,6 +536,142 @@
+         padding-top: 16px;
+         border-top: 1px solid var(--cr-separator-color);
+       }
++      
++      /* Custom autocomplete dropdown styles */
++      .model-id-container {
++        position: relative;
++      }
++      
++      .model-id-input {
++        width: 100%;
++        height: 36px;
++        padding: 0 32px 0 12px;
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 4px;
++        font-size: 13px;
++        background: var(--cr-input-background-color);
++        color: var(--cr-primary-text-color);
++        transition: border-color 0.2s ease;
++        box-sizing: border-box;
++      }
++      
++      .model-id-input:hover {
++        border-color: var(--cr-hover-border-color);
++      }
++      
++      .model-id-input:focus {
++        outline: none;
++        border-color: var(--cr-focus-outline-color);
++      }
++      
++      .model-dropdown-icon {
++        position: absolute;
++        right: 8px;
++        top: 50%;
++        transform: translateY(-50%);
++        width: 20px;
++        height: 20px;
++        color: var(--cr-secondary-text-color);
++        cursor: pointer;
++        transition: color 0.15s ease;
++      }
++      
++      .model-dropdown-icon:hover {
++        color: var(--cr-primary-text-color);
++      }
++      
++      .model-suggestions-dropdown {
++        position: absolute;
++        top: 100%;
++        left: 0;
++        right: 0;
++        margin-top: 4px;
++        background: var(--cr-card-background-color);
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 4px;
++        box-shadow: var(--cr-card-shadow);
++        max-height: 240px;
++        overflow-y: auto;
++        z-index: 100;
++        display: none;
++      }
++      
++      .model-suggestions-dropdown.show {
++        display: block;
++      }
++      
++      .model-suggestion-item {
++        padding: 8px 12px;
++        font-size: 13px;
++        color: var(--cr-primary-text-color);
++        cursor: pointer;
++        transition: background 0.15s ease;
++      }
++      
++      .model-suggestion-item:hover {
++        background: var(--cr-hover-background-color);
++      }
++      
++      .model-suggestion-item.selected {
++        background: var(--cr-focus-background-color);
++      }
++      
++      .model-suggestion-item:first-child {
++        border-radius: 4px 4px 0 0;
++      }
++      
++      .model-suggestion-item:last-child {
++        border-radius: 0 0 4px 4px;
++      }
++      
++      .no-suggestions {
++        padding: 12px;
++        text-align: center;
++        color: var(--cr-secondary-text-color);
++        font-size: 13px;
++        font-style: italic;
++      }
++      
++      .custom-model-option {
++        padding: 10px 12px;
++        background: linear-gradient(to right, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
++        border-bottom: 1px solid var(--cr-separator-color);
++        cursor: pointer;
++        transition: background 0.15s ease;
++      }
++      
++      .custom-model-option:hover {
++        background: linear-gradient(to right, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
++      }
++      
++      .custom-model-option.selected {
++        background: linear-gradient(to right, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
++      }
++      
++      .custom-model-label {
++        font-size: 11px;
++        color: var(--cr-secondary-text-color);
++        text-transform: uppercase;
++        letter-spacing: 0.5px;
++        margin-bottom: 4px;
++        font-weight: 500;
++      }
++      
++      .custom-model-value {
++        font-size: 13px;
++        color: var(--cr-primary-text-color);
++        font-weight: 500;
++      }
++      
++      .suggestions-divider {
++        font-size: 11px;
++        color: var(--cr-secondary-text-color);
++        padding: 8px 12px 4px;
++        text-transform: uppercase;
++        letter-spacing: 0.5px;
++        font-weight: 500;
++        background: var(--cr-hover-background-color);
++      }
+ 
+       /* Status Toast */
+       .status-toast {
+@@ -463,7 +735,7 @@
+         <cr-button class="add-provider-button" on-click="onAddProvider_">
+           <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
+           <template is="dom-if" if="[[!showProviderForm_]]">
+-            Add Provider
++            Add custom provider
+           </template>
+           <template is="dom-if" if="[[showProviderForm_]]">
+             Cancel
+@@ -474,6 +746,34 @@
+ 
+     <!-- Provider Cards Container -->
+     <div class="provider-cards-container">
++      <!-- Templates Section -->
++      <div class="templates-section">
++        <div class="templates-header" on-click="onToggleTemplates_">
++          <div class="templates-title">
++            <cr-icon class$="templates-expand-icon [[getExpandIconClass_(showTemplates_)]]" 
++                     icon="cr:chevron-right"></cr-icon>
++            <span>Quick provider templates</span>
++          </div>
++          <span style="font-size: 12px; color: var(--cr-secondary-text-color);">
++            [[providerTemplates_.length]] templates available
++          </span>
++        </div>
++        <template is="dom-if" if="[[showTemplates_]]">
++          <div class="templates-grid">
++            <template is="dom-repeat" items="[[providerTemplates_]]">
++              <div class="template-card">
++                <div class="template-name">[[item.name]]</div>
++                <button class="template-setup-btn" 
++                        on-click="onUseTemplate_"
++                        data-template-index$="[[index]]">
++                  use
++                </button>
++              </div>
++            </template>
++          </div>
++        </template>
++      </div>
++      
+       <!-- Provider Form Card (shown when adding/editing) -->
+       <div class$="provider-form-card [[getFormCardClass_(showProviderForm_)]]">
+         <h3 class="form-title">
+@@ -495,6 +795,7 @@
+                       value="{{dialogProviderType_::change}}"
+                       on-change="onProviderTypeChange_"
+                       disabled$="[[editingProvider_]]">
++                <option value="openai">OpenAI</option>
+                 <option value="openai_compatible">OpenAI Compatible</option>
+                 <option value="anthropic">Anthropic</option>
+                 <option value="google_gemini">Google Gemini</option>
+@@ -529,10 +830,48 @@
+               <label class="form-label">
+                 Model ID <span class="required">*</span>
+               </label>
+-              <input type="text" 
+-                     class="form-field"
+-                     value="{{dialogModelId_::input}}"
+-                     placeholder="e.g., gpt-4o, claude-3-5-sonnet">
++              <div class="model-id-container">
++                <input type="text" 
++                       class="model-id-input"
++                       value="{{dialogModelId_::input}}"
++                       on-input="onModelIdInput_"
++                       on-focus="onModelIdFocus_"
++                       on-blur="onModelIdBlur_"
++                       on-keydown="onModelIdKeydown_"
++                       placeholder="e.g., gpt-4o, claude-3-5-sonnet">
++                <cr-icon class="model-dropdown-icon" 
++                         icon="cr:arrow-drop-down"
++                         on-click="onToggleDropdown_"></cr-icon>
++                <div class$="model-suggestions-dropdown [[getDropdownClass_(showModelDropdown_)]]">
++                  <!-- Show custom model option when user has typed something -->
++                  <template is="dom-if" if="[[shouldShowCustomOption_(dialogModelId_, filteredModelSuggestions_)]]">
++                    <div class$="custom-model-option [[getCustomOptionClass_(selectedSuggestionIndex_)]]"
++                         on-click="onSelectCustomModel_">
++                      <div class="custom-model-label">Use custom model</div>
++                      <div class="custom-model-value">[[dialogModelId_]]</div>
++                    </div>
++                    <template is="dom-if" if="[[filteredModelSuggestions_.length]]">
++                      <div class="suggestions-divider">Suggestions</div>
++                    </template>
++                  </template>
++                  
++                  <!-- Show suggestions if available -->
++                  <template is="dom-if" if="[[filteredModelSuggestions_.length]]">
++                    <template is="dom-repeat" items="[[filteredModelSuggestions_]]">
++                      <div class$="model-suggestion-item [[getSuggestionClass_(index, selectedSuggestionIndex_)]]"
++                           on-click="onSelectSuggestion_"
++                           data-model$="[[item]]">
++                        [[item]]
++                      </div>
++                    </template>
++                  </template>
++                  
++                  <!-- Show empty state only if no custom option and no suggestions -->
++                  <template is="dom-if" if="[[shouldShowEmptyState_(dialogModelId_, filteredModelSuggestions_)]]">
++                    <div class="no-suggestions">Type a model ID or select from suggestions</div>
++                  </template>
++                </div>
++              </div>
+             </div>
+           </div>
+ 
+@@ -606,15 +945,16 @@
+       <template is="dom-repeat" items="[[providers_]]">
+         <div class$="[[getProviderCardClass_(item)]]">
+           <div class="provider-card-content">
+-            <div class="provider-radio" 
+-                 on-click="setAsDefault_"
+-                 data-provider-id$="[[item.id]]"
+-                 hidden$="[[item.isBuiltIn]]"></div>
+-            <div class="provider-radio" 
+-                 on-click="setAsDefault_"
+-                 data-provider-id$="[[item.id]]"
+-                 hidden$="[[!item.isBuiltIn]]"
+-                 style="cursor: default;"></div>
++            <!-- Radio button for selection -->
++            <template is="dom-if" if="[[shouldShowRadio_(item)]]">
++              <div class="provider-radio" 
++                   on-click="setAsDefault_"
++                   data-provider-id$="[[item.id]]"></div>
++            </template>
++            <template is="dom-if" if="[[!shouldShowRadio_(item)]]">
++              <div style="width: 20px;"></div>
++            </template>
++            
+             <div class$="provider-card-icon [[item.type]]">
+               <span>[[getProviderIcon_(item.type)]]</span>
+             </div>
+@@ -633,7 +973,7 @@
+               </div>
+             </div>
+             <div class="provider-card-actions">
+-              <template is="dom-if" if="[[!item.isBuiltIn]]">
++              <template is="dom-if" if="[[shouldShowActions_(item)]]">
+                 <button class="provider-action-button"
+                         on-click="onEditProvider_"
+                         data-provider-id$="[[item.id]]">
+diff --git a/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts
+index f33e0463b1bfa..99c366e7c4e44 100644
+--- a/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts
++++ b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts
+@@ -21,11 +21,13 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+ 
+ import {getTemplate} from './nxtscape_page.html.js';
++import {MODELS_DATA, getModelsForProvider, getModelContextLength} from './models_data.js';
+ 
+ const SettingsNxtscapePageElementBase = PrefsMixin(PolymerElement);
+ 
+ export enum ProviderType {
+   BROWSEROS = 'browseros',
++  OPENAI = 'openai',
+   OPENAI_COMPATIBLE = 'openai_compatible',
+   ANTHROPIC = 'anthropic',
+   GOOGLE_GEMINI = 'google_gemini',
+@@ -58,21 +60,41 @@ export interface ProviderConfig {
+   updatedAt: string;
+ }
+ 
++export interface ProviderTemplate {
++  name: string;
++  type: ProviderType;
++  baseUrl: string;
++  modelId: string;
++  capabilities: {
++    supportsImages: boolean;
++  };
++  modelConfig: {
++    contextWindow: number;
++    temperature: number;
++  };
++}
++
+ interface AIProviderPreferences {
+   defaultProviderId: string;
+   providers: ProviderConfig[];
+ }
+ 
+ const PROVIDER_DEFAULTS: Record<string, Partial<ProviderConfig>> = {
+-  [ProviderType.OPENAI_COMPATIBLE]: {
++  [ProviderType.OPENAI]: {
+     baseUrl: 'https://api.openai.com/v1',
+-    modelId: 'gpt-4o',
++    modelId: 'gpt-4.1',
+     capabilities: { supportsImages: true },
+-    modelConfig: { contextWindow: 128000, temperature: 0.7 }
++    modelConfig: { contextWindow: 1047576, temperature: 0.7 }
++  },
++  [ProviderType.OPENAI_COMPATIBLE]: {
++    baseUrl: '',
++    modelId: 'openai/gpt-oss-20b',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 131072, temperature: 0.7 }
+   },
+   [ProviderType.ANTHROPIC]: {
+     baseUrl: 'https://api.anthropic.com',
+-    modelId: 'claude-3-7-sonnet-latest',
++    modelId: 'claude-sonnet-4-20250514',
+     capabilities: { supportsImages: true },
+     modelConfig: { contextWindow: 200000, temperature: 0.7 }
+   },
+@@ -80,7 +102,7 @@ const PROVIDER_DEFAULTS: Record<string, Partial<ProviderConfig>> = {
+     baseUrl: 'https://generativelanguage.googleapis.com',
+     modelId: 'gemini-2.5-flash',
+     capabilities: { supportsImages: true },
+-    modelConfig: { contextWindow: 1000000, temperature: 0.7 }
++    modelConfig: { contextWindow: 1048576, temperature: 0.7 }
+   },
+   [ProviderType.OLLAMA]: {
+     baseUrl: 'http://localhost:11434',
+@@ -92,7 +114,7 @@ const PROVIDER_DEFAULTS: Record<string, Partial<ProviderConfig>> = {
+     baseUrl: 'https://openrouter.ai/api/v1',
+     modelId: 'openai/gpt-4.1',
+     capabilities: { supportsImages: true },
+-    modelConfig: { contextWindow: 128000, temperature: 0.7 }
++    modelConfig: { contextWindow: 1047576, temperature: 0.7 }
+   },
+   [ProviderType.CUSTOM]: {
+     baseUrl: '',
+@@ -102,6 +124,65 @@ const PROVIDER_DEFAULTS: Record<string, Partial<ProviderConfig>> = {
+   }
+ };
+ 
++// Model suggestions for each provider type
++// Provider templates for quick setup
++const PROVIDER_TEMPLATES: ProviderTemplate[] = [
++  {
++    name: 'OpenAI',
++    type: ProviderType.OPENAI,
++    baseUrl: 'https://api.openai.com/v1',
++    modelId: 'gpt-4.1',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 1047576, temperature: 0.7 },
++  },
++  {
++    name: 'Claude',
++    type: ProviderType.ANTHROPIC,
++    baseUrl: 'https://api.anthropic.com',
++    modelId: 'claude-sonnet-4-20250514',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 200000, temperature: 0.7 },
++  },
++  {
++    name: 'Gemini',
++    type: ProviderType.GOOGLE_GEMINI,
++    baseUrl: 'https://generativelanguage.googleapis.com',
++    modelId: 'gemini-2.5-flash',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 1048576, temperature: 0.7 },
++  },
++  {
++    name: 'Ollama',
++    type: ProviderType.OLLAMA,
++    baseUrl: 'http://localhost:11434',
++    modelId: 'gpt-oss:20b',
++    capabilities: { supportsImages: false },
++    modelConfig: { contextWindow: 4096, temperature: 0.7 },
++  },
++  {
++    name: 'OpenRouter',
++    type: ProviderType.OPENROUTER,
++    baseUrl: 'https://openrouter.ai/api/v1',
++    modelId: 'openai/gpt-4.1',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 1047576, temperature: 0.7 },
++  },
++  {
++    name: 'LM Studio',
++    type: ProviderType.OPENAI_COMPATIBLE,
++    baseUrl: 'http://localhost:1234/v1/',
++    modelId: 'openai/gpt-oss-20b',
++    capabilities: { supportsImages: false },
++    modelConfig: { contextWindow: 131072, temperature: 0.7 },
++  },
++];
++
++// Function to get model suggestions from the real data
++function getModelSuggestions(providerType: string): string[] {
++  const models = getModelsForProvider(providerType);
++  return models.map(m => m.model_id);
++}
++
+ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase {
+   static get is() {
+     return 'settings-nxtscape-page';
+@@ -183,6 +264,31 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+         type: Boolean,
+         value: false,
+       },
++      
++      filteredModelSuggestions_: {
++        type: Array,
++        value: () => [],
++      },
++      
++      showModelDropdown_: {
++        type: Boolean,
++        value: false,
++      },
++      
++      selectedSuggestionIndex_: {
++        type: Number,
++        value: -1,
++      },
++      
++      showTemplates_: {
++        type: Boolean,
++        value: true,
++      },
++      
++      providerTemplates_: {
++        type: Array,
++        value: () => PROVIDER_TEMPLATES,
++      },
+     };
+   }
+ 
+@@ -200,10 +306,16 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+   private declare dialogContextWindow_: number;
+   private declare dialogTemperature_: number;
+   private declare isTestingConnection_: boolean;
++  private declare filteredModelSuggestions_: string[];
++  private declare showModelDropdown_: boolean;
++  private declare selectedSuggestionIndex_: number;
++  private declare showTemplates_: boolean;
++  private declare providerTemplates_: ProviderTemplate[];
+ 
+   override ready() {
+     super.ready();
+-    this.loadProviders_();
++    // Don't load providers immediately - wait for prefs to be available
++    // The onPrefsChanged_ observer will handle initial load
+   }
+ 
+   private onPrefsChanged_() {
+@@ -214,8 +326,9 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+ 
+   private loadProviders_() {
+     // Load from preferences or initialize with BrowserOS
+-    if (!this.prefs || !this.prefs.browseros) {
+-      this.initializeDefaultProviders_();
++    if (!this.prefs || !this.prefs.browseros || !this.prefs.browseros.providers) {
++      // Prefs not ready yet, initialize defaults locally only
++      this.initializeDefaultProvidersLocally_();
+       return;
+     }
+     
+@@ -225,6 +338,11 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+         const data = JSON.parse(stored.value) as AIProviderPreferences;
+         this.providers_ = data.providers;
+         this.defaultProviderId_ = data.defaultProviderId;
++        
++        // Ensure BrowserOS is always present
++        if (!this.providers_.some(p => p.id === 'browseros')) {
++          this.initializeDefaultProviders_();
++        }
+       } catch (e) {
+         this.initializeDefaultProviders_();
+       }
+@@ -233,23 +351,54 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+     }
+   }
+ 
++  private initializeDefaultProvidersLocally_() {
++    // Initialize providers locally without saving to prefs (prefs not ready)
++    const now = new Date().toISOString();
++    
++    const browseros: ProviderConfig = {
++      id: 'browseros',
++      name: 'BrowserOS',
++      type: ProviderType.BROWSEROS,
++      isDefault: true,
++      isBuiltIn: true,
++      createdAt: now,
++      updatedAt: now,
++    };
++    
++    this.providers_ = [browseros];
++    this.defaultProviderId_ = 'browseros';
++    // Don't save yet - prefs aren't ready
++  }
++
+   private initializeDefaultProviders_() {
++    const now = new Date().toISOString();
++    
+     const browseros: ProviderConfig = {
+       id: 'browseros',
+       name: 'BrowserOS',
+       type: ProviderType.BROWSEROS,
+       isDefault: true,
+       isBuiltIn: true,
+-      createdAt: new Date().toISOString(),
+-      updatedAt: new Date().toISOString(),
++      createdAt: now,
++      updatedAt: now,
+     };
+     
+     this.providers_ = [browseros];
+     this.defaultProviderId_ = 'browseros';
+-    this.saveProviders_();
++    
++    // Only save if prefs are ready
++    if (this.prefs && this.prefs.browseros && this.prefs.browseros.providers !== undefined) {
++      this.saveProviders_();
++    }
+   }
+ 
+   private saveProviders_() {
++    // Safety check: don't save if prefs aren't ready
++    if (!this.prefs || !this.prefs.browseros || this.prefs.browseros.providers === undefined) {
++      console.warn('browseros: Cannot save providers - prefs not ready');
++      return;
++    }
++    
+     const data: AIProviderPreferences = {
+       defaultProviderId: this.defaultProviderId_,
+       providers: this.providers_,
+@@ -273,7 +422,7 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+     
+     if (this.showProviderForm_) {
+       this.set('editingProvider_', null);
+-      this.set('dialogProviderType_', ProviderType.OPENAI_COMPATIBLE);
++      this.set('dialogProviderType_', ProviderType.OPENAI);
+       this.set('dialogProviderName_', '');
+       this.set('dialogBaseUrl_', '');
+       this.set('dialogApiKey_', '');
+@@ -282,8 +431,16 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+       this.set('dialogContextWindow_', 128000);
+       this.set('dialogTemperature_', 0.7);
+       
+-      // Apply defaults for the selected type
++      // Apply defaults for the selected type and update model suggestions
+       this.onProviderTypeChange_();
++      this.updateModelSuggestions_();
++      
++      // Reset dropdown state
++      this.set('showModelDropdown_', false);
++      this.set('selectedSuggestionIndex_', -1);
++      
++      // Scroll to form after a brief delay to ensure it's rendered
++      this.scrollToForm_();
+     }
+     
+     console.log('browseros: Form visibility:', this.showProviderForm_);
+@@ -306,7 +463,15 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+     this.set('dialogContextWindow_', provider.modelConfig?.contextWindow || 128000);
+     this.set('dialogTemperature_', provider.modelConfig?.temperature || 0.7);
+     
++    // Reset dropdown state
++    this.set('showModelDropdown_', false);
++    this.set('selectedSuggestionIndex_', -1);
++    this.updateModelSuggestions_();
++    
+     this.set('showProviderForm_', true);
++    
++    // Scroll to form after showing it
++    this.scrollToForm_();
+   }
+ 
+   private onDeleteProvider_(e: Event) {
+@@ -317,6 +482,7 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+     
+     console.log('browseros: Delete provider clicked:', providerId, provider);
+     
++    // Don't allow deleting built-in providers
+     if (!provider || provider.isBuiltIn) return;
+     
+     // Delete immediately without confirmation
+@@ -357,6 +523,252 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+       this.set('dialogContextWindow_', defaults.modelConfig?.contextWindow || 128000);
+       this.set('dialogTemperature_', defaults.modelConfig?.temperature || 0.7);
+     }
++    
++    // Update model suggestions for the new provider type
++    this.updateModelSuggestions_();
++  }
++  
++  private updateModelSuggestions_() {
++    const providerType = this.dialogProviderType_;
++    
++    // Get models from the JSON data
++    const models = getModelsForProvider(providerType);
++    const suggestions = models.map(m => m.model_id);
++    
++    // If no models from data, fall back to getModelSuggestions
++    if (suggestions.length === 0) {
++      const fallbackSuggestions = getModelSuggestions(providerType);
++      this.set('filteredModelSuggestions_', fallbackSuggestions);
++    } else {
++      this.set('filteredModelSuggestions_', suggestions);
++    }
++  }
++  
++  private onModelIdInput_(event: Event) {
++    const input = event.target as HTMLInputElement;
++    const value = input.value.toLowerCase();
++    const providerType = this.dialogProviderType_;
++    
++    // Get models from data
++    const models = getModelsForProvider(providerType);
++    let allSuggestions = models.map(m => m.model_id);
++    
++    // Fall back to function if no data
++    if (allSuggestions.length === 0) {
++      allSuggestions = getModelSuggestions(providerType);
++    }
++    
++    if (value === '') {
++      this.set('filteredModelSuggestions_', allSuggestions);
++    } else {
++      const filtered = allSuggestions.filter(model => 
++        model.toLowerCase().includes(value)
++      );
++      this.set('filteredModelSuggestions_', filtered);
++    }
++    
++    // Reset selection when filtering
++    this.set('selectedSuggestionIndex_', -1);
++    
++    // Show dropdown if there are suggestions
++    if (this.filteredModelSuggestions_.length > 0) {
++      this.set('showModelDropdown_', true);
++    }
++  }
++  
++  private onModelIdFocus_(_event: Event) {
++    // Show dropdown on focus if there are suggestions or user can add custom model
++    if (this.filteredModelSuggestions_.length > 0 || this.dialogModelId_) {
++      this.set('showModelDropdown_', true);
++    }
++  }
++  
++  private onModelIdBlur_(_event: Event) {
++    // Delay hiding to allow click events on suggestions
++    setTimeout(() => {
++      // Only hide if not clicking on a dropdown item
++      if (this.showModelDropdown_) {
++        this.set('showModelDropdown_', false);
++        this.set('selectedSuggestionIndex_', -1);
++      }
++    }, 250);
++  }
++  
++  private onModelIdKeydown_(event: KeyboardEvent) {
++    if (!this.showModelDropdown_) {
++      // Show dropdown on arrow down when it's not visible
++      if (event.key === 'ArrowDown') {
++        event.preventDefault();
++        if (this.filteredModelSuggestions_.length > 0 || this.dialogModelId_) {
++          this.set('showModelDropdown_', true);
++        }
++      }
++      return;
++    }
++    
++    const hasCustomOption = this.shouldShowCustomOption_(this.dialogModelId_, this.filteredModelSuggestions_);
++    const totalOptions = this.filteredModelSuggestions_.length + (hasCustomOption ? 1 : 0);
++    
++    if (totalOptions === 0) {
++      if (event.key === 'Escape') {
++        this.set('showModelDropdown_', false);
++      }
++      return;
++    }
++    
++    switch (event.key) {
++      case 'ArrowDown':
++        event.preventDefault();
++        const nextIndex = Math.min(
++          this.selectedSuggestionIndex_ + 1, 
++          this.filteredModelSuggestions_.length - 1
++        );
++        this.set('selectedSuggestionIndex_', nextIndex);
++        break;
++        
++      case 'ArrowUp':
++        event.preventDefault();
++        const prevIndex = Math.max(this.selectedSuggestionIndex_ - 1, hasCustomOption ? -2 : -1);
++        this.set('selectedSuggestionIndex_', prevIndex);
++        break;
++        
++      case 'Enter':
++        event.preventDefault();
++        if (this.selectedSuggestionIndex_ === -2 && hasCustomOption) {
++          // Custom option selected
++          this.onSelectCustomModel_(event);
++        } else if (this.selectedSuggestionIndex_ >= 0) {
++          const selectedModel = this.filteredModelSuggestions_[this.selectedSuggestionIndex_];
++          this.set('dialogModelId_', selectedModel);
++          
++          // Auto-set context length from model data
++          const contextLength = getModelContextLength(this.dialogProviderType_, selectedModel);
++          if (contextLength) {
++            this.set('dialogContextWindow_', contextLength);
++            console.log('browseros: Auto-set context length to:', contextLength);
++          }
++          
++          this.set('showModelDropdown_', false);
++          this.set('selectedSuggestionIndex_', -1);
++        } else if (this.dialogModelId_) {
++          // Just close dropdown if no selection but there's text
++          this.set('showModelDropdown_', false);
++          this.set('selectedSuggestionIndex_', -1);
++        }
++        break;
++        
++      case 'Escape':
++        this.set('showModelDropdown_', false);
++        this.set('selectedSuggestionIndex_', -1);
++        break;
++    }
++  }
++  
++  private onSelectSuggestion_(event: Event) {
++    event.stopPropagation();
++    event.preventDefault();
++    
++    const target = event.currentTarget as HTMLElement;
++    const model = target.dataset['model'];
++    console.log('browseros: Model suggestion clicked:', model);
++    
++    if (model) {
++      console.log('browseros: Setting dialogModelId_ to:', model);
++      this.set('dialogModelId_', model);
++      this.set('showModelDropdown_', false);
++      this.set('selectedSuggestionIndex_', -1);
++      
++      // Auto-set context length from model data
++      const contextLength = getModelContextLength(this.dialogProviderType_, model);
++      if (contextLength) {
++        this.set('dialogContextWindow_', contextLength);
++        console.log('browseros: Auto-set context length to:', contextLength);
++      }
++      
++      // Force update the input field value
++      const input = this.shadowRoot?.querySelector('.model-id-input') as HTMLInputElement;
++      if (input) {
++        input.value = model;
++        console.log('browseros: Input value set to:', input.value);
++      }
++    }
++  }
++  
++  private getDropdownClass_(show: boolean): string {
++    return show ? 'show' : '';
++  }
++  
++  private getSuggestionClass_(index: number, selectedIndex: number): string {
++    return index === selectedIndex ? 'selected' : '';
++  }
++  
++  private getCustomOptionClass_(selectedIndex: number): string {
++    return selectedIndex === -2 ? 'selected' : '';
++  }
++  
++  private shouldShowCustomOption_(modelId: string, suggestions: string[]): boolean {
++    // Show custom option if user has typed something that's not empty
++    // and either no suggestions match or the exact value isn't in suggestions
++    if (!modelId || modelId.trim() === '') {
++      return false;
++    }
++    
++    // Don't show custom option if the exact model ID is already in suggestions
++    const exactMatch = suggestions.some(s => s.toLowerCase() === modelId.toLowerCase());
++    return !exactMatch;
++  }
++  
++  private shouldShowEmptyState_(modelId: string, suggestions: string[]): boolean {
++    // Show empty state only when there's no input and no suggestions
++    return (!modelId || modelId.trim() === '') && suggestions.length === 0;
++  }
++  
++  private onSelectCustomModel_(event: Event) {
++    event.stopPropagation();
++    event.preventDefault();
++    
++    // The model ID is already set, just close the dropdown
++    this.set('showModelDropdown_', false);
++    this.set('selectedSuggestionIndex_', -1);
++    
++    // Log that a custom model was selected
++    console.log('browseros: Custom model selected:', this.dialogModelId_);
++    
++    // Force update the input field value to ensure it's synced
++    const input = this.shadowRoot?.querySelector('.model-id-input') as HTMLInputElement;
++    if (input && this.dialogModelId_) {
++      input.value = this.dialogModelId_;
++    }
++  }
++  
++  private onToggleDropdown_(event: Event) {
++    event.stopPropagation();
++    event.preventDefault();
++    
++    if (this.showModelDropdown_) {
++      this.set('showModelDropdown_', false);
++      this.set('selectedSuggestionIndex_', -1);
++    } else {
++      // Update suggestions first
++      this.updateModelSuggestions_();
++      // Trigger filtering if there's existing text
++      if (this.dialogModelId_) {
++        const value = this.dialogModelId_.toLowerCase();
++        const providerType = this.dialogProviderType_;
++        const allSuggestions = getModelSuggestions(providerType);
++        
++        if (value === '') {
++          this.set('filteredModelSuggestions_', allSuggestions);
++        } else {
++          const filtered = allSuggestions.filter(model => 
++            model.toLowerCase().includes(value)
++          );
++          this.set('filteredModelSuggestions_', filtered);
++        }
++        this.set('selectedSuggestionIndex_', -1);
++      }
++      this.set('showModelDropdown_', true);
++    }
+   }
+ 
+   private async testConnection_() {
+@@ -396,6 +808,7 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+           },
+           updatedAt: now,
+         };
++        
+         this.set(`providers_.${index}`, updated);
+       }
+     } else {
+@@ -465,6 +878,51 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+     this.set('showProviderForm_', false);
+     this.editingProvider_ = null;
+   }
++  
++  private scrollToForm_() {
++    // Use requestAnimationFrame to ensure DOM is updated
++    requestAnimationFrame(() => {
++      const formCard = this.shadowRoot?.querySelector('.provider-form-card') as HTMLElement;
++      if (formCard) {
++        // Get the position of the form relative to the viewport
++        const rect = formCard.getBoundingClientRect();
++        
++        // Always scroll to form when opening from templates (which are at bottom)
++        // or if form is not fully visible
++        if (rect.top < 0 || rect.bottom > window.innerHeight || rect.top > window.innerHeight / 2) {
++          // Smooth scroll to the form with some offset from top
++          formCard.scrollIntoView({ 
++            behavior: 'smooth', 
++            block: 'start'
++          });
++          
++          // Add a visual highlight effect
++          formCard.classList.add('highlight');
++          
++          // Add a pulse animation
++          formCard.style.animation = 'pulse 1s ease-out';
++          
++          // Remove effects after animation
++          setTimeout(() => {
++            if (formCard) {
++              formCard.style.animation = '';
++              formCard.classList.remove('highlight');
++            }
++          }, 2000);
++        }
++        
++        // Focus on the first input field for better UX
++        // Delay to allow scroll animation to complete
++        setTimeout(() => {
++          const firstInput = formCard.querySelector('input:not([type="checkbox"])') as HTMLInputElement;
++          if (firstInput) {
++            firstInput.focus();
++            firstInput.select(); // Select text if present for easy replacement
++          }
++        }, 500);
++      }
++    });
++  }
+ 
+   private onDefaultProviderChange_(e: Event) {
+     const select = e.target as HTMLSelectElement;
+@@ -503,6 +961,7 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+   private getProviderIcon_(type: ProviderType): string {
+     const icons: Record<ProviderType, string> = {
+       [ProviderType.BROWSEROS]: 'B',
++      [ProviderType.OPENAI]: 'O',
+       [ProviderType.OPENAI_COMPATIBLE]: 'O',
+       [ProviderType.ANTHROPIC]: 'A',
+       [ProviderType.GOOGLE_GEMINI]: 'G',
+@@ -523,6 +982,58 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+     }
+     return classes;
+   }
++  
++  private shouldShowRadio_(provider: ProviderConfig): boolean {
++    return !provider.isBuiltIn;
++  }
++  
++  private shouldShowActions_(provider: ProviderConfig): boolean {
++    return !provider.isBuiltIn;
++  }
++  
++  private onToggleTemplates_() {
++    this.set('showTemplates_', !this.showTemplates_);
++  }
++  
++  private onUseTemplate_(event: Event) {
++    const target = event.currentTarget as HTMLElement;
++    const templateIndex = parseInt(target.dataset['templateIndex'] || '0', 10);
++    const template = this.providerTemplates_[templateIndex];
++    
++    if (!template) return;
++    
++    // Show the form
++    this.set('showProviderForm_', true);
++    this.set('editingProvider_', null);
++    
++    // Populate form with template values
++    this.set('dialogProviderType_', template.type);
++    this.set('dialogProviderName_', template.name);
++    this.set('dialogBaseUrl_', template.baseUrl);
++    this.set('dialogModelId_', template.modelId);
++    this.set('dialogApiKey_', ''); // User needs to provide this
++    this.set('dialogSupportsImages_', template.capabilities.supportsImages);
++    this.set('dialogContextWindow_', template.modelConfig.contextWindow);
++    this.set('dialogTemperature_', template.modelConfig.temperature);
++    
++    // Update model suggestions (but don't call onProviderTypeChange_ as it would overwrite template values)
++    this.updateModelSuggestions_();
++    
++    // Reset dropdown state
++    this.set('showModelDropdown_', false);
++    this.set('selectedSuggestionIndex_', -1);
++    
++    // Scroll to form and focus API key field
++    this.scrollToForm_();
++    setTimeout(() => {
++      const apiKeyInput = this.shadowRoot?.querySelector('input[type="password"]') as HTMLInputElement;
++      if (apiKeyInput) {
++        apiKeyInput.focus();
++      }
++    }, 600);
++    
++    console.log('browseros: Using template:', template.name);
++  }
+ 
+   private getProviderSubtitle_(provider: ProviderConfig): string {
+     if (provider.type === ProviderType.BROWSEROS) {
+@@ -554,6 +1065,10 @@ export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase
+   private getFormCardClass_(show: boolean): string {
+     return show ? 'show' : '';
+   }
++  
++  private getExpandIconClass_(expanded: boolean): string {
++    return expanded ? 'expanded' : '';
++  }
+ 
+   private showStatusMessage_(message?: string, isError: boolean = false) {
+     if (!this.shadowRoot) return;
+-- 
+2.49.0
+

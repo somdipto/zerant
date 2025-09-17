@@ -1,0 +1,13 @@
+<!-- Sparkle Update Framework Keys -->
+<key>SUPublicEDKey</key>
+<string>LzQmcNuTsdB3/dsivo0eeN+jPfDoriRHAkkEJcfFs2A=</string>
+<key>CrProductDirName</key>
+<string>BrowserOS</string>
+<key>SUEnableAutomaticChecks</key>
+<true/>
+<key>SUScheduledCheckInterval</key>
+<integer>1080</integer>
+<key>SUAllowsAutomaticUpdates</key>
+<true/>
+<key>SUAutomaticallyUpdate</key>
+<true/>

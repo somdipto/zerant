@@ -1,0 +1,24 @@
+From 6e1eb7912668735eea24920c83d12eba742dae35 Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Wed, 23 Jul 2025 09:26:47 -0700
+Subject: [PATCH] patch: chrome version update
+
+---
+ chrome/VERSION | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/chrome/VERSION b/chrome/VERSION
+index cdbed925f47c1..37b80272989ff 100644
+--- a/chrome/VERSION
++++ b/chrome/VERSION
+@@ -1,4 +1,4 @@
+ MAJOR=137
+ MINOR=0
+-BUILD=7151
+-PATCH=69
++BUILD=7187
++PATCH=69
+\ No newline at end of file
+-- 
+2.49.0
+

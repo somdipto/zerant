@@ -1,0 +1,2196 @@
+From 0f11d4438b9a1723c188d23c55ff76d80b4b8ee2 Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Tue, 22 Jul 2025 21:36:34 -0700
+Subject: [PATCH] patch(M): llm-hub
+
+---
+ chrome/app/chrome_command_ids.h               |   1 +
+ chrome/app/generated_resources.grd            |   6 +
+ .../browser/global_keyboard_shortcuts_mac.mm  |   1 +
+ chrome/browser/ui/actions/chrome_action_id.h  |   3 +-
+ chrome/browser/ui/browser_actions.cc          |  17 +
+ .../browser/ui/browser_command_controller.cc  |  21 +
+ .../browser/ui/toolbar/toolbar_pref_names.cc  |   9 +
+ chrome/browser/ui/ui_features.cc              |   4 +
+ chrome/browser/ui/ui_features.h               |   1 +
+ chrome/browser/ui/views/accelerator_table.cc  |   2 +
+ chrome/browser/ui/views/side_panel/BUILD.gn   |   6 +
+ .../clash_of_gpts_coordinator.cc              | 538 +++++++++++++++++
+ .../clash_of_gpts/clash_of_gpts_coordinator.h | 216 +++++++
+ .../clash_of_gpts/clash_of_gpts_view.cc       | 553 ++++++++++++++++++
+ .../clash_of_gpts/clash_of_gpts_view.h        | 115 ++++
+ .../clash_of_gpts/clash_of_gpts_window.cc     |  83 +++
+ .../clash_of_gpts/clash_of_gpts_window.h      |  65 ++
+ .../ui/views/side_panel/side_panel_entry_id.h |   1 +
+ .../ui/views/side_panel/side_panel_prefs.cc   |   6 +
+ .../ui/views/side_panel/side_panel_util.cc    |   2 +
+ .../toolbar/pinned_action_toolbar_button.cc   |  28 +
+ chrome/browser/ui/webui/BUILD.gn              |   2 +
+ .../browser/ui/webui/chrome_web_ui_configs.cc |   2 +
+ .../webui/clash_of_gpts/clash_of_gpts_ui.cc   | 103 ++++
+ .../ui/webui/clash_of_gpts/clash_of_gpts_ui.h |  33 ++
+ .../customize_toolbar/customize_toolbar.mojom |   1 +
+ .../customize_toolbar_handler.cc              |   6 +
+ chrome/common/webui_url_constants.h           |   2 +
+ 28 files changed, 1826 insertions(+), 1 deletion(-)
+ create mode 100644 chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc
+ create mode 100644 chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h
+ create mode 100644 chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.cc
+ create mode 100644 chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h
+ create mode 100644 chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.cc
+ create mode 100644 chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.h
+ create mode 100644 chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.cc
+ create mode 100644 chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.h
+
+diff --git a/chrome/app/chrome_command_ids.h b/chrome/app/chrome_command_ids.h
+index 91d055b22ce33..353b1ca1e9f25 100644
+--- a/chrome/app/chrome_command_ids.h
++++ b/chrome/app/chrome_command_ids.h
+@@ -292,6 +292,7 @@
+ #define IDC_FIND_EXTENSIONS  40295
+ #define IDC_SHOW_THIRD_PARTY_LLM_SIDE_PANEL  40296
+ #define IDC_CYCLE_THIRD_PARTY_LLM_PROVIDER  40297
++#define IDC_OPEN_CLASH_OF_GPTS               40298
+ 
+ // Spell-check
+ // Insert any additional suggestions before _LAST; these have to be consecutive.
+diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
+index ea11ecc8060dd..1dd06536b1105 100644
+--- a/chrome/app/generated_resources.grd
++++ b/chrome/app/generated_resources.grd
+@@ -8843,6 +8843,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
+       <message name="IDS_THIRD_PARTY_LLM_TITLE" desc="Title for 3rd party LLM side panel">
+         LLM Chat
+       </message>
++      <message name="IDS_CLASH_OF_GPTS_TITLE" desc="Title for Clash of GPTs side panel">
++        LLM Hub
++      </message>
++      <message name="IDS_CLASH_OF_GPTS_TOOLTIP" desc="Tooltip for Clash of GPTs side panel button">
++        Compare responses from multiple AI models
++      </message>
+       <message name="IDS_READ_LATER_MENU_UNREAD_HEADER" desc="Header for section of unread Read later items.">
+         Unread
+       </message>
+diff --git a/chrome/browser/global_keyboard_shortcuts_mac.mm b/chrome/browser/global_keyboard_shortcuts_mac.mm
+index 262d771e6b568..56da23fd6d745 100644
+--- a/chrome/browser/global_keyboard_shortcuts_mac.mm
++++ b/chrome/browser/global_keyboard_shortcuts_mac.mm
+@@ -147,6 +147,7 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
+       {true,  false, false, true,  kVK_ANSI_L,            IDC_SHOW_DOWNLOADS},
+       {true,  true,  false, false, kVK_ANSI_L,            IDC_SHOW_THIRD_PARTY_LLM_SIDE_PANEL},
+       {true,  true,  false, false, kVK_ANSI_Semicolon,   IDC_CYCLE_THIRD_PARTY_LLM_PROVIDER},
++      {true,  true,  false, false, kVK_ANSI_U,            IDC_OPEN_CLASH_OF_GPTS},
+       {true,  true,  false, false, kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
+       {true,  false, false, true,  kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
+       {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
+diff --git a/chrome/browser/ui/actions/chrome_action_id.h b/chrome/browser/ui/actions/chrome_action_id.h
+index 15585a7886bdb..fe4582b81ef43 100644
+--- a/chrome/browser/ui/actions/chrome_action_id.h
++++ b/chrome/browser/ui/actions/chrome_action_id.h
+@@ -540,7 +540,8 @@
+   E(kActionSidePanelShowSideSearch) \
+   E(kActionSidePanelShowUserNote) \
+   E(kActionSidePanelShowMerchantTrust) \
+-  E(kActionSidePanelShowThirdPartyLlm)
++  E(kActionSidePanelShowThirdPartyLlm) \
++  E(kActionSidePanelShowClashOfGpts)
+ 
+ #define TOOLBAR_PINNABLE_ACTION_IDS \
+   E(kActionHome, IDC_HOME) \
+diff --git a/chrome/browser/ui/browser_actions.cc b/chrome/browser/ui/browser_actions.cc
+index b08b1f61ce3c4..f045fea5635ba 100644
+--- a/chrome/browser/ui/browser_actions.cc
++++ b/chrome/browser/ui/browser_actions.cc
+@@ -243,6 +243,23 @@ void BrowserActions::InitializeBrowserActions() {
+             .Build());
+   }
+ 
++  // Add Clash of GPTs action if feature is enabled
++  if (base::FeatureList::IsEnabled(features::kClashOfGpts)) {
++    root_action_item_->AddChild(
++        ChromeMenuAction(
++            base::BindRepeating(
++                [](Browser* browser, actions::ActionItem* item,
++                   actions::ActionInvocationContext context) {
++                  chrome::ExecuteCommand(browser, IDC_OPEN_CLASH_OF_GPTS);
++                },
++                base::Unretained(browser)),
++            kActionSidePanelShowClashOfGpts,
++            IDS_CLASH_OF_GPTS_TITLE,
++            IDS_CLASH_OF_GPTS_TOOLTIP,
++            vector_icons::kClashOfGptsIcon)
++            .Build());
++  }
++
+   if (HistorySidePanelCoordinator::IsSupported()) {
+     root_action_item_->AddChild(
+         SidePanelAction(SidePanelEntryId::kHistory, IDS_HISTORY_TITLE,
+diff --git a/chrome/browser/ui/browser_command_controller.cc b/chrome/browser/ui/browser_command_controller.cc
+index f0912a69e5c05..b172b393c7b2b 100644
+--- a/chrome/browser/ui/browser_command_controller.cc
++++ b/chrome/browser/ui/browser_command_controller.cc
+@@ -69,6 +69,7 @@
+ #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+ #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+ #include "chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h"
+ #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+ #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+ #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+@@ -928,6 +929,24 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
+         }
+       }
+       break;
++    case IDC_OPEN_CLASH_OF_GPTS:
++      LOG(INFO) << "IDC_OPEN_CLASH_OF_GPTS command received";
++      if (base::FeatureList::IsEnabled(features::kClashOfGpts)) {
++        LOG(INFO) << "kClashOfGpts feature is enabled, getting coordinator";
++        ClashOfGptsCoordinator* coordinator = ClashOfGptsCoordinator::GetOrCreateForBrowser(browser_);
++        LOG(INFO) << "Coordinator = " << coordinator;
++        // Toggle the window - close if showing, show if hidden
++        if (coordinator->IsShowing()) {
++          LOG(INFO) << "Window is showing, closing it";
++          coordinator->Close();
++        } else {
++          LOG(INFO) << "Window is not showing, opening it";
++          coordinator->Show();
++        }
++      } else {
++        LOG(INFO) << "kClashOfGpts feature is not enabled";
++      }
++      break;
+     case IDC_SHOW_APP_MENU:
+       base::RecordAction(base::UserMetricsAction("Accel_Show_App_Menu"));
+       ShowAppMenu(browser_);
+@@ -1570,6 +1589,8 @@ void BrowserCommandController::InitCommandState() {
+                                         base::FeatureList::IsEnabled(features::kThirdPartyLlmPanel));
+   command_updater_.UpdateCommandEnabled(IDC_CYCLE_THIRD_PARTY_LLM_PROVIDER,
+                                         base::FeatureList::IsEnabled(features::kThirdPartyLlmPanel));
++  command_updater_.UpdateCommandEnabled(IDC_OPEN_CLASH_OF_GPTS,
++                                        base::FeatureList::IsEnabled(features::kClashOfGpts));
+ 
+   if (browser_->is_type_normal()) {
+     // Reading list commands.
+diff --git a/chrome/browser/ui/toolbar/toolbar_pref_names.cc b/chrome/browser/ui/toolbar/toolbar_pref_names.cc
+index 7f09152198f12..292472a6ff554 100644
+--- a/chrome/browser/ui/toolbar/toolbar_pref_names.cc
++++ b/chrome/browser/ui/toolbar/toolbar_pref_names.cc
+@@ -35,6 +35,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+     }
+   }
+ 
++  // Add Clash of GPTs panel to default pinned actions
++  if (base::FeatureList::IsEnabled(features::kClashOfGpts)) {
++    const std::optional<std::string>& clash_of_gpts_action =
++        actions::ActionIdMap::ActionIdToString(kActionSidePanelShowClashOfGpts);
++    if (clash_of_gpts_action.has_value()) {
++      default_pinned_actions.Append(clash_of_gpts_action.value());
++    }
++  }
++
+   registry->RegisterListPref(prefs::kPinnedActions,
+                              std::move(default_pinned_actions),
+                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+diff --git a/chrome/browser/ui/ui_features.cc b/chrome/browser/ui/ui_features.cc
+index f9c6087f5388e..af90976ea365b 100644
+--- a/chrome/browser/ui/ui_features.cc
++++ b/chrome/browser/ui/ui_features.cc
+@@ -141,6 +141,10 @@ BASE_FEATURE(kThirdPartyLlmPanel,
+              "ThirdPartyLlmPanel",
+              base::FEATURE_ENABLED_BY_DEFAULT);
+ 
++BASE_FEATURE(kClashOfGpts,
++             "ClashOfGpts",
++             base::FEATURE_ENABLED_BY_DEFAULT);
++
+ BASE_FEATURE(kTabDuplicateMetrics,
+              "TabDuplicateMetrics",
+              base::FEATURE_ENABLED_BY_DEFAULT);
+diff --git a/chrome/browser/ui/ui_features.h b/chrome/browser/ui/ui_features.h
+index f4a829cc38c71..e079cd62708d6 100644
+--- a/chrome/browser/ui/ui_features.h
++++ b/chrome/browser/ui/ui_features.h
+@@ -111,6 +111,7 @@ extern const char kTabScrollingButtonPositionParameterName[];
+ BASE_DECLARE_FEATURE(kSidePanelResizing);
+ BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
+ BASE_DECLARE_FEATURE(kThirdPartyLlmPanel);
++BASE_DECLARE_FEATURE(kClashOfGpts);
+ 
+ BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
+ 
+diff --git a/chrome/browser/ui/views/accelerator_table.cc b/chrome/browser/ui/views/accelerator_table.cc
+index c22b9bd1d77ab..80af2177736e3 100644
+--- a/chrome/browser/ui/views/accelerator_table.cc
++++ b/chrome/browser/ui/views/accelerator_table.cc
+@@ -153,6 +153,8 @@ const AcceleratorMapping kAcceleratorMap[] = {
+      IDC_SHOW_AVATAR_MENU},
+     {ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
+      IDC_SHOW_THIRD_PARTY_LLM_SIDE_PANEL},
++    {ui::VKEY_U, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
++     IDC_OPEN_CLASH_OF_GPTS},
+ 
+ // Platform-specific key maps.
+ #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+diff --git a/chrome/browser/ui/views/side_panel/BUILD.gn b/chrome/browser/ui/views/side_panel/BUILD.gn
+index 36605fd2eddbf..a06f78dc7e4b6 100644
+--- a/chrome/browser/ui/views/side_panel/BUILD.gn
++++ b/chrome/browser/ui/views/side_panel/BUILD.gn
+@@ -92,6 +92,12 @@ source_set("side_panel") {
+     "third_party_llm/third_party_llm_panel_coordinator.h",
+     "third_party_llm/third_party_llm_view.cc",
+     "third_party_llm/third_party_llm_view.h",
++    "clash_of_gpts/clash_of_gpts_coordinator.cc",
++    "clash_of_gpts/clash_of_gpts_coordinator.h",
++    "clash_of_gpts/clash_of_gpts_view.cc",
++    "clash_of_gpts/clash_of_gpts_view.h",
++    "clash_of_gpts/clash_of_gpts_window.cc",
++    "clash_of_gpts/clash_of_gpts_window.h",
+   ]
+   public_deps = [
+     "//base",
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc
+new file mode 100644
+index 0000000000000..ce0ab7befb361
+--- /dev/null
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc
+@@ -0,0 +1,538 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h"
++
++#include "base/functional/bind.h"
++#include "base/logging.h"
++#include "base/strings/string_number_conversions.h"
++#include "base/strings/stringprintf.h"
++#include "base/task/sequenced_task_runner.h"
++#include "chrome/browser/profiles/profile.h"
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_commands.h"
++#include "chrome/browser/ui/browser_list.h"
++#include "chrome/browser/ui/browser_tabstrip.h"
++#include "chrome/browser/ui/browser_window.h"
++#include "chrome/browser/ui/tabs/tab_strip_model.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.h"
++#include "components/input/native_web_keyboard_event.h"
++#include "components/pref_registry/pref_registry_syncable.h"
++#include "components/prefs/pref_service.h"
++#include "components/prefs/scoped_user_pref_update.h"
++#include "content/public/browser/render_frame_host.h"
++#include "content/public/browser/web_contents.h"
++#include "ui/base/clipboard/clipboard.h"
++#include "ui/base/clipboard/scoped_clipboard_writer.h"
++#include "ui/accessibility/ax_tree_update.h"
++#include "ui/events/keycodes/keyboard_codes.h"
++#include "third_party/blink/public/common/input/web_input_event.h"
++
++namespace {
++
++// Preference names
++const char kClashOfGptsProvidersPref[] = "clash_of_gpts.providers";
++const char kClashOfGptsLastUrlsPref[] = "clash_of_gpts.last_urls";
++const char kClashOfGptsPaneCountPref[] = "clash_of_gpts.pane_count";
++
++// Default providers are now initialized directly in the constructor
++
++}  // namespace
++
++ClashOfGptsCoordinator::ClashOfGptsCoordinator(Browser* browser)
++    : BrowserUserData<ClashOfGptsCoordinator>(*browser) {
++  // Register for early cleanup notifications
++  browser_list_observation_.Observe(BrowserList::GetInstance());
++  profile_observation_.Observe(browser->profile());
++
++  // Initialize with default providers for max panes
++  pane_providers_[0] = LlmProvider::kChatGPT;
++  pane_providers_[1] = LlmProvider::kClaude;
++  pane_providers_[2] = LlmProvider::kGrok;
++  LoadState();
++}
++
++ClashOfGptsCoordinator::~ClashOfGptsCoordinator() {
++  // Destructor should be minimal - cleanup already done in observer methods
++  // The ScopedObservation objects will automatically unregister
++  SaveState();
++}
++
++void ClashOfGptsCoordinator::Show() {
++  LOG(INFO) << "ClashOfGptsCoordinator::Show() called";
++  LOG(INFO) << "widget_ = " << widget_.get() << ", window_ = " << window_.get();
++  
++  CreateWindowIfNeeded();
++  
++  LOG(INFO) << "After CreateWindowIfNeeded: widget_ = " << widget_.get() << ", window_ = " << window_.get();
++  
++  if (widget_) {
++    LOG(INFO) << "Showing and activating widget";
++    widget_->Show();
++    widget_->Activate();
++  } else {
++    LOG(ERROR) << "widget_ is null after CreateWindowIfNeeded!";
++  }
++}
++
++void ClashOfGptsCoordinator::Close() {
++  if (widget_) {
++    // Following Chromium style guide: destroy widget by resetting unique_ptr
++    widget_.reset();
++  }
++  window_.reset();
++  view_ = nullptr;
++}
++
++bool ClashOfGptsCoordinator::IsShowing() const {
++  return widget_ && widget_->IsVisible();
++}
++
++void ClashOfGptsCoordinator::CycleProviderInPane(int pane_index) {
++  if (pane_index < 0 || pane_index >= current_pane_count_) {
++    return;
++  }
++
++  int current = static_cast<int>(pane_providers_[pane_index]);
++  int next = (current + 1) % 5;  // Now we have 5 providers including Grok
++  SetProviderForPane(pane_index, static_cast<LlmProvider>(next));
++}
++
++void ClashOfGptsCoordinator::CopyContentToAll() {
++  // Get the active tab's web contents
++  TabStripModel* tab_strip_model = GetBrowser().tab_strip_model();
++  if (!tab_strip_model) {
++    return;
++  }
++
++  content::WebContents* active_contents = tab_strip_model->GetActiveWebContents();
++  if (!active_contents) {
++    return;
++  }
++
++  // Get the page title and URL
++  std::u16string page_title = active_contents->GetTitle();
++  GURL page_url = active_contents->GetVisibleURL();
++
++  // Request accessibility tree snapshot (similar to the side panel implementation)
++  active_contents->RequestAXTreeSnapshot(
++      base::BindOnce([](std::u16string title, GURL url, ui::AXTreeUpdate& update) {
++        // Extract text from accessibility tree
++        std::u16string extracted_text;
++        // TODO: Implement text extraction similar to third_party_llm_panel_coordinator.cc
++        
++        // Format the output for comparison across LLMs
++        std::u16string formatted_output = u"----------- WEB PAGE CONTENT -----------\n\n";
++        formatted_output += u"TITLE: " + title + u"\n\n";
++        formatted_output += u"URL: " + base::UTF8ToUTF16(url.spec()) + u"\n\n";
++        formatted_output += u"CONTENT:\n\n" + extracted_text;
++        formatted_output += u"\n\n----------- USER PROMPT -----------\n\n";
++
++        // Copy to clipboard
++        ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
++        clipboard_writer.WriteText(formatted_output);
++      }, page_title, page_url),
++      ui::AXMode::kWebContents,
++      0,  // max_nodes (0 = no limit)
++      base::Seconds(5),  // timeout
++      content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
++
++  // Show feedback in the UI
++  if (view_) {
++    view_->ShowCopyFeedback();
++  }
++}
++
++ClashOfGptsCoordinator::LlmProvider ClashOfGptsCoordinator::GetProviderForPane(
++    int pane_index) const {
++  if (pane_index < 0 || pane_index >= current_pane_count_) {
++    return LlmProvider::kChatGPT;
++  }
++  return pane_providers_[pane_index];
++}
++
++void ClashOfGptsCoordinator::SetProviderForPane(int pane_index, LlmProvider provider) {
++  if (pane_index < 0 || pane_index >= current_pane_count_) {
++    return;
++  }
++
++  // Save the current URL for this pane/provider combo
++  if (view_) {
++    if (content::WebContents* web_contents = view_->GetWebContentsForPane(pane_index)) {
++      GURL current_url = web_contents->GetURL();
++      if (current_url.is_valid()) {
++        last_urls_[{pane_index, pane_providers_[pane_index]}] = current_url;
++      }
++    }
++  }
++
++  pane_providers_[pane_index] = provider;
++  SaveState();
++
++  // Navigate to the new provider URL
++  if (view_) {
++    GURL provider_url;
++    auto it = last_urls_.find({pane_index, provider});
++    if (it != last_urls_.end() && it->second.is_valid()) {
++      provider_url = it->second;
++    } else {
++      provider_url = GetProviderUrl(provider);
++    }
++    view_->NavigatePaneToUrl(pane_index, provider_url);
++  }
++}
++
++GURL ClashOfGptsCoordinator::GetProviderUrl(LlmProvider provider) const {
++  switch (provider) {
++    case LlmProvider::kChatGPT:
++      return GURL("https://chatgpt.com");
++    case LlmProvider::kClaude:
++      return GURL("https://claude.ai");
++    case LlmProvider::kGrok:
++      return GURL("https://grok.com");
++    case LlmProvider::kGemini:
++      return GURL("https://gemini.google.com");
++    case LlmProvider::kPerplexity:
++      return GURL("https://www.perplexity.ai");
++  }
++}
++
++std::u16string ClashOfGptsCoordinator::GetProviderName(LlmProvider provider) const {
++  switch (provider) {
++    case LlmProvider::kChatGPT:
++      return u"ChatGPT";
++    case LlmProvider::kClaude:
++      return u"Claude";
++    case LlmProvider::kGrok:
++      return u"Grok";
++    case LlmProvider::kGemini:
++      return u"Gemini";
++    case LlmProvider::kPerplexity:
++      return u"Perplexity";
++  }
++}
++
++void ClashOfGptsCoordinator::SetPaneCount(int count) {
++  if (count < kMinPanes || count > kMaxPanes || count == current_pane_count_) {
++    return;
++  }
++
++  current_pane_count_ = count;
++  SaveState();
++
++  // Update the view if it exists
++  if (view_) {
++    view_->UpdatePaneCount(count);
++  }
++
++  // Resize window based on new pane count
++  if (widget_ && widget_->IsVisible()) {
++    // int window_width = current_pane_count_ == 2 ? 1000 : 1400;
++    int window_width = 1400;
++    gfx::Size new_size(window_width, widget_->GetWindowBoundsInScreen().height());
++    widget_->CenterWindow(new_size);
++  }
++}
++
++void ClashOfGptsCoordinator::CreateAndRegisterEntry(SidePanelRegistry* registry) {
++  // For now, we don't register a side panel entry since Clash of GPTs
++  // opens in its own window. This method is here for compatibility
++  // with the side panel infrastructure.
++}
++
++
++bool ClashOfGptsCoordinator::HandleKeyboardEvent(
++    content::WebContents* source,
++    const input::NativeWebKeyboardEvent& event) {
++  // Handle Cmd+1/2/3 for focusing panes
++  if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown &&
++      event.GetModifiers() & blink::WebInputEvent::kMetaKey) {
++    // Check for number keys (1, 2, 3)
++    int pane_index = -1;
++    if (event.windows_key_code >= ui::VKEY_1 && 
++        event.windows_key_code <= ui::VKEY_3) {
++      pane_index = event.windows_key_code - ui::VKEY_1;
++    }
++
++    // Only focus if the pane exists
++    if (pane_index >= 0 && pane_index < current_pane_count_ && view_) {
++      view_->FocusInputFieldForPane(pane_index);
++      return true;
++    }
++  }
++  
++  // Use the unhandled keyboard event handler to process the event
++  // This ensures standard browser shortcuts like Cmd+C and Cmd+V work properly
++  if (view_ && view_->GetWidget()) {
++    views::FocusManager* focus_manager = view_->GetWidget()->GetFocusManager();
++    if (focus_manager) {
++      return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event, focus_manager);
++    }
++  }
++  
++  return false;
++}
++
++content::WebContents* ClashOfGptsCoordinator::AddNewContents(
++    content::WebContents* source,
++    std::unique_ptr<content::WebContents> new_contents,
++    const GURL& target_url,
++    WindowOpenDisposition disposition,
++    const blink::mojom::WindowFeatures& window_features,
++    bool user_gesture,
++    bool* was_blocked) {
++  // Handle popup windows from the webviews
++  if (!user_gesture) {
++    if (was_blocked) {
++      *was_blocked = true;
++    }
++    return nullptr;
++  }
++
++  // For popup windows and new tabs, open them in the main browser
++  if (disposition == WindowOpenDisposition::NEW_POPUP ||
++      disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
++      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
++      disposition == WindowOpenDisposition::NEW_WINDOW) {
++    chrome::AddWebContents(&GetBrowser(), source, std::move(new_contents),
++                          target_url, disposition, window_features);
++  }
++
++  return nullptr;
++}
++
++void ClashOfGptsCoordinator::OnViewIsDeleting(views::View* observed_view) {
++  if (observed_view == view_) {
++    view_ = nullptr;
++  }
++  view_observation_.RemoveObservation(observed_view);
++}
++
++void ClashOfGptsCoordinator::CreateWindowIfNeeded() {
++  LOG(INFO) << "CreateWindowIfNeeded called, window_ = " << window_.get();
++  
++  if (!window_) {
++    LOG(INFO) << "Creating new window and widget";
++    
++    // Following Chromium style guide: CLIENT_OWNS_WIDGET pattern
++    // Client (coordinator) owns both widget and delegate separately
++    window_ = std::make_unique<ClashOfGptsWindow>(&GetBrowser(), this);
++    
++    // Create and store the widget
++    widget_ = std::make_unique<views::Widget>();
++    views::Widget::InitParams params(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
++                                     views::Widget::InitParams::TYPE_WINDOW);
++    params.delegate = window_.get();
++    params.name = "ClashOfGptsWindow";
++    // Calculate window size based on pane count
++    // For 2 panes: ~1000px width, for 3 panes: ~1400px width
++    // int window_width = current_pane_count_ == 2 ? 1000 : 1400;
++    int window_width = 1400;
++    gfx::Size window_size(window_width, 800);
++    
++    params.bounds = gfx::Rect(window_size);
++    widget_->Init(std::move(params));
++    
++    // Let the window know about its widget
++    window_->SetWidget(widget_.get());
++    
++    // Center the window
++    if (GetBrowser().window()) {
++      widget_->CenterWindow(window_size);
++    }
++    
++    view_ = window_->GetView();
++    if (view_) {
++      view_observation_.AddObservation(view_);
++    }
++    
++    LOG(INFO) << "Window and widget creation complete";
++  } else {
++    LOG(INFO) << "Window already exists, not creating new one";
++  }
++}
++
++void ClashOfGptsCoordinator::SaveState() {
++  PrefService* prefs = GetBrowser().profile()->GetPrefs();
++  if (!prefs) {
++    return;
++  }
++
++  // Save pane count
++  prefs->SetInteger(kClashOfGptsPaneCountPref, current_pane_count_);
++
++  // Save provider selections
++  ScopedListPrefUpdate providers_update(prefs, kClashOfGptsProvidersPref);
++  providers_update->clear();
++  for (int i = 0; i < current_pane_count_; ++i) {
++    providers_update->Append(static_cast<int>(pane_providers_[i]));
++  }
++
++  // Save last URLs
++  ScopedDictPrefUpdate urls_update(prefs, kClashOfGptsLastUrlsPref);
++  urls_update->clear();
++  for (const auto& [key, url] : last_urls_) {
++    std::string dict_key = base::StringPrintf("%d_%d", key.first, static_cast<int>(key.second));
++    urls_update->Set(dict_key, url.spec());
++  }
++}
++
++void ClashOfGptsCoordinator::LoadState() {
++  PrefService* prefs = GetBrowser().profile()->GetPrefs();
++  if (!prefs) {
++    // Use defaults - already initialized in constructor
++    return;
++  }
++
++  // Load pane count
++  current_pane_count_ = prefs->GetInteger(kClashOfGptsPaneCountPref);
++  if (current_pane_count_ < kMinPanes || current_pane_count_ > kMaxPanes) {
++    current_pane_count_ = kDefaultPaneCount;
++  }
++
++  // Load provider selections
++  const base::Value::List& providers_list = prefs->GetList(kClashOfGptsProvidersPref);
++  if (providers_list.size() > 0) {
++    for (size_t i = 0; i < providers_list.size() && i < kMaxPanes; ++i) {
++      if (providers_list[i].is_int()) {
++        int provider_int = providers_list[i].GetInt();
++        if (provider_int >= 0 && provider_int <= 4) {  // Now includes kPerplexity = 4
++          pane_providers_[i] = static_cast<LlmProvider>(provider_int);
++        }
++      }
++    }
++  }
++
++  // Load last URLs
++  const base::Value::Dict& urls_dict = prefs->GetDict(kClashOfGptsLastUrlsPref);
++  for (const auto [key, value] : urls_dict) {
++    if (const std::string* url_str = value.GetIfString()) {
++      // Parse key format "pane_provider" safely without sscanf
++      size_t underscore_pos = key.find('_');
++      if (underscore_pos != std::string::npos && underscore_pos > 0 && 
++          underscore_pos < key.length() - 1) {
++        int pane_index, provider_int;
++        if (base::StringToInt(key.substr(0, underscore_pos), &pane_index) &&
++            base::StringToInt(key.substr(underscore_pos + 1), &provider_int)) {
++          if (pane_index >= 0 && pane_index < kMaxPanes &&
++              provider_int >= 0 && provider_int <= 4) {  // Now includes kPerplexity = 4
++            GURL url(*url_str);
++            if (url.is_valid()) {
++              last_urls_[{pane_index, static_cast<LlmProvider>(provider_int)}] = url;
++            }
++          }
++        }
++      }
++    }
++  }
++}
++
++// static
++void ClashOfGptsCoordinator::RegisterProfilePrefs(
++    user_prefs::PrefRegistrySyncable* registry) {
++  registry->RegisterListPref(kClashOfGptsProvidersPref);
++  registry->RegisterDictionaryPref(kClashOfGptsLastUrlsPref);
++  registry->RegisterIntegerPref(kClashOfGptsPaneCountPref, kDefaultPaneCount);
++}
++
++
++// PaneWebContentsObserver implementation
++ClashOfGptsCoordinator::PaneWebContentsObserver::PaneWebContentsObserver(
++    ClashOfGptsCoordinator* coordinator, int pane_index, content::WebContents* web_contents)
++    : content::WebContentsObserver(web_contents),
++      coordinator_(coordinator),
++      pane_index_(pane_index) {}
++
++ClashOfGptsCoordinator::PaneWebContentsObserver::~PaneWebContentsObserver() = default;
++
++void ClashOfGptsCoordinator::PaneWebContentsObserver::DidFinishLoad(
++    content::RenderFrameHost* render_frame_host,
++    const GURL& validated_url) {
++  // Focus the input field when the page finishes loading
++  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
++    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
++        FROM_HERE,
++        base::BindOnce([](base::WeakPtr<ClashOfGptsCoordinator> coordinator,
++                         int pane_index) {
++          if (!coordinator || !coordinator->view_) {
++            return;
++          }
++          coordinator->view_->FocusInputFieldForPane(pane_index);
++        }, coordinator_->weak_factory_.GetWeakPtr(), pane_index_),
++        base::Seconds(1));
++  }
++}
++
++content::WebContents* ClashOfGptsCoordinator::GetOrCreateWebContentsForPane(int pane_index) {
++  if (pane_index < 0 || pane_index >= kMaxPanes) {
++    return nullptr;
++  }
++
++  if (!owned_web_contents_[pane_index]) {
++    content::WebContents::CreateParams params(GetBrowser().profile());
++    owned_web_contents_[pane_index] = content::WebContents::Create(params);
++
++    // Set this as the delegate to handle keyboard events
++    owned_web_contents_[pane_index]->SetDelegate(this);
++
++    // Create observer for this pane
++    pane_observers_[pane_index] = std::make_unique<PaneWebContentsObserver>(
++        this, pane_index, owned_web_contents_[pane_index].get());
++  }
++
++  return owned_web_contents_[pane_index].get();
++}
++
++void ClashOfGptsCoordinator::CleanupWebContents() {
++  // Save any URLs before cleanup
++  if (view_) {
++    for (int i = 0; i < current_pane_count_; ++i) {
++      if (content::WebContents* web_contents = view_->GetWebContentsForPane(i)) {
++        GURL current_url = web_contents->GetURL();
++        if (current_url.is_valid()) {
++          last_urls_[{i, pane_providers_[i]}] = current_url;
++        }
++      }
++    }
++  }
++
++  // Clear all WebContents first
++  for (int i = 0; i < kMaxPanes; ++i) {
++    // Clear the observer first
++    pane_observers_[i].reset();
++
++    // Then destroy the WebContents
++    owned_web_contents_[i].reset();
++  }
++
++  // Remove view observation before widget cleanup
++  if (view_) {
++    view_observation_.RemoveObservation(view_);
++    view_ = nullptr;
++  }
++
++  // Close the window if it exists
++  if (widget_ && !widget_->IsClosed()) {
++    widget_->CloseNow();
++  }
++  widget_.reset();
++  window_.reset();
++}
++
++void ClashOfGptsCoordinator::OnBrowserRemoved(Browser* browser) {
++  if (browser == &GetBrowser()) {
++    // Browser is being removed - clean up WebContents early
++    CleanupWebContents();
++  }
++}
++
++void ClashOfGptsCoordinator::OnProfileWillBeDestroyed(Profile* profile) {
++  if (profile == GetBrowser().profile()) {
++    // Profile is being destroyed - clean up WebContents if not already done
++    CleanupWebContents();
++  }
++}
++
++BROWSER_USER_DATA_KEY_IMPL(ClashOfGptsCoordinator);
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h
+new file mode 100644
+index 0000000000000..a5d075bd04c00
+--- /dev/null
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h
+@@ -0,0 +1,216 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_COORDINATOR_H_
++#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_COORDINATOR_H_
++
++#include <array>
++#include <map>
++#include <memory>
++#include <string>
++#include <vector>
++
++#include "base/memory/weak_ptr.h"
++#include "base/scoped_multi_source_observation.h"
++#include "base/scoped_observation.h"
++#include "chrome/browser/ui/browser_list_observer.h"
++#include "chrome/browser/ui/browser_user_data.h"
++#include "chrome/browser/profiles/profile_observer.h"
++#include "content/public/browser/web_contents_delegate.h"
++#include "content/public/browser/web_contents_observer.h"
++#include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
++#include "ui/base/window_open_disposition.h"
++#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
++#include "ui/views/view_observer.h"
++#include "ui/views/widget/widget.h"
++#include "url/gurl.h"
++
++class Browser;
++class BrowserList;
++class ClashOfGptsView;
++class ClashOfGptsWindow;
++class Profile;
++class SidePanelRegistry;
++
++namespace content {
++class WebContents;
++}  // namespace content
++
++namespace input {
++struct NativeWebKeyboardEvent;
++}  // namespace input
++
++namespace user_prefs {
++class PrefRegistrySyncable;
++}  // namespace user_prefs
++
++namespace views {
++class Widget;
++}  // namespace views
++
++// ClashOfGptsCoordinator manages the Clash of GPTs window with multiple WebViews
++// for comparing LLM responses side-by-side.
++class ClashOfGptsCoordinator : public BrowserUserData<ClashOfGptsCoordinator>,
++                                public BrowserListObserver,
++                                public ProfileObserver,
++                                public content::WebContentsDelegate,
++                                public views::ViewObserver {
++ public:
++  enum class LlmProvider {
++    kChatGPT = 0,
++    kClaude = 1,
++    kGrok = 2,
++    kGemini = 3,
++    kPerplexity = 4,
++  };
++
++  // Configuration constants
++  static constexpr int kMinPanes = 1;
++  static constexpr int kMaxPanes = 3;
++  static constexpr int kDefaultPaneCount = 3;
++
++  explicit ClashOfGptsCoordinator(Browser* browser);
++  ~ClashOfGptsCoordinator() override;
++
++  // Shows the Clash of GPTs window
++  void Show();
++
++  // Closes the window
++  void Close();
++
++  // Returns true if the window is showing
++  bool IsShowing() const;
++
++  // Cycles to the next provider for a specific pane
++  void CycleProviderInPane(int pane_index);
++
++  // Copies content from active tab to all panes
++  void CopyContentToAll();
++
++  // Gets the current provider for a pane
++  LlmProvider GetProviderForPane(int pane_index) const;
++
++  // Sets the provider for a pane
++  void SetProviderForPane(int pane_index, LlmProvider provider);
++
++  // Gets the URL for a provider
++  GURL GetProviderUrl(LlmProvider provider) const;
++
++  // Gets the name for a provider
++  std::u16string GetProviderName(LlmProvider provider) const;
++
++  // Gets the current number of panes
++  int GetPaneCount() const { return current_pane_count_; }
++
++  // Sets the number of panes (2 or 3)
++  void SetPaneCount(int count);
++
++  // Creates and registers a side panel entry
++  void CreateAndRegisterEntry(SidePanelRegistry* registry);
++
++  // Gets or creates WebContents for a specific pane
++  content::WebContents* GetOrCreateWebContentsForPane(int pane_index);
++
++  // content::WebContentsDelegate:
++  bool HandleKeyboardEvent(content::WebContents* source,
++                           const input::NativeWebKeyboardEvent& event) override;
++  content::WebContents* AddNewContents(
++      content::WebContents* source,
++      std::unique_ptr<content::WebContents> new_contents,
++      const GURL& target_url,
++      WindowOpenDisposition disposition,
++      const blink::mojom::WindowFeatures& window_features,
++      bool user_gesture,
++      bool* was_blocked) override;
++
++  // views::ViewObserver:
++  void OnViewIsDeleting(views::View* observed_view) override;
++
++  // BrowserListObserver:
++  void OnBrowserRemoved(Browser* browser) override;
++
++  // ProfileObserver:
++  void OnProfileWillBeDestroyed(Profile* profile) override;
++
++  // Static preference registration
++  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
++
++ private:
++  friend class BrowserUserData<ClashOfGptsCoordinator>;
++  friend class ClashOfGptsView;
++
++  BROWSER_USER_DATA_KEY_DECL();
++
++  // Creates the window if it doesn't exist
++  void CreateWindowIfNeeded();
++
++  // Saves the current state to preferences
++  void SaveState();
++
++  // Loads state from preferences
++  void LoadState();
++
++  // Clean up WebContents early to avoid shutdown crashes
++  void CleanupWebContents();
++
++  // WebContents observer for a specific pane
++  class PaneWebContentsObserver : public content::WebContentsObserver {
++   public:
++    PaneWebContentsObserver(ClashOfGptsCoordinator* coordinator,
++                           int pane_index,
++                           content::WebContents* web_contents);
++    ~PaneWebContentsObserver() override;
++
++    // content::WebContentsObserver:
++    void DidFinishLoad(content::RenderFrameHost* render_frame_host,
++                       const GURL& validated_url) override;
++
++   private:
++    raw_ptr<ClashOfGptsCoordinator> coordinator_;
++    int pane_index_;
++  };
++
++  // Current number of panes (2 or 3)
++  int current_pane_count_ = kDefaultPaneCount;
++
++  // Current provider selection for each pane (sized for max panes)
++  std::array<LlmProvider, kMaxPanes> pane_providers_;
++
++  // Last URLs for each provider in each pane
++  std::map<std::pair<int, LlmProvider>, GURL> last_urls_;
++
++  // The window (delegate) containing the UI
++  std::unique_ptr<ClashOfGptsWindow> window_;
++  
++  // The widget for the window (following CLIENT_OWNS_WIDGET pattern)
++  std::unique_ptr<views::Widget> widget_;
++
++  // Weak pointer to the view (owned by the window)
++  raw_ptr<ClashOfGptsView> view_ = nullptr;
++
++  // WebContents observers for each pane (sized for max panes)
++  std::array<std::unique_ptr<PaneWebContentsObserver>, kMaxPanes> pane_observers_;
++
++  // We need to own the WebContents for each pane because WebView doesn't take ownership
++  // when we call SetWebContents with externally created WebContents
++  std::array<std::unique_ptr<content::WebContents>, kMaxPanes> owned_web_contents_;
++
++  // Observe lifetime of UI views
++  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
++      view_observation_{this};
++
++  // Observer registrations for early cleanup notifications
++  base::ScopedObservation<BrowserList, BrowserListObserver>
++      browser_list_observation_{this};
++  base::ScopedObservation<Profile, ProfileObserver>
++      profile_observation_{this};
++
++  // Handler for unhandled keyboard events
++  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
++
++  // Weak pointer factory for callbacks
++  base::WeakPtrFactory<ClashOfGptsCoordinator> weak_factory_{this};
++};
++
++#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_COORDINATOR_H_
+\ No newline at end of file
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.cc b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.cc
+new file mode 100644
+index 0000000000000..7e08e2f8fc872
+--- /dev/null
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.cc
+@@ -0,0 +1,553 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h"
++
++#include <utility>
++
++#include "base/functional/bind.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h"
++#include "base/strings/string_number_conversions.h"
++#include "base/strings/stringprintf.h"
++#include "base/strings/utf_string_conversions.h"
++#include "base/timer/timer.h"
++#include "chrome/browser/profiles/profile.h"
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_commands.h"
++#include "chrome/browser/ui/browser_navigator.h"
++#include "chrome/browser/ui/browser_navigator_params.h"
++#include "chrome/browser/ui/views/chrome_layout_provider.h"
++#include "components/vector_icons/vector_icons.h"
++#include "content/public/browser/navigation_controller.h"
++#include "content/public/browser/web_contents.h"
++#include "ui/base/l10n/l10n_util.h"
++#include "ui/base/metadata/metadata_impl_macros.h"
++#include "ui/base/models/combobox_model.h"
++#include "ui/base/ui_base_features.h"
++#include "ui/color/color_id.h"
++#include "ui/color/color_provider.h"
++#include "ui/views/background.h"
++#include "ui/views/controls/button/image_button.h"
++#include "ui/views/controls/button/radio_button.h"
++#include "ui/views/controls/combobox/combobox.h"
++#include "ui/views/controls/label.h"
++#include "ui/views/controls/separator.h"
++#include "ui/views/controls/webview/webview.h"
++#include "ui/views/layout/box_layout.h"
++#include "ui/views/layout/flex_layout.h"
++#include "ui/views/vector_icons.h"
++
++namespace {
++
++// ComboboxModel for LLM provider selection
++class LlmProviderComboboxModel : public ui::ComboboxModel {
++ public:
++  LlmProviderComboboxModel() = default;
++  ~LlmProviderComboboxModel() override = default;
++
++  // ui::ComboboxModel:
++  size_t GetItemCount() const override { return 5; }
++
++  std::u16string GetItemAt(size_t index) const override {
++    switch (index) {
++      case 0:
++        return u"ChatGPT";
++      case 1:
++        return u"Claude";
++      case 2:
++        return u"Grok";
++      case 3:
++        return u"Gemini";
++      case 4:
++        return u"Perplexity";
++      default:
++        NOTREACHED();
++    }
++  }
++};
++
++}  // namespace
++
++ClashOfGptsView::ClashOfGptsView(ClashOfGptsCoordinator* coordinator)
++    : coordinator_(coordinator),
++      feedback_timer_(std::make_unique<base::OneShotTimer>()) {
++  // Initialize panes vector based on current pane count
++  panes_.resize(coordinator_->GetPaneCount());
++
++  // Set up the main container with horizontal layout
++  auto* main_layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
++  main_layout->SetOrientation(views::LayoutOrientation::kVertical)
++      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
++      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
++
++  // Create header with global controls
++  auto* header = this->AddChildView(std::make_unique<views::View>());
++  header->SetLayoutManager(std::make_unique<views::BoxLayout>(
++      views::BoxLayout::Orientation::kHorizontal,
++      gfx::Insets::TLBR(8, 12, 8, 12),
++      12));  // Increased spacing between elements
++
++  // Add title
++  auto* title_label = header->AddChildView(
++      std::make_unique<views::Label>(u"Clash of GPTs"));
++  title_label->SetFontList(title_label->font_list().Derive(
++      2, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
++
++  // Add spacer
++  auto* spacer = header->AddChildView(std::make_unique<views::View>());
++  static_cast<views::BoxLayout*>(header->GetLayoutManager())
++      ->SetFlexForView(spacer, 1);
++
++  // Add radio buttons for pane count selection
++  auto* pane_count_label = header->AddChildView(
++      std::make_unique<views::Label>(u"Panels:"));
++  pane_count_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
++
++  one_pane_radio_ = header->AddChildView(
++      std::make_unique<views::RadioButton>(u"1", 1));
++  one_pane_radio_->SetCallback(base::BindRepeating(
++      &ClashOfGptsView::OnPaneCountChanged, base::Unretained(this), 1));
++  one_pane_radio_->SetChecked(coordinator_->GetPaneCount() == 1);
++
++  two_panes_radio_ = header->AddChildView(
++      std::make_unique<views::RadioButton>(u"2", 1));
++  two_panes_radio_->SetCallback(base::BindRepeating(
++      &ClashOfGptsView::OnPaneCountChanged, base::Unretained(this), 2));
++  two_panes_radio_->SetChecked(coordinator_->GetPaneCount() == 2);
++
++  three_panes_radio_ = header->AddChildView(
++      std::make_unique<views::RadioButton>(u"3", 1));
++  three_panes_radio_->SetCallback(base::BindRepeating(
++      &ClashOfGptsView::OnPaneCountChanged, base::Unretained(this), 3));
++  three_panes_radio_->SetChecked(coordinator_->GetPaneCount() == 3);
++
++  // Add some padding before copy button
++  header->AddChildView(std::make_unique<views::View>())
++      ->SetPreferredSize(gfx::Size(16, 0));
++
++  // Add copy content button
++  auto* copy_button = header->AddChildView(
++      std::make_unique<views::ImageButton>(base::BindRepeating(
++          &ClashOfGptsView::OnCopyContent, base::Unretained(this))));
++  copy_button->SetImageModel(
++      views::Button::STATE_NORMAL,
++      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon, 
++                                    ui::kColorIcon, 20));  // Increased icon size
++  copy_button->SetAccessibleName(u"Copy page content to all panes");
++  copy_button->SetTooltipText(u"Copy main page content to clipboard for all LLMs");
++  copy_button->SetPreferredSize(gfx::Size(32, 32));  // Set button size
++  copy_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
++  copy_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
++
++  // Add feedback label (initially hidden)
++  copy_feedback_label_ = header->AddChildView(
++      std::make_unique<views::Label>(u""));
++  copy_feedback_label_->SetVisible(false);
++  copy_feedback_label_->SetEnabledColor(ui::kColorLabelForegroundSecondary);
++
++  // Add separator
++  AddChildView(std::make_unique<views::Separator>());
++
++  // Create container for the panes
++  panes_container_ = AddChildView(std::make_unique<views::View>());
++  panes_container_->SetProperty(
++      views::kFlexBehaviorKey,
++      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
++                               views::MaximumFlexSizeRule::kUnbounded));
++
++  // Create panes based on current count
++  RecreatePanesContainer();
++  // The panes are created in RecreatePanesContainer() above
++
++  // Add footer separator
++  AddChildView(std::make_unique<views::Separator>());
++
++  // Create footer with keyboard shortcuts
++  auto* footer = AddChildView(std::make_unique<views::View>());
++  footer->SetLayoutManager(std::make_unique<views::BoxLayout>(
++      views::BoxLayout::Orientation::kHorizontal,
++      gfx::Insets::TLBR(6, 12, 6, 12),
++      8));
++
++  // Add keyboard shortcuts text
++  auto* shortcuts_label = footer->AddChildView(
++      std::make_unique<views::Label>(
++          u"⌨️  Shortcuts: Toggle window: ⌘⇧U  •  Cycle pane: Click dropdown"));
++  shortcuts_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
++  shortcuts_label->SetFontList(
++      shortcuts_label->font_list().DeriveWithSizeDelta(-1));
++}
++
++ClashOfGptsView::~ClashOfGptsView() {
++  if (feedback_timer_ && feedback_timer_->IsRunning()) {
++    feedback_timer_->Stop();
++  }
++  // No need to clean up WebContents - coordinator owns them and will
++  // clean them up via BrowserListObserver/ProfileObserver
++}
++
++content::WebContents* ClashOfGptsView::GetWebContentsForPane(
++    int pane_index) const {
++  if (pane_index < 0 || pane_index >= static_cast<int>(panes_.size())) {
++    return nullptr;
++  }
++  
++  if (panes_[pane_index].web_view && panes_[pane_index].web_view->web_contents()) {
++    return panes_[pane_index].web_view->web_contents();
++  }
++  
++  return nullptr;
++}
++
++void ClashOfGptsView::NavigatePaneToUrl(int pane_index, const GURL& url) {
++  if (content::WebContents* web_contents = GetWebContentsForPane(pane_index)) {
++    web_contents->GetController().LoadURL(
++        url, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
++  }
++}
++
++void ClashOfGptsView::ShowCopyFeedback() {
++  if (copy_feedback_label_) {
++    copy_feedback_label_->SetText(u"Content copied to clipboard");
++    copy_feedback_label_->SetVisible(true);
++
++    // Cancel any existing timer
++    if (feedback_timer_->IsRunning()) {
++      feedback_timer_->Stop();
++    }
++
++    // Start timer to hide message after 2.5 seconds
++    feedback_timer_->Start(FROM_HERE, base::Seconds(2.5),
++        base::BindOnce(&ClashOfGptsView::HideFeedbackLabel,
++                       weak_factory_.GetWeakPtr()));
++  }
++}
++
++void ClashOfGptsView::FocusInputFieldForPane(int pane_index) {
++  content::WebContents* web_contents = GetWebContentsForPane(pane_index);
++  if (!web_contents) {
++    return;
++  }
++
++  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
++  if (!main_frame || !main_frame->IsRenderFrameLive()) {
++    return;
++  }
++
++  // JavaScript to focus the input field for each provider
++  std::string focus_script;
++  ClashOfGptsCoordinator::LlmProvider provider = 
++      coordinator_->GetProviderForPane(pane_index);
++  
++  switch (provider) {
++    case ClashOfGptsCoordinator::LlmProvider::kChatGPT:
++      focus_script = R"(
++        setTimeout(() => {
++          const input = document.querySelector('#prompt-textarea');
++          if (input) {
++            input.focus();
++            input.click();
++          }
++        }, 500);
++      )";
++      break;
++      
++    case ClashOfGptsCoordinator::LlmProvider::kClaude:
++      focus_script = R"(
++        setTimeout(() => {
++          const input = document.querySelector('div[contenteditable="true"]');
++          if (input) {
++            input.focus();
++            input.click();
++          }
++        }, 500);
++      )";
++      break;
++      
++    case ClashOfGptsCoordinator::LlmProvider::kGrok:
++      focus_script = R"(
++        setTimeout(() => {
++          const input = document.querySelector('textarea, input[type="text"]');
++          if (input) {
++            input.focus();
++            input.click();
++          }
++        }, 500);
++      )";
++      break;
++      
++    case ClashOfGptsCoordinator::LlmProvider::kGemini:
++      focus_script = R"(
++        setTimeout(() => {
++          const input = document.querySelector('.ql-editor, textarea, input[type="text"]');
++          if (input) {
++            input.focus();
++            input.click();
++          }
++        }, 500);
++      )";
++      break;
++      
++    case ClashOfGptsCoordinator::LlmProvider::kPerplexity:
++      focus_script = R"(
++        setTimeout(() => {
++          const input = document.querySelector('textarea');
++          if (input) {
++            input.focus();
++            input.click();
++          }
++        }, 500);
++      )";
++      break;
++  }
++
++  if (!focus_script.empty()) {
++    main_frame->ExecuteJavaScriptForTests(
++        base::UTF8ToUTF16(focus_script),
++        base::NullCallback(),
++        /* has_user_gesture= */ true);
++  }
++}
++
++void ClashOfGptsView::OnThemeChanged() {
++  views::View::OnThemeChanged();
++  
++  // Update colors based on theme
++  const auto* color_provider = GetColorProvider();
++  if (!color_provider) {
++    return;
++  }
++  
++  // Set the view background to match the window background
++  SetBackground(views::CreateSolidBackground(
++      color_provider->GetColor(ui::kColorDialogBackground)));
++
++  // Update all labels that use secondary color
++  if (copy_feedback_label_) {
++    copy_feedback_label_->SetEnabledColor(
++        color_provider->GetColor(ui::kColorLabelForegroundSecondary));
++  }
++  
++  // Note: pane_count_label_ doesn't exist - removed this block
++  
++  // Update shortcuts label if it exists
++  auto* footer = panes_container_->parent();
++  if (footer && footer->children().size() > 0) {
++    // Find the shortcuts label (should be one of the last children)
++    for (const auto& child_ptr : footer->children()) {
++      views::View* child = child_ptr.get();
++      if (auto* label = views::AsViewClass<views::Label>(child)) {
++        if (label->GetText().find(u"Toggle:") != std::u16string::npos) {
++          label->SetEnabledColor(
++              color_provider->GetColor(ui::kColorLabelForegroundSecondary));
++        }
++      }
++    }
++  }
++  
++  // Update pane labels with theme colors
++  for (const auto& pane : panes_) {
++    if (pane.pane_label) {
++      pane.pane_label->SetEnabledColor(
++          color_provider->GetColor(ui::kColorLabelForegroundSecondary));
++    }
++    
++    // Force combobox to repaint with new theme
++    if (pane.provider_selector) {
++      pane.provider_selector->SchedulePaint();
++    }
++  }
++  
++  // Force WebViews to update their background
++  for (auto& pane : panes_) {
++    if (pane.web_view) {
++      // WebView background should automatically adapt, but we can force a repaint
++      pane.web_view->SchedulePaint();
++    }
++  }
++}
++
++std::unique_ptr<views::View> ClashOfGptsView::CreatePaneView(int pane_index) {
++  auto pane_container = std::make_unique<views::View>();
++  auto* pane_layout = pane_container->SetLayoutManager(
++      std::make_unique<views::FlexLayout>());
++  pane_layout->SetOrientation(views::LayoutOrientation::kVertical)
++      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
++      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
++
++  // Create header for this pane
++  auto* header = pane_container->AddChildView(std::make_unique<views::View>());
++  header->SetLayoutManager(std::make_unique<views::BoxLayout>(
++      views::BoxLayout::Orientation::kHorizontal,
++      gfx::Insets::TLBR(4, 8, 4, 8),
++      12));  // Increased spacing between elements
++
++  // Add pane label
++  std::u16string pane_label_text = u"Pane " + base::NumberToString16(pane_index + 1);
++  panes_[pane_index].pane_label = header->AddChildView(
++      std::make_unique<views::Label>(pane_label_text));
++  panes_[pane_index].pane_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
++
++  // Add provider dropdown
++  auto provider_model = std::make_unique<LlmProviderComboboxModel>();
++  panes_[pane_index].provider_selector = header->AddChildView(
++      std::make_unique<views::Combobox>(std::move(provider_model)));
++  panes_[pane_index].provider_selector->SetSelectedIndex(
++      static_cast<size_t>(coordinator_->GetProviderForPane(pane_index)));
++  panes_[pane_index].provider_selector->SetCallback(base::BindRepeating(
++      &ClashOfGptsView::OnProviderChanged, base::Unretained(this), pane_index));
++  panes_[pane_index].provider_selector->SetAccessibleName(
++      u"LLM Provider Selection for Pane " + base::NumberToString16(pane_index + 1));
++
++  // Add spacer
++  auto* spacer = header->AddChildView(std::make_unique<views::View>());
++  static_cast<views::BoxLayout*>(header->GetLayoutManager())
++      ->SetFlexForView(spacer, 1);
++
++  // Add open in new tab button
++  auto* open_button = header->AddChildView(
++      std::make_unique<views::ImageButton>(base::BindRepeating(
++          &ClashOfGptsView::OnOpenInNewTab, base::Unretained(this), pane_index)));
++  open_button->SetImageModel(
++      views::Button::STATE_NORMAL,
++      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon, ui::kColorIcon, 20));  // Increased icon size
++  open_button->SetAccessibleName(u"Open in new tab");
++  open_button->SetTooltipText(u"Open in new tab");
++  open_button->SetPreferredSize(gfx::Size(32, 32));  // Set button size
++  open_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
++  open_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
++
++  // Create WebView
++  panes_[pane_index].web_view = pane_container->AddChildView(
++      std::make_unique<views::WebView>(coordinator_->GetBrowser().profile()));
++  panes_[pane_index].web_view->SetProperty(
++      views::kFlexBehaviorKey,
++      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
++                               views::MaximumFlexSizeRule::kUnbounded));
++
++  // Get WebContents from coordinator (it owns them)
++  content::WebContents* web_contents = coordinator_->GetOrCreateWebContentsForPane(pane_index);
++  if (web_contents) {
++    // Navigate to initial provider URL
++    GURL provider_url = coordinator_->GetProviderUrl(
++        coordinator_->GetProviderForPane(pane_index));
++    web_contents->GetController().LoadURL(
++        provider_url,
++        content::Referrer(),
++        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
++        std::string());
++
++    // Set the WebContents in the WebView (WebView does NOT take ownership)
++    panes_[pane_index].web_view->SetWebContents(web_contents);
++    panes_[pane_index].web_view->SetVisible(true);
++  }
++
++  // Enable focus and accelerators
++  panes_[pane_index].web_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
++  panes_[pane_index].web_view->set_allow_accelerators(true);
++
++  return pane_container;
++}
++
++void ClashOfGptsView::OnProviderChanged(int pane_index) {
++  if (!panes_[pane_index].provider_selector) {
++    return;
++  }
++
++  auto selected_index = panes_[pane_index].provider_selector->GetSelectedIndex();
++  if (!selected_index || selected_index.value() > 4) {
++    return;
++  }
++
++  coordinator_->SetProviderForPane(
++      pane_index, 
++      static_cast<ClashOfGptsCoordinator::LlmProvider>(selected_index.value()));
++}
++
++void ClashOfGptsView::OnOpenInNewTab(int pane_index) {
++  content::WebContents* web_contents = GetWebContentsForPane(pane_index);
++  if (!web_contents) {
++    return;
++  }
++
++  GURL current_url = web_contents->GetURL();
++  if (!current_url.is_valid()) {
++    return;
++  }
++
++  // Open the current URL in a new tab
++  NavigateParams params(&coordinator_->GetBrowser(), current_url, 
++                       ui::PAGE_TRANSITION_LINK);
++  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
++  Navigate(&params);
++}
++
++void ClashOfGptsView::OnCopyContent() {
++  coordinator_->CopyContentToAll();
++}
++
++void ClashOfGptsView::HideFeedbackLabel() {
++  if (copy_feedback_label_ && copy_feedback_label_->GetWidget()) {
++    copy_feedback_label_->SetVisible(false);
++  }
++}
++
++void ClashOfGptsView::UpdatePaneCount(int new_count) {
++  if (new_count == static_cast<int>(panes_.size())) {
++    return;
++  }
++
++  // Update radio button state
++  one_pane_radio_->SetChecked(new_count == 1);
++  two_panes_radio_->SetChecked(new_count == 2);
++  three_panes_radio_->SetChecked(new_count == 3);
++
++  // Recreate panes with new count
++  RecreatePanesContainer();
++}
++
++void ClashOfGptsView::OnPaneCountChanged(int pane_count) {
++  coordinator_->SetPaneCount(pane_count);
++}
++
++void ClashOfGptsView::RecreatePanesContainer() {
++  // Clear existing panes
++  panes_container_->RemoveAllChildViews();
++  panes_.clear();
++  panes_.resize(coordinator_->GetPaneCount());
++
++  // Set up layout
++  auto* panes_layout = panes_container_->SetLayoutManager(
++      std::make_unique<views::FlexLayout>());
++  panes_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
++      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
++      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
++
++  // Create panes
++  for (int i = 0; i < coordinator_->GetPaneCount(); ++i) {
++    auto pane_view = CreatePaneView(i);
++    pane_view->SetProperty(
++        views::kFlexBehaviorKey,
++        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
++                                 views::MaximumFlexSizeRule::kUnbounded)
++            .WithWeight(1));  // Equal weight for all panes
++    panes_container_->AddChildView(std::move(pane_view));
++
++    // Add separator between panes (except after the last one)
++    if (i < coordinator_->GetPaneCount() - 1) {
++      auto* separator = panes_container_->AddChildView(
++          std::make_unique<views::Separator>());
++      separator->SetOrientation(views::Separator::Orientation::kVertical);
++    }
++  }
++
++  // Force layout update
++  panes_container_->InvalidateLayout();
++  if (GetWidget()) {
++    GetWidget()->LayoutRootViewIfNecessary();
++  }
++}
++
++BEGIN_METADATA(ClashOfGptsView)
++END_METADATA
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h
+new file mode 100644
+index 0000000000000..43724dd1b3bfb
+--- /dev/null
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h
+@@ -0,0 +1,115 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_VIEW_H_
++#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_VIEW_H_
++
++#include <array>
++#include <memory>
++#include <vector>
++
++#include "base/memory/raw_ptr.h"
++#include "base/memory/weak_ptr.h"
++#include "ui/base/metadata/metadata_header_macros.h"
++#include "ui/views/view.h"
++
++class ClashOfGptsCoordinator;
++
++namespace base {
++class OneShotTimer;
++}  // namespace base
++
++namespace content {
++class WebContents;
++}  // namespace content
++
++namespace views {
++class Combobox;
++class Label;
++class RadioButton;
++class WebView;
++}  // namespace views
++
++// ClashOfGptsView is the main view containing multiple split WebViews for comparing
++// LLM responses side-by-side. Supports 2 or 3 panes dynamically.
++class ClashOfGptsView : public views::View {
++ public:
++  METADATA_HEADER(ClashOfGptsView, views::View)
++  
++  explicit ClashOfGptsView(ClashOfGptsCoordinator* coordinator);
++  ~ClashOfGptsView() override;
++
++  // Gets the WebContents for a specific pane
++  content::WebContents* GetWebContentsForPane(int pane_index) const;
++
++  // Navigates a specific pane to a URL
++  void NavigatePaneToUrl(int pane_index, const GURL& url);
++
++  // Shows copy feedback message
++  void ShowCopyFeedback();
++
++  // Focuses the input field for a specific pane
++  void FocusInputFieldForPane(int pane_index);
++
++  // views::View:
++  void OnThemeChanged() override;
++
++  // Updates the view to show the specified number of panes
++  void UpdatePaneCount(int new_count);
++
++ private:
++  friend class ClashOfGptsCoordinator;
++  friend class ClashOfGptsWindow;
++  struct PaneControls {
++    raw_ptr<views::Combobox> provider_selector = nullptr;
++    raw_ptr<views::WebView> web_view = nullptr;
++    raw_ptr<views::Label> pane_label = nullptr;
++  };
++
++  // Creates the UI for a single pane
++  std::unique_ptr<views::View> CreatePaneView(int pane_index);
++
++  // Handles provider selection change for a pane
++  void OnProviderChanged(int pane_index);
++
++  // Opens the current URL of a pane in a new tab
++  void OnOpenInNewTab(int pane_index);
++
++  // Copies content from the active tab
++  void OnCopyContent();
++
++  // Hides the feedback label after a delay
++  void HideFeedbackLabel();
++
++  // Handles pane count radio button selection
++  void OnPaneCountChanged(int pane_count);
++
++  // Recreates the panes container with the new count
++  void RecreatePanesContainer();
++
++  // The coordinator that owns this view
++  raw_ptr<ClashOfGptsCoordinator> coordinator_;
++
++  // Controls for each pane (dynamically sized)
++  std::vector<PaneControls> panes_;
++
++  // Container for the panes
++  raw_ptr<views::View> panes_container_ = nullptr;
++
++  // Radio buttons for selecting pane count
++  raw_ptr<views::RadioButton> one_pane_radio_ = nullptr;
++  raw_ptr<views::RadioButton> two_panes_radio_ = nullptr;
++  raw_ptr<views::RadioButton> three_panes_radio_ = nullptr;
++
++  // Global copy feedback label
++  raw_ptr<views::Label> copy_feedback_label_ = nullptr;
++
++  // Timer for auto-hiding feedback
++  std::unique_ptr<base::OneShotTimer> feedback_timer_;
++
++  // Weak pointer factory for callbacks
++  base::WeakPtrFactory<ClashOfGptsView> weak_factory_{this};
++};
++
++#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_VIEW_H_
+\ No newline at end of file
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.cc b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.cc
+new file mode 100644
+index 0000000000000..7a44fab1879ef
+--- /dev/null
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.cc
+@@ -0,0 +1,83 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.h"
++
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_window.h"
++#include "chrome/browser/ui/views/chrome_layout_provider.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_view.h"
++#include "components/vector_icons/vector_icons.h"
++#include "ui/base/models/image_model.h"
++#include "ui/gfx/geometry/size.h"
++#include "ui/views/widget/widget.h"
++
++ClashOfGptsWindow::ClashOfGptsWindow(Browser* browser,
++                                     ClashOfGptsCoordinator* coordinator)
++    : browser_(browser), 
++      coordinator_(coordinator) {
++  // Create the main view
++  view_ = new ClashOfGptsView(coordinator);
++  
++  // Widget will be set by the coordinator after creation
++}
++
++ClashOfGptsWindow::~ClashOfGptsWindow() {
++  // The widget will delete the view when it's destroyed
++}
++
++void ClashOfGptsWindow::Show() {
++  // Widget is created and managed by the coordinator
++  // This method is no longer responsible for widget creation
++}
++
++void ClashOfGptsWindow::Close() {
++  // Widget is managed by the coordinator
++}
++
++bool ClashOfGptsWindow::IsShowing() const {
++  return widget_ && widget_->IsVisible();
++}
++
++std::u16string ClashOfGptsWindow::GetWindowTitle() const {
++  return u"Clash of GPTs";
++}
++
++bool ClashOfGptsWindow::CanResize() const {
++  return true;
++}
++
++bool ClashOfGptsWindow::CanMaximize() const {
++  return true;
++}
++
++bool ClashOfGptsWindow::CanMinimize() const {
++  return true;
++}
++
++bool ClashOfGptsWindow::ShouldShowCloseButton() const {
++  return true;
++}
++
++views::View* ClashOfGptsWindow::GetContentsView() {
++  return view_;
++}
++
++ui::ImageModel ClashOfGptsWindow::GetWindowIcon() {
++  return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
++                                       ui::kColorIcon, 16);
++}
++
++ui::ImageModel ClashOfGptsWindow::GetWindowAppIcon() {
++  return GetWindowIcon();
++}
++
++views::Widget* ClashOfGptsWindow::GetWidget() {
++  return widget_;
++}
++
++const views::Widget* ClashOfGptsWindow::GetWidget() const {
++  return widget_;
++}
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.h b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.h
+new file mode 100644
+index 0000000000000..74a3cd0bbb720
+--- /dev/null
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_window.h
+@@ -0,0 +1,65 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_WINDOW_H_
++#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_WINDOW_H_
++
++#include <memory>
++
++#include "base/memory/raw_ptr.h"
++#include "ui/views/widget/widget.h"
++#include "ui/views/widget/widget_delegate.h"
++
++class Browser;
++class ClashOfGptsCoordinator;
++class ClashOfGptsView;
++
++namespace views {
++class Widget;
++}  // namespace views
++
++// ClashOfGptsWindow manages the window containing the Clash of GPTs UI.
++class ClashOfGptsWindow : public views::WidgetDelegate {
++ public:
++  ClashOfGptsWindow(Browser* browser, ClashOfGptsCoordinator* coordinator);
++  ~ClashOfGptsWindow() override;
++
++  // Shows the window
++  void Show();
++
++  // Closes the window
++  void Close();
++
++  // Returns true if the window is showing
++  bool IsShowing() const;
++
++  // Gets the main view
++  ClashOfGptsView* GetView() { return view_; }
++  
++  // Sets the widget (called by coordinator after creation)
++  void SetWidget(views::Widget* widget) { widget_ = widget; }
++  
++  // views::WidgetDelegate:
++  views::Widget* GetWidget() override;
++  const views::Widget* GetWidget() const override;
++  std::u16string GetWindowTitle() const override;
++  bool CanResize() const override;
++  bool CanMaximize() const override;
++  bool CanMinimize() const override;
++  bool ShouldShowCloseButton() const override;
++  views::View* GetContentsView() override;
++  ui::ImageModel GetWindowIcon() override;
++  ui::ImageModel GetWindowAppIcon() override;
++
++ private:
++
++  raw_ptr<Browser> browser_;
++  raw_ptr<ClashOfGptsCoordinator> coordinator_;
++  raw_ptr<ClashOfGptsView> view_ = nullptr;
++  
++  // Widget is owned by the coordinator, we just keep a raw pointer
++  raw_ptr<views::Widget> widget_ = nullptr;
++};
++
++#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CLASH_OF_GPTS_CLASH_OF_GPTS_WINDOW_H_
+\ No newline at end of file
+diff --git a/chrome/browser/ui/views/side_panel/side_panel_entry_id.h b/chrome/browser/ui/views/side_panel/side_panel_entry_id.h
+index 9e159f5ad7a6d..3563b035b6d00 100644
+--- a/chrome/browser/ui/views/side_panel/side_panel_entry_id.h
++++ b/chrome/browser/ui/views/side_panel/side_panel_entry_id.h
+@@ -40,6 +40,7 @@
+     "LensOverlayResults")                                                     \
+   V(kMerchantTrust, kActionSidePanelShowMerchantTrust, "MerchantTrust")       \
+   V(kThirdPartyLlm, kActionSidePanelShowThirdPartyLlm, "ThirdPartyLlm")      \
++  V(kClashOfGpts, kActionSidePanelShowClashOfGpts, "ClashOfGpts")            \
+   /* Extensions (nothing more should be added below here) */                  \
+   V(kExtension, std::nullopt, "Extension")
+ 
+diff --git a/chrome/browser/ui/views/side_panel/side_panel_prefs.cc b/chrome/browser/ui/views/side_panel/side_panel_prefs.cc
+index f4e4296509222..46424babda9e1 100644
+--- a/chrome/browser/ui/views/side_panel/side_panel_prefs.cc
++++ b/chrome/browser/ui/views/side_panel/side_panel_prefs.cc
+@@ -8,6 +8,7 @@
+ #include "base/i18n/rtl.h"
+ #include "chrome/browser/ui/ui_features.h"
+ #include "chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h"
+ #include "chrome/common/pref_names.h"
+ #include "components/pref_registry/pref_registry_syncable.h"
+ #include "components/prefs/pref_registry_simple.h"
+@@ -28,6 +29,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+   if (base::FeatureList::IsEnabled(features::kThirdPartyLlmPanel)) {
+     ThirdPartyLlmPanelCoordinator::RegisterProfilePrefs(registry);
+   }
++  
++  // Register Clash of GPTs preferences
++  if (base::FeatureList::IsEnabled(features::kClashOfGpts)) {
++    ClashOfGptsCoordinator::RegisterProfilePrefs(registry);
++  }
+ }
+ 
+ }  // namespace side_panel_prefs
+diff --git a/chrome/browser/ui/views/side_panel/side_panel_util.cc b/chrome/browser/ui/views/side_panel/side_panel_util.cc
+index cc55483ad32d7..f48aaeb53210b 100644
+--- a/chrome/browser/ui/views/side_panel/side_panel_util.cc
++++ b/chrome/browser/ui/views/side_panel/side_panel_util.cc
+@@ -61,6 +61,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
+     ThirdPartyLlmPanelCoordinator::GetOrCreateForBrowser(browser)
+         ->CreateAndRegisterEntry(window_registry);
+   }
++
++  // Clash of GPTs doesn't need side panel registration as it opens in its own window
+ }
+ 
+ SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
+diff --git a/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc b/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc
+index 7ccb336f542f3..ad850a06feeeb 100644
+--- a/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc
++++ b/chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.cc
+@@ -72,6 +72,21 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
+   GetViewAccessibility().SetDescription(
+       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+ 
++  // Set text from action item if available
++  if (auto* action_item = container_->GetActionItemFor(action_id)) {
++    // Only show text for our specific side panels
++    if (action_id == kActionSidePanelShowThirdPartyLlm ||
++        action_id == kActionSidePanelShowClashOfGpts ||
++        (action_item->GetActionId() == actions::ActionIdMap::StringToActionId(
++            SidePanelEntry::Key(SidePanelEntry::Id::kExtension, 
++                               extension_misc::kAISidePanelExtensionId).ToString()))) {
++      // Use LabelButton::SetText directly to set permanent text
++      views::LabelButton::SetText(action_item->GetText());
++      // Ensure the text is visible
++      SetTextSubpixelRenderingEnabled(false);
++    }
++  }
++
+   // Normally, the notify action is determined by whether a view is draggable
+   // (and is set to press for non-draggable and release for draggable views).
+   // However, PinnedActionToolbarButton may be draggable or non-draggable
+@@ -325,6 +340,19 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
+     }
+   }
+ 
++  // Update the text from the action item
++  // Only show text for our specific side panels
++  if (action_view_->GetActionId() == kActionSidePanelShowThirdPartyLlm ||
++      action_view_->GetActionId() == kActionSidePanelShowClashOfGpts ||
++      (action_item->GetActionId() == actions::ActionIdMap::StringToActionId(
++          SidePanelEntry::Key(SidePanelEntry::Id::kExtension, 
++                             extension_misc::kAISidePanelExtensionId).ToString()))) {
++    // Use LabelButton::SetText directly to set permanent text
++    action_view_->views::LabelButton::SetText(action_item->GetText());
++    // Ensure the text is visible
++    action_view_->SetTextSubpixelRenderingEnabled(false);
++  }
++
+   // Update whether the action is engaged before updating the view.
+   action_view_->SetActionEngaged(
+       action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+diff --git a/chrome/browser/ui/webui/BUILD.gn b/chrome/browser/ui/webui/BUILD.gn
+index f74846025f398..5452b6a0c7cf2 100644
+--- a/chrome/browser/ui/webui/BUILD.gn
++++ b/chrome/browser/ui/webui/BUILD.gn
+@@ -89,6 +89,8 @@ source_set("configs") {
+ 
+ source_set("webui") {
+   sources = [
++    "clash_of_gpts/clash_of_gpts_ui.cc",
++    "clash_of_gpts/clash_of_gpts_ui.h",
+     "constrained_web_dialog_ui.cc",
+     "constrained_web_dialog_ui.h",
+     "current_channel_logo.cc",
+diff --git a/chrome/browser/ui/webui/chrome_web_ui_configs.cc b/chrome/browser/ui/webui/chrome_web_ui_configs.cc
+index 0b1381fe9813c..6b72a49ababc0 100644
+--- a/chrome/browser/ui/webui/chrome_web_ui_configs.cc
++++ b/chrome/browser/ui/webui/chrome_web_ui_configs.cc
+@@ -78,6 +78,7 @@
+ #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
+ #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
+ #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
++#include "chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.h"
+ #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
+ #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
+ #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+@@ -289,6 +290,7 @@ void RegisterChromeWebUIConfigs() {
+   map.AddWebUIConfig(std::make_unique<media_router::AccessCodeCastUIConfig>());
+   map.AddWebUIConfig(std::make_unique<BookmarksSidePanelUIConfig>());
+   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
++  map.AddWebUIConfig(std::make_unique<ClashOfGptsUIConfig>());
+   map.AddWebUIConfig(std::make_unique<CustomizeChromeUIConfig>());
+   map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
+   map.AddWebUIConfig(std::make_unique<FeedbackUIConfig>());
+diff --git a/chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.cc b/chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.cc
+new file mode 100644
+index 0000000000000..fafdf120def3d
+--- /dev/null
++++ b/chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.cc
+@@ -0,0 +1,103 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.h"
++
++#include <memory>
++
++#include "base/memory/ref_counted_memory.h"
++#include "chrome/browser/profiles/profile.h"
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_finder.h"
++#include "chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.h"
++#include "chrome/common/webui_url_constants.h"
++#include "chrome/grit/generated_resources.h"
++#include "content/public/browser/web_contents.h"
++#include "content/public/browser/web_ui.h"
++#include "content/public/browser/web_ui_data_source.h"
++#include "services/network/public/mojom/content_security_policy.mojom.h"
++
++ClashOfGptsUIConfig::ClashOfGptsUIConfig()
++    : content::WebUIConfig(content::kChromeUIScheme,
++                          chrome::kChromeUIClashOfGptsHost) {}
++
++ClashOfGptsUIConfig::~ClashOfGptsUIConfig() = default;
++
++std::unique_ptr<content::WebUIController>
++ClashOfGptsUIConfig::CreateWebUIController(content::WebUI* web_ui,
++                                           const GURL& url) {
++  return std::make_unique<ClashOfGptsUI>(web_ui);
++}
++
++ClashOfGptsUI::ClashOfGptsUI(content::WebUI* web_ui)
++    : content::WebUIController(web_ui) {
++  // Create a data source with minimal HTML
++  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
++      web_ui->GetWebContents()->GetBrowserContext(),
++      chrome::kChromeUIClashOfGptsHost);
++
++  // Set the HTML content directly
++  static constexpr const char kHtmlContent[] = R"(
++<!DOCTYPE html>
++<html>
++<head>
++  <meta charset="utf-8">
++  <title>Clash of GPTs</title>
++  <style>
++    body {
++      font-family: system-ui, -apple-system, sans-serif;
++      display: flex;
++      justify-content: center;
++      align-items: center;
++      height: 100vh;
++      margin: 0;
++      background: #f5f5f5;
++    }
++    .message {
++      text-align: center;
++      color: #666;
++    }
++  </style>
++</head>
++<body>
++  <div class="message">
++    <h2>Opening Clash of GPTs...</h2>
++    <p>The window should open automatically.</p>
++  </div>
++  <script>
++    // Close this tab after a short delay
++    setTimeout(() => {
++      window.close();
++    }, 1000);
++  </script>
++</body>
++</html>
++)";
++
++  // Use a lambda to provide the HTML content
++  source->SetRequestFilter(
++      base::BindRepeating([](const std::string& path) { 
++        return path.empty() || path == "/"; 
++      }),
++      base::BindRepeating([](const std::string& path,
++                            content::WebUIDataSource::GotDataCallback callback) {
++        std::string data(kHtmlContent);
++        auto ref_bytes = base::MakeRefCounted<base::RefCountedBytes>(
++            std::vector<uint8_t>(data.begin(), data.end()));
++        std::move(callback).Run(ref_bytes);
++      }));
++  
++  // Set CSP
++  source->OverrideContentSecurityPolicy(
++      network::mojom::CSPDirectiveName::ScriptSrc,
++      "script-src 'self' 'unsafe-inline';");
++
++  // Open the Clash of GPTs window
++  Browser* browser = chrome::FindBrowserWithTab(web_ui->GetWebContents());
++  if (browser) {
++    ClashOfGptsCoordinator::GetOrCreateForBrowser(browser)->Show();
++  }
++}
++
++ClashOfGptsUI::~ClashOfGptsUI() = default;
+\ No newline at end of file
+diff --git a/chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.h b/chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.h
+new file mode 100644
+index 0000000000000..63022ff758ac8
+--- /dev/null
++++ b/chrome/browser/ui/webui/clash_of_gpts/clash_of_gpts_ui.h
+@@ -0,0 +1,33 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef CHROME_BROWSER_UI_WEBUI_CLASH_OF_GPTS_CLASH_OF_GPTS_UI_H_
++#define CHROME_BROWSER_UI_WEBUI_CLASH_OF_GPTS_CLASH_OF_GPTS_UI_H_
++
++#include "content/public/browser/web_ui_controller.h"
++#include "content/public/browser/webui_config.h"
++
++// WebUI config for chrome://clash-of-gpts
++class ClashOfGptsUIConfig : public content::WebUIConfig {
++ public:
++  ClashOfGptsUIConfig();
++  ~ClashOfGptsUIConfig() override;
++
++  // content::WebUIConfig:
++  std::unique_ptr<content::WebUIController> CreateWebUIController(
++      content::WebUI* web_ui,
++      const GURL& url) override;
++};
++
++// WebUI controller for chrome://clash-of-gpts
++class ClashOfGptsUI : public content::WebUIController {
++ public:
++  explicit ClashOfGptsUI(content::WebUI* web_ui);
++  ~ClashOfGptsUI() override;
++
++  ClashOfGptsUI(const ClashOfGptsUI&) = delete;
++  ClashOfGptsUI& operator=(const ClashOfGptsUI&) = delete;
++};
++
++#endif  // CHROME_BROWSER_UI_WEBUI_CLASH_OF_GPTS_CLASH_OF_GPTS_UI_H_
+\ No newline at end of file
+diff --git a/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom b/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom
+index 278acb75a3704..c873205ac549a 100644
+--- a/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom
++++ b/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom
+@@ -34,6 +34,7 @@ enum ActionId {
+   kTabSearch,
+   kSplitTab,
+   kShowThirdPartyLlm,
++  kShowClashOfGpts,
+ };
+ 
+ // Unique identifiers for categories the actions can belong to.
+diff --git a/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.cc b/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.cc
+index a7915f812708a..5be29b2ed54dd 100644
+--- a/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.cc
++++ b/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.cc
+@@ -87,6 +87,8 @@ MojoActionForChromeAction(actions::ActionId action_id) {
+       return side_panel::customize_chrome::mojom::ActionId::kSplitTab;
+     case kActionSidePanelShowThirdPartyLlm:
+       return side_panel::customize_chrome::mojom::ActionId::kShowThirdPartyLlm;
++    case kActionSidePanelShowClashOfGpts:
++      return side_panel::customize_chrome::mojom::ActionId::kShowClashOfGpts;
+     default:
+       return std::nullopt;
+   }
+@@ -147,6 +149,8 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
+       return kActionSplitTab;
+     case side_panel::customize_chrome::mojom::ActionId::kShowThirdPartyLlm:
+       return kActionSidePanelShowThirdPartyLlm;
++    case side_panel::customize_chrome::mojom::ActionId::kShowClashOfGpts:
++      return kActionSidePanelShowClashOfGpts;
+     default:
+       return std::nullopt;
+   }
+@@ -296,6 +300,8 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
+              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+   add_action(kActionSidePanelShowThirdPartyLlm,
+              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
++  add_action(kActionSidePanelShowClashOfGpts,
++             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+   add_action(kActionSidePanelShowHistoryCluster,
+              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+   add_action(kActionShowDownloads,
+diff --git a/chrome/common/webui_url_constants.h b/chrome/common/webui_url_constants.h
+index d2e895dbc4a16..de868b13a8fb5 100644
+--- a/chrome/common/webui_url_constants.h
++++ b/chrome/common/webui_url_constants.h
+@@ -56,6 +56,8 @@ inline constexpr char kChromeUIBatchUploadURL[] = "chrome://batch-upload/";
+ inline constexpr char kChromeUIBluetoothInternalsHost[] = "bluetooth-internals";
+ inline constexpr char kChromeUIBookmarksHost[] = "bookmarks";
+ inline constexpr char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
++inline constexpr char kChromeUIClashOfGptsHost[] = "clash-of-gpts";
++inline constexpr char kChromeUIClashOfGptsURL[] = "chrome://clash-of-gpts/";
+ inline constexpr char kChromeUIBrowsingTopicsInternalsHost[] =
+     "topics-internals";
+ inline constexpr char kChromeUICertificateViewerHost[] = "view-cert";
+-- 
+2.49.0
+

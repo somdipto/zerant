@@ -1,0 +1,1531 @@
+From 571131d545b8236884b38dcdb1c2746595414f4f Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Tue, 22 Jul 2025 21:33:35 -0700
+Subject: [PATCH] patch(M): llm settings page
+
+---
+ .../api/settings_private/prefs_util.cc        |  27 +
+ chrome/browser/prefs/browser_prefs.cc         |  35 +
+ chrome/browser/prefs/browser_prefs.h          |   2 +
+ chrome/browser/resources/settings/BUILD.gn    |   1 +
+ .../settings/nxtscape_page/nxtscape_page.html | 659 ++++++++++++++++++
+ .../settings/nxtscape_page/nxtscape_page.ts   | 582 ++++++++++++++++
+ chrome/browser/resources/settings/route.ts    |   1 +
+ chrome/browser/resources/settings/router.ts   |   1 +
+ chrome/browser/resources/settings/settings.ts |   1 +
+ .../settings/settings_main/settings_main.html |   6 +
+ .../settings/settings_main/settings_main.ts   |  15 +-
+ .../settings/settings_menu/settings_menu.html |   6 +
+ chrome/common/pref_names.h                    |  11 +
+ 13 files changed, 1343 insertions(+), 4 deletions(-)
+ create mode 100644 chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html
+ create mode 100644 chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts
+
+diff --git a/chrome/browser/extensions/api/settings_private/prefs_util.cc b/chrome/browser/extensions/api/settings_private/prefs_util.cc
+index c27e0e96e4bce..200d72995460e 100644
+--- a/chrome/browser/extensions/api/settings_private/prefs_util.cc
++++ b/chrome/browser/extensions/api/settings_private/prefs_util.cc
+@@ -580,6 +580,33 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
+   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =
+       settings_api::PrefType::kBoolean;
+ 
++  // Nxtscape AI provider preferences
++  (*s_allowlist)[prefs::kBrowserOSProviders] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.default_provider"] = settings_api::PrefType::kString;
++  
++  // Nxtscape provider settings
++  (*s_allowlist)["nxtscape.nxtscape_model"] = settings_api::PrefType::kString;
++  
++  // OpenAI provider settings
++  (*s_allowlist)["nxtscape.openai_api_key"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.openai_model"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.openai_base_url"] = settings_api::PrefType::kString;
++
++  // Anthropic provider settings
++  (*s_allowlist)["nxtscape.anthropic_api_key"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.anthropic_model"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.anthropic_base_url"] = settings_api::PrefType::kString;
++
++  // Gemini provider settings
++  (*s_allowlist)["nxtscape.gemini_api_key"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.gemini_model"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.gemini_base_url"] = settings_api::PrefType::kString;
++
++  // Ollama provider settings
++  (*s_allowlist)["nxtscape.ollama_api_key"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.ollama_base_url"] = settings_api::PrefType::kString;
++  (*s_allowlist)["nxtscape.ollama_model"] = settings_api::PrefType::kString;
++
+ #if BUILDFLAG(IS_CHROMEOS)
+   // Accounts / Users / People.
+   (*s_allowlist)[ash::kAccountsPrefAllowGuest] =
+diff --git a/chrome/browser/prefs/browser_prefs.cc b/chrome/browser/prefs/browser_prefs.cc
+index c83cfdfe3708c..e6f03310af7ee 100644
+--- a/chrome/browser/prefs/browser_prefs.cc
++++ b/chrome/browser/prefs/browser_prefs.cc
+@@ -1941,6 +1941,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+   regional_capabilities::prefs::RegisterProfilePrefs(registry);
+   RegisterBrowserUserPrefs(registry);
+   RegisterGeminiSettingsPrefs(registry);
++  RegisterNxtscapePrefs(registry);
+   RegisterPrefersDefaultScrollbarStylesPrefs(registry);
+   RegisterSafetyHubProfilePrefs(registry);
+ #if BUILDFLAG(IS_CHROMEOS)
+@@ -2324,6 +2325,40 @@ void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterIntegerPref(prefs::kGeminiSettings, 0);
+ }
+ 
++void RegisterNxtscapePrefs(user_prefs::PrefRegistrySyncable* registry) {
++  // AI Provider configurations stored as JSON
++  // This will store the entire provider configuration including:
++  // - defaultProviderId
++  // - providers array with all configured providers
++  registry->RegisterStringPref(prefs::kBrowserOSProviders, "");
++  
++  // Legacy preferences (kept for backward compatibility)
++  registry->RegisterStringPref("nxtscape.default_provider", "browseros");
++  
++  // Nxtscape provider settings
++  registry->RegisterStringPref("nxtscape.nxtscape_model", "");
++
++  // OpenAI provider settings
++  registry->RegisterStringPref("nxtscape.openai_api_key", "");
++  registry->RegisterStringPref("nxtscape.openai_model", "gpt-4o");
++  registry->RegisterStringPref("nxtscape.openai_base_url", "");
++
++  // Anthropic provider settings
++  registry->RegisterStringPref("nxtscape.anthropic_api_key", "");
++  registry->RegisterStringPref("nxtscape.anthropic_model", "claude-3-5-sonnet-latest");
++  registry->RegisterStringPref("nxtscape.anthropic_base_url", "");
++
++  // Gemini provider settings
++  registry->RegisterStringPref("nxtscape.gemini_api_key", "");
++  registry->RegisterStringPref("nxtscape.gemini_model", "gemini-1.5-pro");
++  registry->RegisterStringPref("nxtscape.gemini_base_url", "");
++
++  // Ollama provider settings
++  registry->RegisterStringPref("nxtscape.ollama_api_key", "");
++  registry->RegisterStringPref("nxtscape.ollama_base_url", "http://localhost:11434");
++  registry->RegisterStringPref("nxtscape.ollama_model", "");
++}
++
+ #if BUILDFLAG(IS_CHROMEOS)
+ void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+                                 std::string_view country) {
+diff --git a/chrome/browser/prefs/browser_prefs.h b/chrome/browser/prefs/browser_prefs.h
+index 3a1c48b14b37f..5600baa2143e0 100644
+--- a/chrome/browser/prefs/browser_prefs.h
++++ b/chrome/browser/prefs/browser_prefs.h
+@@ -32,6 +32,8 @@ void RegisterScreenshotPrefs(PrefRegistrySimple* registry);
+ 
+ void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry);
+ 
++void RegisterNxtscapePrefs(user_prefs::PrefRegistrySyncable* registry);
++
+ // Register all prefs that will be used via a PrefService attached to a user
+ // Profile using the locale of |g_browser_process|.
+ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+diff --git a/chrome/browser/resources/settings/BUILD.gn b/chrome/browser/resources/settings/BUILD.gn
+index 6eb2b37837e97..1a8cd69860514 100644
+--- a/chrome/browser/resources/settings/BUILD.gn
++++ b/chrome/browser/resources/settings/BUILD.gn
+@@ -56,6 +56,7 @@ build_webui("build") {
+   web_component_files = [
+     "a11y_page/a11y_page.ts",
+     "about_page/about_page.ts",
++    "nxtscape_page/nxtscape_page.ts",
+     "ai_page/ai_compare_subpage.ts",
+     "ai_page/ai_info_card.ts",
+     "ai_page/ai_logging_info_bullet.ts",
+diff --git a/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html
+new file mode 100644
+index 0000000000000..9a429f31f43a0
+--- /dev/null
++++ b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.html
+@@ -0,0 +1,659 @@
++    <link rel="import" href="../controls/settings_toggle_button.html">
++    <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
++    <style include="cr-shared-style settings-shared md-select">
++      /* Global box-sizing for all form elements */
++      input, select, textarea {
++        box-sizing: border-box;
++      }
++
++      .provider-header-section {
++        padding: 24px 20px;
++        border-bottom: var(--cr-separator-line);
++      }
++
++      .provider-header-top {
++        display: flex;
++        align-items: center;
++        gap: 16px;
++        margin-bottom: 20px;
++      }
++
++      .provider-header-icon {
++        width: 48px;
++        height: 48px;
++        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
++        border-radius: 50%;
++        display: flex;
++        align-items: center;
++        justify-content: center;
++        color: white;
++        font-size: 28px;
++        flex-shrink: 0;
++      }
++
++      .provider-header-content {
++        flex: 1;
++      }
++
++      .provider-header-title {
++        font-size: 20px;
++        font-weight: 400;
++        color: var(--cr-primary-text-color);
++        margin: 0 0 4px 0;
++      }
++
++      .provider-header-subtitle {
++        font-size: 14px;
++        color: var(--cr-secondary-text-color);
++        line-height: 20px;
++      }
++
++      .provider-controls {
++        display: flex;
++        align-items: center;
++        gap: 12px;
++        padding: 16px 0;
++      }
++
++      .provider-control-label {
++        font-size: 13px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++        white-space: nowrap;
++      }
++
++      .provider-dropdown {
++        height: 36px;
++        padding: 0 32px 0 12px;
++        border-radius: 4px;
++        font-size: 13px;
++        min-width: 200px;
++        box-sizing: border-box;
++      }
++      
++      .spacer {
++        flex: 1;
++      }
++
++      .add-provider-button {
++        --cr-button-height: 36px;
++        flex-shrink: 0;
++      }
++
++      .provider-cards-container {
++        max-width: 680px;
++        margin: 20px auto 0;
++        padding: 0 20px 20px;
++        display: flex;
++        flex-direction: column;
++        gap: 12px;
++      }
++
++      .provider-card {
++        background: var(--cr-card-background-color);
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 8px;
++        padding: 16px 20px;
++        transition: all 0.2s ease;
++        margin: 0;
++        position: relative;
++      }
++
++      .provider-card:hover {
++        box-shadow: var(--cr-card-shadow);
++      }
++
++      .provider-card.selected {
++        border-color: var(--cr-focus-outline-color);
++        background: var(--cr-card-background-color);
++      }
++
++      .provider-card.browseros {
++        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
++      }
++
++      .provider-card-content {
++        display: flex;
++        align-items: center;
++        gap: 16px;
++      }
++
++      .provider-radio {
++        width: 20px;
++        height: 20px;
++        border-radius: 50%;
++        border: 2px solid var(--cr-separator-color);
++        position: relative;
++        cursor: pointer;
++        flex-shrink: 0;
++      }
++
++      .provider-card.selected .provider-radio {
++        border-color: var(--cr-focus-outline-color);
++      }
++
++      .provider-card.selected .provider-radio::after {
++        content: '';
++        position: absolute;
++        top: 50%;
++        left: 50%;
++        transform: translate(-50%, -50%);
++        width: 10px;
++        height: 10px;
++        border-radius: 50%;
++        background: var(--cr-focus-outline-color);
++      }
++
++      .provider-card-icon {
++        width: 40px;
++        height: 40px;
++        border-radius: 8px;
++        display: flex;
++        align-items: center;
++        justify-content: center;
++        font-size: 18px;
++        font-weight: 600;
++        color: white;
++        flex-shrink: 0;
++      }
++
++      .provider-card.browseros .provider-card-icon {
++        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
++      }
++
++      .provider-card-icon.openai_compatible {
++        background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
++      }
++
++      .provider-card-icon.anthropic {
++        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
++      }
++
++      .provider-card-icon.google_gemini {
++        background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);
++      }
++
++      .provider-card-icon.ollama {
++        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
++      }
++
++      .provider-card-icon.openrouter {
++        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
++      }
++
++      .provider-card-icon.custom {
++        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
++      }
++
++      .provider-card-info {
++        flex: 1;
++      }
++
++      .provider-card-header {
++        display: flex;
++        align-items: center;
++        gap: 8px;
++      }
++
++      .provider-card-name {
++        font-size: 15px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++        margin: 0;
++      }
++
++      .provider-badge {
++        padding: 2px 8px;
++        border-radius: 4px;
++        font-size: 11px;
++        font-weight: 500;
++        text-transform: uppercase;
++        letter-spacing: 0.5px;
++      }
++
++      .provider-badge.default {
++        background: var(--google-green-50);
++        color: var(--google-green-700);
++      }
++
++      .provider-badge.builtin {
++        background: var(--google-blue-50);
++        color: var(--google-blue-700);
++      }
++
++      @media (prefers-color-scheme: dark) {
++        .provider-badge.default {
++          background: rgba(129, 201, 149, 0.15);
++          color: var(--google-green-300);
++        }
++
++        .provider-badge.builtin {
++          background: rgba(138, 180, 248, 0.15);
++          color: var(--google-blue-300);
++        }
++      }
++
++      .provider-card-subtitle {
++        font-size: 13px;
++        color: var(--cr-secondary-text-color);
++        margin-top: 4px;
++      }
++
++      .provider-card-actions {
++        display: flex;
++        gap: 8px;
++        align-items: center;
++      }
++
++      .provider-action-button {
++        padding: 6px 12px;
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 4px;
++        background: transparent;
++        color: var(--cr-primary-text-color);
++        font-size: 12px;
++        cursor: pointer;
++        transition: all 0.2s ease;
++      }
++
++      .provider-action-button:hover {
++        background: var(--cr-hover-background-color);
++      }
++
++      .provider-action-button.delete {
++        color: var(--google-red-600);
++      }
++
++      .provider-action-button.delete:hover {
++        background: var(--google-red-50);
++      }
++
++      @media (prefers-color-scheme: dark) {
++        .provider-action-button.delete:hover {
++          background: rgba(244, 67, 54, 0.1);
++        }
++      }
++
++      /* Provider Form Card Styles */
++      .provider-form-card {
++        background: var(--cr-card-background-color);
++        border: 1px solid var(--cr-focus-outline-color);
++        border-radius: 8px;
++        padding: 24px 28px;
++        margin-bottom: 16px;
++        display: none;
++        box-sizing: border-box;
++      }
++
++      .provider-form-card.show {
++        display: block;
++        animation: slideDown 0.3s ease-out;
++      }
++
++      @keyframes slideDown {
++        from {
++          opacity: 0;
++          transform: translateY(-10px);
++        }
++        to {
++          opacity: 1;
++          transform: translateY(0);
++        }
++      }
++
++      .form-title {
++        font-size: 16px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++        margin: 0 0 20px 0;
++      }
++
++      .form-content {
++        display: flex;
++        flex-direction: column;
++        gap: 16px;
++      }
++
++      .form-row {
++        display: flex;
++        gap: 16px;
++      }
++
++      .form-row .form-group {
++        flex: 1;
++        min-width: 0;
++      }
++
++      .form-group {
++        display: flex;
++        flex-direction: column;
++        gap: 8px;
++      }
++
++      .form-label {
++        font-size: 13px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++      }
++
++      .form-label .required {
++        color: var(--google-red-600);
++      }
++
++      .form-field {
++        width: 100%;
++        height: 36px;
++        padding: 0 12px;
++        border: 1px solid var(--cr-separator-color);
++        border-radius: 4px;
++        font-size: 13px;
++        background: var(--cr-input-background-color);
++        color: var(--cr-primary-text-color);
++        transition: border-color 0.2s ease;
++        box-sizing: border-box;
++      }
++
++      .form-field:hover {
++        border-color: var(--cr-hover-border-color);
++      }
++
++      .form-field:focus {
++        outline: none;
++        border-color: var(--cr-focus-outline-color);
++      }
++
++      .form-helper {
++        font-size: 12px;
++        color: var(--cr-secondary-text-color);
++      }
++
++      .form-section {
++        border-top: 1px solid var(--cr-separator-color);
++        padding-top: 16px;
++        margin-top: 16px;
++      }
++
++      .form-section-title {
++        font-size: 14px;
++        font-weight: 500;
++        color: var(--cr-primary-text-color);
++        margin-bottom: 16px;
++      }
++
++      .checkbox-group {
++        display: flex;
++        align-items: center;
++        gap: 8px;
++        margin-bottom: 16px;
++      }
++      
++      .checkbox-group input[type="checkbox"] {
++        width: auto;
++        margin: 0;
++      }
++
++      .form-buttons {
++        display: flex;
++        justify-content: flex-end;
++        gap: 8px;
++        margin-top: 20px;
++        padding-top: 16px;
++        border-top: 1px solid var(--cr-separator-color);
++      }
++
++      /* Status Toast */
++      .status-toast {
++        position: fixed;
++        bottom: 24px;
++        left: 50%;
++        transform: translateX(-50%) translateY(100px);
++        padding: 12px 24px;
++        border-radius: 4px;
++        background: var(--google-grey-900);
++        color: white;
++        font-size: 14px;
++        display: flex;
++        align-items: center;
++        gap: 8px;
++        opacity: 0;
++        transition: all 0.3s ease;
++        z-index: 1000;
++        pointer-events: none;
++      }
++
++      .status-toast.show {
++        transform: translateX(-50%) translateY(0);
++        opacity: 1;
++      }
++
++      .status-toast.error {
++        background: var(--google-red-600);
++      }
++
++      @media (prefers-color-scheme: dark) {
++        .provider-card.browseros {
++          background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
++        }
++      }
++    </style>
++
++    <!-- Main Header -->
++    <div class="provider-header-section">
++      <div class="provider-header-top">
++        <div class="provider-header-icon">
++          <cr-icon icon="settings:auto-awesome"></cr-icon>
++        </div>
++        <div class="provider-header-content">
++          <h1 class="provider-header-title">LLM Providers</h1>
++          <div class="provider-header-subtitle">
++            Add your provider and choose the default LLM
++          </div>
++        </div>
++      </div>
++      <div class="provider-controls">
++        <span class="provider-control-label">Default Provider:</span>
++        <select id="defaultProvider" class="md-select provider-dropdown"
++                value="[[defaultProviderId_]]"
++                on-change="onDefaultProviderChange_">
++          <template is="dom-repeat" items="[[providers_]]">
++            <option value="[[item.id]]">[[item.name]]</option>
++          </template>
++        </select>
++        <div class="spacer"></div>
++        <cr-button class="add-provider-button" on-click="onAddProvider_">
++          <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
++          <template is="dom-if" if="[[!showProviderForm_]]">
++            Add Provider
++          </template>
++          <template is="dom-if" if="[[showProviderForm_]]">
++            Cancel
++          </template>
++        </cr-button>
++      </div>
++    </div>
++
++    <!-- Provider Cards Container -->
++    <div class="provider-cards-container">
++      <!-- Provider Form Card (shown when adding/editing) -->
++      <div class$="provider-form-card [[getFormCardClass_(showProviderForm_)]]">
++        <h3 class="form-title">
++          <template is="dom-if" if="[[editingProvider_]]">
++            Edit Provider
++          </template>
++          <template is="dom-if" if="[[!editingProvider_]]">
++            Configure New Provider
++          </template>
++        </h3>
++        
++        <div class="form-content">
++          <div class="form-row">
++            <div class="form-group">
++              <label class="form-label">
++                Provider Type <span class="required">*</span>
++              </label>
++              <select class="form-field"
++                      value="{{dialogProviderType_::change}}"
++                      on-change="onProviderTypeChange_"
++                      disabled$="[[editingProvider_]]">
++                <option value="openai_compatible">OpenAI Compatible</option>
++                <option value="anthropic">Anthropic</option>
++                <option value="google_gemini">Google Gemini</option>
++                <option value="ollama">Ollama</option>
++                <option value="openrouter">OpenRouter</option>
++                <option value="custom">Custom</option>
++              </select>
++            </div>
++
++            <div class="form-group">
++              <label class="form-label">
++                Provider Name <span class="required">*</span>
++              </label>
++              <input type="text" 
++                     class="form-field"
++                     value="{{dialogProviderName_::input}}"
++                     placeholder="e.g., Work OpenAI">
++            </div>
++          </div>
++
++          <div class="form-row">
++            <div class="form-group">
++              <label class="form-label">Base URL</label>
++              <input type="url" 
++                     class="form-field"
++                     value="{{dialogBaseUrl_::input}}"
++                     placeholder="Leave empty for default">
++              <div class="form-helper">Override the default API endpoint</div>
++            </div>
++
++            <div class="form-group">
++              <label class="form-label">
++                Model ID <span class="required">*</span>
++              </label>
++              <input type="text" 
++                     class="form-field"
++                     value="{{dialogModelId_::input}}"
++                     placeholder="e.g., gpt-4o, claude-3-5-sonnet">
++            </div>
++          </div>
++
++          <div class="form-group">
++            <label class="form-label">API Key</label>
++            <input type="password" 
++                   class="form-field"
++                   value="{{dialogApiKey_::input}}"
++                   placeholder="Enter your API key (optional for some providers)">
++            <div class="form-helper">Your API key is encrypted and stored locally</div>
++          </div>
++
++          <div class="form-section">
++            <div class="form-section-title">Model Configuration</div>
++            
++            <div class="checkbox-group">
++              <input type="checkbox" 
++                     id="supportsImages"
++                     checked="{{dialogSupportsImages_::change}}">
++              <label for="supportsImages">Supports Images</label>
++            </div>
++
++            <div class="form-row">
++              <div class="form-group">
++                <label class="form-label">Context Window Size</label>
++                <input type="number" 
++                       class="form-field"
++                       value="{{dialogContextWindow_::input}}"
++                       min="1024"
++                       placeholder="128000">
++              </div>
++
++              <div class="form-group">
++                <label class="form-label">Temperature (0-2)</label>
++                <input type="number" 
++                       class="form-field"
++                       value="{{dialogTemperature_::input}}"
++                       min="0"
++                       max="2"
++                       step="0.1"
++                       placeholder="0.7">
++              </div>
++            </div>
++          </div>
++
++          <div class="form-buttons">
++            <!-- Test connection hidden for now -->
++            <!--
++            <cr-button on-click="testConnection_"
++                       disabled="[[isTestingConnection_]]">
++              <template is="dom-if" if="[[isTestingConnection_]]">
++                Testing...
++              </template>
++              <template is="dom-if" if="[[!isTestingConnection_]]">
++                Test Connection
++              </template>
++            </cr-button>
++            -->
++            <cr-button on-click="closeProviderForm_">
++              Cancel
++            </cr-button>
++            <cr-button class="action-button"
++                       on-click="saveProvider_">
++              Save
++            </cr-button>
++          </div>
++        </div>
++      </div>
++
++      <!-- Provider Cards List -->
++      <template is="dom-repeat" items="[[providers_]]">
++        <div class$="[[getProviderCardClass_(item)]]">
++          <div class="provider-card-content">
++            <div class="provider-radio" 
++                 on-click="setAsDefault_"
++                 data-provider-id$="[[item.id]]"
++                 hidden$="[[item.isBuiltIn]]"></div>
++            <div class="provider-radio" 
++                 on-click="setAsDefault_"
++                 data-provider-id$="[[item.id]]"
++                 hidden$="[[!item.isBuiltIn]]"
++                 style="cursor: default;"></div>
++            <div class$="provider-card-icon [[item.type]]">
++              <span>[[getProviderIcon_(item.type)]]</span>
++            </div>
++            <div class="provider-card-info">
++              <div class="provider-card-header">
++                <h3 class="provider-card-name">[[item.name]]</h3>
++                <template is="dom-if" if="[[item.isDefault]]">
++                  <span class="provider-badge default">Default</span>
++                </template>
++                <template is="dom-if" if="[[item.isBuiltIn]]">
++                  <span class="provider-badge builtin">Built-in</span>
++                </template>
++              </div>
++              <div class="provider-card-subtitle">
++                [[getProviderSubtitle_(item)]]
++              </div>
++            </div>
++            <div class="provider-card-actions">
++              <template is="dom-if" if="[[!item.isBuiltIn]]">
++                <button class="provider-action-button"
++                        on-click="onEditProvider_"
++                        data-provider-id$="[[item.id]]">
++                  Edit
++                </button>
++                <button class="provider-action-button delete"
++                        on-click="onDeleteProvider_"
++                        data-provider-id$="[[item.id]]">
++                  Delete
++                </button>
++              </template>
++            </div>
++          </div>
++        </div>
++      </template>
++    </div>
++
++    
++    <!-- Status Toast -->
++    <div id="statusMessage" class="status-toast">
++      <cr-icon icon="cr:check-circle"></cr-icon>
++      <span>Settings saved successfully</span>
++    </div>
+diff --git a/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts
+new file mode 100644
+index 0000000000000..f33e0463b1bfa
+--- /dev/null
++++ b/chrome/browser/resources/settings/nxtscape_page/nxtscape_page.ts
+@@ -0,0 +1,582 @@
++// Copyright 2024 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++/**
++ * @fileoverview 'settings-nxtscape-page' contains AI provider-specific settings.
++ */
++
++import '../settings_page/settings_section.js';
++import '../settings_page_styles.css.js';
++import '../settings_shared.css.js';
++import '../controls/settings_toggle_button.js';
++import 'chrome://resources/cr_elements/cr_button/cr_button.js';
++import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
++import 'chrome://resources/cr_elements/icons.html.js';
++import 'chrome://resources/cr_elements/cr_shared_style.css.js';
++import 'chrome://resources/cr_elements/cr_input/cr_input.js';
++import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
++
++import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
++import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
++
++import {getTemplate} from './nxtscape_page.html.js';
++
++const SettingsNxtscapePageElementBase = PrefsMixin(PolymerElement);
++
++export enum ProviderType {
++  BROWSEROS = 'browseros',
++  OPENAI_COMPATIBLE = 'openai_compatible',
++  ANTHROPIC = 'anthropic',
++  GOOGLE_GEMINI = 'google_gemini',
++  OLLAMA = 'ollama',
++  OPENROUTER = 'openrouter',
++  CUSTOM = 'custom'
++}
++
++export interface ProviderConfig {
++  id: string;
++  name: string;
++  type: ProviderType;
++  isDefault: boolean;
++  isBuiltIn?: boolean;
++  
++  baseUrl?: string;
++  apiKey?: string;
++  modelId?: string;
++  
++  capabilities?: {
++    supportsImages: boolean;
++  };
++  
++  modelConfig?: {
++    contextWindow: number;
++    temperature: number;
++  };
++  
++  createdAt: string;
++  updatedAt: string;
++}
++
++interface AIProviderPreferences {
++  defaultProviderId: string;
++  providers: ProviderConfig[];
++}
++
++const PROVIDER_DEFAULTS: Record<string, Partial<ProviderConfig>> = {
++  [ProviderType.OPENAI_COMPATIBLE]: {
++    baseUrl: 'https://api.openai.com/v1',
++    modelId: 'gpt-4o',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 128000, temperature: 0.7 }
++  },
++  [ProviderType.ANTHROPIC]: {
++    baseUrl: 'https://api.anthropic.com',
++    modelId: 'claude-3-7-sonnet-latest',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 200000, temperature: 0.7 }
++  },
++  [ProviderType.GOOGLE_GEMINI]: {
++    baseUrl: 'https://generativelanguage.googleapis.com',
++    modelId: 'gemini-2.5-flash',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 1000000, temperature: 0.7 }
++  },
++  [ProviderType.OLLAMA]: {
++    baseUrl: 'http://localhost:11434',
++    modelId: 'gpt-oss:20b',
++    capabilities: { supportsImages: false },
++    modelConfig: { contextWindow: 4096, temperature: 0.7 }
++  },
++  [ProviderType.OPENROUTER]: {
++    baseUrl: 'https://openrouter.ai/api/v1',
++    modelId: 'openai/gpt-4.1',
++    capabilities: { supportsImages: true },
++    modelConfig: { contextWindow: 128000, temperature: 0.7 }
++  },
++  [ProviderType.CUSTOM]: {
++    baseUrl: '',
++    modelId: '',
++    capabilities: { supportsImages: false },
++    modelConfig: { contextWindow: 4096, temperature: 0.7 }
++  }
++};
++
++export class SettingsNxtscapePageElement extends SettingsNxtscapePageElementBase {
++  static get is() {
++    return 'settings-nxtscape-page';
++  }
++
++  static get template() {
++    return getTemplate();
++  }
++
++  static get properties() {
++    return {
++      prefs: {
++        type: Object,
++        notify: true,
++        observer: 'onPrefsChanged_',
++      },
++      
++      providers_: {
++        type: Array,
++        value: () => [],
++      },
++      
++      defaultProviderId_: {
++        type: String,
++        value: 'browseros',
++      },
++      
++      showProviderForm_: {
++        type: Boolean,
++        value: false,
++      },
++      
++      editingProvider_: {
++        type: Object,
++        value: null,
++      },
++      
++      dialogProviderType_: {
++        type: String,
++        value: ProviderType.OPENAI_COMPATIBLE,
++      },
++      
++      dialogProviderName_: {
++        type: String,
++        value: '',
++      },
++      
++      dialogBaseUrl_: {
++        type: String,
++        value: '',
++      },
++      
++      dialogApiKey_: {
++        type: String,
++        value: '',
++      },
++      
++      dialogModelId_: {
++        type: String,
++        value: '',
++      },
++      
++      dialogSupportsImages_: {
++        type: Boolean,
++        value: true,
++      },
++      
++      dialogContextWindow_: {
++        type: Number,
++        value: 128000,
++      },
++      
++      dialogTemperature_: {
++        type: Number,
++        value: 0.7,
++      },
++      
++      isTestingConnection_: {
++        type: Boolean,
++        value: false,
++      },
++    };
++  }
++
++  declare prefs: any;
++  private declare providers_: ProviderConfig[];
++  private declare defaultProviderId_: string;
++  private declare showProviderForm_: boolean;
++  private declare editingProvider_: ProviderConfig | null;
++  private declare dialogProviderType_: ProviderType;
++  private declare dialogProviderName_: string;
++  private declare dialogBaseUrl_: string;
++  private declare dialogApiKey_: string;
++  private declare dialogModelId_: string;
++  private declare dialogSupportsImages_: boolean;
++  private declare dialogContextWindow_: number;
++  private declare dialogTemperature_: number;
++  private declare isTestingConnection_: boolean;
++
++  override ready() {
++    super.ready();
++    this.loadProviders_();
++  }
++
++  private onPrefsChanged_() {
++    if (this.prefs && this.prefs.browseros) {
++      this.loadProviders_();
++    }
++  }
++
++  private loadProviders_() {
++    // Load from preferences or initialize with BrowserOS
++    if (!this.prefs || !this.prefs.browseros) {
++      this.initializeDefaultProviders_();
++      return;
++    }
++    
++    const stored = this.getPref('browseros.providers');
++    if (stored && stored.value) {
++      try {
++        const data = JSON.parse(stored.value) as AIProviderPreferences;
++        this.providers_ = data.providers;
++        this.defaultProviderId_ = data.defaultProviderId;
++      } catch (e) {
++        this.initializeDefaultProviders_();
++      }
++    } else {
++      this.initializeDefaultProviders_();
++    }
++  }
++
++  private initializeDefaultProviders_() {
++    const browseros: ProviderConfig = {
++      id: 'browseros',
++      name: 'BrowserOS',
++      type: ProviderType.BROWSEROS,
++      isDefault: true,
++      isBuiltIn: true,
++      createdAt: new Date().toISOString(),
++      updatedAt: new Date().toISOString(),
++    };
++    
++    this.providers_ = [browseros];
++    this.defaultProviderId_ = 'browseros';
++    this.saveProviders_();
++  }
++
++  private saveProviders_() {
++    const data: AIProviderPreferences = {
++      defaultProviderId: this.defaultProviderId_,
++      providers: this.providers_,
++    };
++    
++    // @ts-ignore: setPrefValue exists at runtime from PrefsMixin
++    this.setPrefValue('browseros.providers', JSON.stringify(data));
++    console.log('browseros: Saving providers:', data);
++    this.showStatusMessage_();
++  }
++
++  private generateId_(): string {
++    return 'provider_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
++  }
++
++  private onAddProvider_() {
++    console.log('browseros: Add Provider clicked');
++    
++    // Toggle the form visibility
++    this.set('showProviderForm_', !this.showProviderForm_);
++    
++    if (this.showProviderForm_) {
++      this.set('editingProvider_', null);
++      this.set('dialogProviderType_', ProviderType.OPENAI_COMPATIBLE);
++      this.set('dialogProviderName_', '');
++      this.set('dialogBaseUrl_', '');
++      this.set('dialogApiKey_', '');
++      this.set('dialogModelId_', '');
++      this.set('dialogSupportsImages_', true);
++      this.set('dialogContextWindow_', 128000);
++      this.set('dialogTemperature_', 0.7);
++      
++      // Apply defaults for the selected type
++      this.onProviderTypeChange_();
++    }
++    
++    console.log('browseros: Form visibility:', this.showProviderForm_);
++  }
++
++  private onEditProvider_(e: Event) {
++    const target = e.currentTarget as HTMLElement;
++    const providerId = target.dataset['providerId'];
++    const provider = this.providers_.find(p => p.id === providerId);
++    
++    if (!provider || provider.isBuiltIn) return;
++    
++    this.set('editingProvider_', provider);
++    this.set('dialogProviderType_', provider.type);
++    this.set('dialogProviderName_', provider.name);
++    this.set('dialogBaseUrl_', provider.baseUrl || '');
++    this.set('dialogApiKey_', provider.apiKey || '');
++    this.set('dialogModelId_', provider.modelId || '');
++    this.set('dialogSupportsImages_', provider.capabilities?.supportsImages || false);
++    this.set('dialogContextWindow_', provider.modelConfig?.contextWindow || 128000);
++    this.set('dialogTemperature_', provider.modelConfig?.temperature || 0.7);
++    
++    this.set('showProviderForm_', true);
++  }
++
++  private onDeleteProvider_(e: Event) {
++    e.stopPropagation();
++    const target = e.currentTarget as HTMLElement;
++    const providerId = target.dataset['providerId'];
++    const provider = this.providers_.find(p => p.id === providerId);
++    
++    console.log('browseros: Delete provider clicked:', providerId, provider);
++    
++    if (!provider || provider.isBuiltIn) return;
++    
++    // Delete immediately without confirmation
++    const index = this.providers_.findIndex(p => p.id === providerId);
++    if (index !== -1) {
++      this.splice('providers_', index, 1);
++      
++      // If deleted provider was default, set BrowserOS as default
++      if (provider.id === this.defaultProviderId_) {
++        this.set('defaultProviderId_', 'browseros');
++        this.updateProvidersDefaultStatus_();
++      }
++      
++      this.saveProviders_();
++      this.showStatusMessage_('Provider deleted');
++    }
++  }
++
++  private onProviderTypeChange_(event?: Event) {
++    // Get the new value from the event if available, otherwise use the bound property
++    let providerType = this.dialogProviderType_;
++    if (event && event.target) {
++      const selectElement = event.target as HTMLSelectElement;
++      providerType = selectElement.value as ProviderType;
++      // Also update the bound property
++      this.set('dialogProviderType_', providerType);
++    }
++    
++    console.log('browseros: Provider type changed to:', providerType);
++    
++    const defaults = PROVIDER_DEFAULTS[providerType];
++    if (defaults) {
++      console.log('browseros: Applying defaults:', defaults);
++      // Use Polymer's set method to ensure proper data binding
++      this.set('dialogBaseUrl_', defaults.baseUrl || '');
++      this.set('dialogModelId_', defaults.modelId || '');
++      this.set('dialogSupportsImages_', defaults.capabilities?.supportsImages || false);
++      this.set('dialogContextWindow_', defaults.modelConfig?.contextWindow || 128000);
++      this.set('dialogTemperature_', defaults.modelConfig?.temperature || 0.7);
++    }
++  }
++
++  private async testConnection_() {
++    this.isTestingConnection_ = true;
++    
++    // Simulate API test (in real implementation, this would call C++ backend)
++    await new Promise(resolve => setTimeout(resolve, 1500));
++    
++    this.isTestingConnection_ = false;
++    this.showStatusMessage_('Connection successful!');
++  }
++
++  private saveProvider_() {
++    if (!this.validateProviderForm_()) {
++      return;
++    }
++    
++    const now = new Date().toISOString();
++    
++    if (this.editingProvider_) {
++      // Update existing provider
++      const index = this.providers_.findIndex(p => p.id === this.editingProvider_!.id);
++      if (index !== -1) {
++        const updated: ProviderConfig = {
++          ...this.editingProvider_,
++          name: this.dialogProviderName_,
++          type: this.dialogProviderType_,
++          baseUrl: this.dialogBaseUrl_,
++          apiKey: this.dialogApiKey_,
++          modelId: this.dialogModelId_,
++          capabilities: {
++            supportsImages: this.dialogSupportsImages_,
++          },
++          modelConfig: {
++            contextWindow: this.dialogContextWindow_,
++            temperature: this.dialogTemperature_,
++          },
++          updatedAt: now,
++        };
++        this.set(`providers_.${index}`, updated);
++      }
++    } else {
++      // Add new provider
++      const newProvider: ProviderConfig = {
++        id: this.generateId_(),
++        name: this.dialogProviderName_,
++        type: this.dialogProviderType_,
++        isDefault: false,
++        isBuiltIn: false,
++        baseUrl: this.dialogBaseUrl_,
++        apiKey: this.dialogApiKey_,
++        modelId: this.dialogModelId_,
++        capabilities: {
++          supportsImages: this.dialogSupportsImages_,
++        },
++        modelConfig: {
++          contextWindow: this.dialogContextWindow_,
++          temperature: this.dialogTemperature_,
++        },
++        createdAt: now,
++        updatedAt: now,
++      };
++      this.push('providers_', newProvider);
++      
++      chrome.send('logBrowserOSMetric', ['settings.provider.added', {
++        provider_type: newProvider.type,
++        model_id: newProvider.modelId
++      }]);
++    }
++    
++    this.saveProviders_();
++    this.closeProviderForm_();
++  }
++
++  private validateProviderForm_(): boolean {
++    console.log('browseros: Validating form:', {
++      name: this.dialogProviderName_,
++      type: this.dialogProviderType_,
++      apiKey: this.dialogApiKey_,
++      modelId: this.dialogModelId_
++    });
++    
++    if (!this.dialogProviderName_ || !this.dialogProviderName_.trim()) {
++      this.showStatusMessage_('Provider name is required', true);
++      return false;
++    }
++    
++    // API key is optional for all providers, but show warning if missing for certain types
++    const apiKeyOptionalTypes = [ProviderType.OLLAMA, ProviderType.OPENAI_COMPATIBLE, ProviderType.CUSTOM];
++    if (!this.dialogApiKey_ || !this.dialogApiKey_.trim()) {
++      if (!apiKeyOptionalTypes.includes(this.dialogProviderType_)) {
++        // Show warning but don't block
++        this.showStatusMessage_('Warning: API key not provided. Provider may not work without it.', false);
++      }
++    }
++    
++    if (!this.dialogModelId_ || !this.dialogModelId_.trim()) {
++      this.showStatusMessage_('Model ID is required', true);
++      return false;
++    }
++    
++    return true;
++  }
++
++  private closeProviderForm_() {
++    this.set('showProviderForm_', false);
++    this.editingProvider_ = null;
++  }
++
++  private onDefaultProviderChange_(e: Event) {
++    const select = e.target as HTMLSelectElement;
++    const oldProviderId = this.defaultProviderId_;
++    this.defaultProviderId_ = select.value;
++    this.updateProvidersDefaultStatus_();
++    this.saveProviders_();
++    
++    chrome.send('logBrowserOSMetric', ['settings.default_provider.changed', {
++      old_provider_id: oldProviderId,
++      new_provider_id: this.defaultProviderId_
++    }]);
++  }
++
++  private updateProvidersDefaultStatus_() {
++    this.providers_ = this.providers_.map(p => ({
++      ...p,
++      isDefault: p.id === this.defaultProviderId_
++    }));
++  }
++
++  private setAsDefault_(e: Event) {
++    const target = e.currentTarget as HTMLElement;
++    const providerId = target.dataset['providerId'];
++    const oldProviderId = this.defaultProviderId_;
++    this.defaultProviderId_ = providerId!;
++    this.updateProvidersDefaultStatus_();
++    this.saveProviders_();
++    
++    chrome.send('logBrowserOSMetric', ['settings.default_provider.changed', {
++      old_provider_id: oldProviderId,
++      new_provider_id: this.defaultProviderId_
++    }]);
++  }
++
++  private getProviderIcon_(type: ProviderType): string {
++    const icons: Record<ProviderType, string> = {
++      [ProviderType.BROWSEROS]: 'B',
++      [ProviderType.OPENAI_COMPATIBLE]: 'O',
++      [ProviderType.ANTHROPIC]: 'A',
++      [ProviderType.GOOGLE_GEMINI]: 'G',
++      [ProviderType.OLLAMA]: 'L',
++      [ProviderType.OPENROUTER]: 'R',
++      [ProviderType.CUSTOM]: 'C',
++    };
++    return icons[type] || 'AI';
++  }
++
++  private getProviderCardClass_(provider: ProviderConfig): string {
++    let classes = 'provider-card';
++    if (provider.isDefault) {
++      classes += ' selected';
++    }
++    if (provider.type === ProviderType.BROWSEROS) {
++      classes += ' browseros';
++    }
++    return classes;
++  }
++
++  private getProviderSubtitle_(provider: ProviderConfig): string {
++    if (provider.type === ProviderType.BROWSEROS) {
++      return 'Automatically chooses the best model for each task';
++    }
++    
++    const parts = [];
++    if (provider.modelId) {
++      parts.push(`Model: ${provider.modelId}`);
++    }
++    if (provider.baseUrl && !this.isDefaultUrl_(provider.type, provider.baseUrl)) {
++      parts.push(`URL: ${this.truncateUrl_(provider.baseUrl)}`);
++    }
++    return parts.join(' • ') || 'Not configured';
++  }
++
++  private isDefaultUrl_(type: ProviderType, url: string): boolean {
++    const defaults = PROVIDER_DEFAULTS[type];
++    return defaults?.baseUrl === url;
++  }
++
++  private truncateUrl_(url: string): string {
++    if (url.length > 30) {
++      return url.substring(0, 27) + '...';
++    }
++    return url;
++  }
++
++  private getFormCardClass_(show: boolean): string {
++    return show ? 'show' : '';
++  }
++
++  private showStatusMessage_(message?: string, isError: boolean = false) {
++    if (!this.shadowRoot) return;
++    
++    const statusMessage = this.shadowRoot.querySelector('#statusMessage') as HTMLElement;
++    if (statusMessage) {
++      if (message) {
++        statusMessage.textContent = message;
++      }
++      statusMessage.classList.toggle('error', isError);
++      statusMessage.classList.add('show');
++      setTimeout(() => {
++        statusMessage.classList.remove('show');
++      }, 2000);
++    }
++  }
++}
++
++declare global {
++  interface HTMLElementTagNameMap {
++    'settings-nxtscape-page': SettingsNxtscapePageElement;
++  }
++}
++
++customElements.define(
++    SettingsNxtscapePageElement.is, SettingsNxtscapePageElement);
+diff --git a/chrome/browser/resources/settings/route.ts b/chrome/browser/resources/settings/route.ts
+index 2458ecb3791b0..e8dd01dc3e7b6 100644
+--- a/chrome/browser/resources/settings/route.ts
++++ b/chrome/browser/resources/settings/route.ts
+@@ -183,6 +183,7 @@ function createRoutes(): SettingsRoutes {
+   // Root pages.
+   r.BASIC = new Route('/');
+   r.ABOUT = new Route('/help', loadTimeData.getString('aboutPageTitle'));
++  r.NXTSCAPE = new Route('/browseros-ai', 'BrowserOS AI Settings');
+ 
+   r.SEARCH = r.BASIC.createSection(
+       '/search', 'search', loadTimeData.getString('searchPageTitle'));
+diff --git a/chrome/browser/resources/settings/router.ts b/chrome/browser/resources/settings/router.ts
+index 236c564f9b909..46c2093278ceb 100644
+--- a/chrome/browser/resources/settings/router.ts
++++ b/chrome/browser/resources/settings/router.ts
+@@ -14,6 +14,7 @@ import {loadTimeData} from './i18n_setup.js';
+ export interface SettingsRoutes {
+   ABOUT: Route;
+   ACCESSIBILITY: Route;
++  NXTSCAPE: Route;
+   ADDRESSES: Route;
+   ADVANCED: Route;
+   AI: Route;
+diff --git a/chrome/browser/resources/settings/settings.ts b/chrome/browser/resources/settings/settings.ts
+index 85e1db9929325..dbd5e82c285f9 100644
+--- a/chrome/browser/resources/settings/settings.ts
++++ b/chrome/browser/resources/settings/settings.ts
+@@ -32,6 +32,7 @@ export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_w
+ export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+ export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+ export {SettingsAboutPageElement} from './about_page/about_page.js';
++export {SettingsNxtscapePageElement} from './nxtscape_page/nxtscape_page.js';
+ export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
+ export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
+ export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
+diff --git a/chrome/browser/resources/settings/settings_main/settings_main.html b/chrome/browser/resources/settings/settings_main/settings_main.html
+index 329e9552760de..403f2f2258fb8 100644
+--- a/chrome/browser/resources/settings/settings_main/settings_main.html
++++ b/chrome/browser/resources/settings/settings_main/settings_main.html
+@@ -49,3 +49,9 @@
+           prefs="{{prefs}}">
+       </settings-about-page>
+     </template>
++    <template is="dom-if" if="[[showPages_.nxtscape]]">
++      <settings-nxtscape-page role="main"
++          class="cr-centered-card-container"
++          prefs="{{prefs}}">
++      </settings-nxtscape-page>
++    </template>
+diff --git a/chrome/browser/resources/settings/settings_main/settings_main.ts b/chrome/browser/resources/settings/settings_main/settings_main.ts
+index 43fd55ea0b83c..433afef3be384 100644
+--- a/chrome/browser/resources/settings/settings_main/settings_main.ts
++++ b/chrome/browser/resources/settings/settings_main/settings_main.ts
+@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
+ import 'chrome://resources/js/search_highlight_utils.js';
+ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+ import '../about_page/about_page.js';
++import '../nxtscape_page/nxtscape_page.js';
+ import '../basic_page/basic_page.js';
+ import '../search_settings.js';
+ import '../settings_shared.css.js';
+@@ -32,6 +33,7 @@ import {getTemplate} from './settings_main.html.js';
+ interface MainPageVisibility {
+   about: boolean;
+   settings: boolean;
++  nxtscape: boolean;
+ }
+ 
+ export interface SettingsMainElement {
+@@ -68,7 +70,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
+       showPages_: {
+         type: Object,
+         value() {
+-          return {about: false, settings: false};
++          return {about: false, settings: false, nxtscape: false};
+         },
+       },
+ 
+@@ -114,9 +116,14 @@ export class SettingsMainElement extends SettingsMainElementBase {
+    * current route.
+    */
+   override currentRouteChanged() {
+-    const inAbout =
+-        routes.ABOUT.contains(Router.getInstance().getCurrentRoute());
+-    this.showPages_ = {about: inAbout, settings: !inAbout};
++    const currentRoute = Router.getInstance().getCurrentRoute();
++    const inAbout = routes.ABOUT.contains(currentRoute);
++    const inNxtscape = routes.NXTSCAPE.contains(currentRoute);
++    this.showPages_ = {
++      about: inAbout,
++      settings: !inAbout && !inNxtscape,
++      nxtscape: inNxtscape
++    };
+   }
+ 
+   private onShowingSubpage_() {
+diff --git a/chrome/browser/resources/settings/settings_menu/settings_menu.html b/chrome/browser/resources/settings/settings_menu/settings_menu.html
+index 79aad7032abc7..8f123acf9b322 100644
+--- a/chrome/browser/resources/settings/settings_menu/settings_menu.html
++++ b/chrome/browser/resources/settings/settings_menu/settings_menu.html
+@@ -57,6 +57,12 @@
+           $i18n{peoplePageTitle}
+           <cr-ripple></cr-ripple>
+         </a>
++        <a role="menuitem" id="nxtscape-menu" href="/browseros-ai"
++            class="cr-nav-menu-item">
++          <cr-icon icon="[[aiPageIcon_]]"></cr-icon>
++          BrowserOS AI
++          <cr-ripple></cr-ripple>
++        </a>
+         <a role="menuitem" id="autofill" href="/autofill"
+             hidden="[[!pageVisibility.autofill]]"
+             class="cr-nav-menu-item">
+diff --git a/chrome/common/pref_names.h b/chrome/common/pref_names.h
+index fb0a6d63e909a..a453af343fed7 100644
+--- a/chrome/common/pref_names.h
++++ b/chrome/common/pref_names.h
+@@ -4277,6 +4277,17 @@ inline constexpr char kSharedWorkerBlobURLFixEnabled[] =
+ // String containing the stable client ID for BrowserOS metrics
+ inline constexpr char kBrowserOSMetricsClientId[] =
+     "browseros.metrics_client_id";
++
++// JSON string containing custom AI providers for BrowserOS
++inline constexpr char kBrowserOSCustomProviders[] = 
++    "browseros.custom_providers";
++
++// JSON string containing the list of AI providers and configuration
++inline constexpr char kBrowserOSProviders[] = "browseros.providers";
++
++// String containing the default provider ID for BrowserOS
++inline constexpr char kBrowserOSDefaultProviderId[] = 
++    "browseros.default_provider_id";
+ }  // namespace prefs
+ 
+ #endif  // CHROME_COMMON_PREF_NAMES_H_
+-- 
+2.49.0
+

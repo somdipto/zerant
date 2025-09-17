@@ -1,0 +1,30 @@
+# Nxtscape Debug Build Configuration
+build:
+  type: debug
+  architecture: arm64 # Single arch for faster debug builds
+  # architectures: [x86_64, arm64]  # Uncomment for multi-arch debug
+  # universal: false  # Uncomment to disable universal for debug
+
+gn_flags:
+  file: build/config/gn/flags.macos.debug.gn
+
+steps:
+  clean: false
+  git_setup: true
+  apply_patches: true
+  build: true
+  sign: false
+  package: true
+
+paths:
+  root_dir: .
+  # chromium_src: ../chromium-src
+
+# Environment-specific settings
+env:
+  PYTHONPATH: scripts
+
+# Notification settings
+notifications:
+  slack: false # Set to true to enable Slack notifications for debug builds
+

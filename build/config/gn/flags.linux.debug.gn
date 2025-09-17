@@ -1,0 +1,46 @@
+# Linux Debug Build Flags for Nxtscape
+# Based on ungoogled-chromium-portablelinux configuration
+
+# Build type
+is_debug = true
+is_official_build = false
+is_component_build = false
+use_siso=false
+
+# Compiler
+use_sysroot = true
+use_custom_libcxx = true
+
+# Features
+enable_nacl = false
+enable_widevine = true
+enable_hangout_services_extension = false
+enable_js_type_check = false
+
+# Media
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+use_vaapi = true
+rtc_use_pipewire = true
+
+# Debug symbols
+symbol_level = 1
+blink_symbol_level = 1
+enable_precompiled_headers = false
+exclude_unwind_tables = false
+
+# Security
+use_unofficial_version_number = false
+treat_warnings_as_errors = false
+
+# Sandbox
+use_suid_sandbox = true
+
+# Other
+v8_enable_backtrace = true
+v8_use_external_startup_data = true
+v8_enable_i18n_support = true
+
+# Debug specific
+dcheck_always_on = true
+enable_iterator_debugging = false

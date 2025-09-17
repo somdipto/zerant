@@ -1,0 +1,149 @@
+From 8d1ca75ba0a9a2f9f9e18c5644e7769cbec977a6 Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Thu, 24 Jul 2025 13:26:50 -0700
+Subject: [PATCH] browseros branding for file paths
+
+---
+ chrome/common/chrome_constants.cc              | 18 +++++++++---------
+ chrome/common/chrome_paths_linux.cc            |  2 +-
+ .../install_static/chromium_install_modes.cc   |  4 ++--
+ chrome/install_static/chromium_install_modes.h | 16 ++++++++--------
+ .../os_crypt/sync/keychain_password_mac.mm     |  4 ++--
+ 5 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/chrome/common/chrome_constants.cc b/chrome/common/chrome_constants.cc
+index 298138e77b9f6..d89ef96cc4d86 100644
+--- a/chrome/common/chrome_constants.cc
++++ b/chrome/common/chrome_constants.cc
+@@ -33,9 +33,9 @@ const char kChromeVersion[] = CHROME_VERSION_STRING;
+ 
+ #if BUILDFLAG(IS_WIN)
+ const base::FilePath::CharType kBrowserProcessExecutableName[] =
+-    FPL("chrome.exe");
++    FPL("browseros.exe");
+ const base::FilePath::CharType kHelperProcessExecutableName[] =
+-    FPL("chrome.exe");
++    FPL("browseros.exe");
+ #elif BUILDFLAG(IS_MAC)
+ const base::FilePath::CharType kBrowserProcessExecutableName[] =
+     FPL(PRODUCT_FULLNAME_STRING);
+@@ -47,7 +47,7 @@ const base::FilePath::CharType kBrowserProcessExecutableName[] = FPL("chrome");
+ const base::FilePath::CharType kHelperProcessExecutableName[] =
+     FPL("sandboxed_process");
+ #elif BUILDFLAG(IS_POSIX)
+-const base::FilePath::CharType kBrowserProcessExecutableName[] = FPL("chrome");
++const base::FilePath::CharType kBrowserProcessExecutableName[] = FPL("browseros");
+ // Helper processes end up with a name of "exe" due to execing via
+ // /proc/self/exe.  See bug 22703.
+ const base::FilePath::CharType kHelperProcessExecutableName[] = FPL("exe");
+@@ -55,9 +55,9 @@ const base::FilePath::CharType kHelperProcessExecutableName[] = FPL("exe");
+ 
+ #if BUILDFLAG(IS_WIN)
+ const base::FilePath::CharType kBrowserProcessExecutablePath[] =
+-    FPL("chrome.exe");
++    FPL("browseros.exe");
+ const base::FilePath::CharType kHelperProcessExecutablePath[] =
+-    FPL("chrome.exe");
++    FPL("browseros.exe");
+ #elif BUILDFLAG(IS_MAC)
+ const base::FilePath::CharType kBrowserProcessExecutablePath[] =
+     FPL(PRODUCT_FULLNAME_STRING ".app/Contents/MacOS/" PRODUCT_FULLNAME_STRING);
+@@ -76,8 +76,8 @@ const base::FilePath::CharType kHelperProcessExecutablePath[] =
+ const base::FilePath::CharType kBrowserProcessExecutablePath[] = FPL("chrome");
+ const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("chrome");
+ #elif BUILDFLAG(IS_POSIX)
+-const base::FilePath::CharType kBrowserProcessExecutablePath[] = FPL("chrome");
+-const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("chrome");
++const base::FilePath::CharType kBrowserProcessExecutablePath[] = FPL("browseros");
++const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("browseros");
+ #endif  // OS_*
+ 
+ #if BUILDFLAG(IS_MAC)
+@@ -89,8 +89,8 @@ const char kMacHelperSuffixAlerts[] = " (Alerts)";
+ #endif  // BUILDFLAG(IS_MAC)
+ 
+ #if BUILDFLAG(IS_WIN)
+-const base::FilePath::CharType kBrowserResourcesDll[] = FPL("chrome.dll");
+-const base::FilePath::CharType kElfDll[] = FPL("chrome_elf.dll");
++const base::FilePath::CharType kBrowserResourcesDll[] = FPL("browseros.dll");
++const base::FilePath::CharType kElfDll[] = FPL("browseros_elf.dll");
+ const base::FilePath::CharType kStatusTrayWindowClass[] =
+     FPL("Chrome_StatusTrayWindow");
+ #endif  // BUILDFLAG(IS_WIN)
+diff --git a/chrome/common/chrome_paths_linux.cc b/chrome/common/chrome_paths_linux.cc
+index 5ed55385a674a..9b33458dec123 100644
+--- a/chrome/common/chrome_paths_linux.cc
++++ b/chrome/common/chrome_paths_linux.cc
+@@ -95,7 +95,7 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
+ #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+   std::string data_dir_basename = "google-chrome";
+ #else
+-  std::string data_dir_basename = "chromium";
++  std::string data_dir_basename = "browser-os";
+ #endif
+   *result = config_dir.Append(data_dir_basename + GetChannelSuffixForDataDir());
+   return true;
+diff --git a/chrome/install_static/chromium_install_modes.cc b/chrome/install_static/chromium_install_modes.cc
+index f5af44ca1c489..57dc381b0147f 100644
+--- a/chrome/install_static/chromium_install_modes.cc
++++ b/chrome/install_static/chromium_install_modes.cc
+@@ -12,9 +12,9 @@
+ 
+ namespace install_static {
+ 
+-const wchar_t kCompanyPathName[] = L"";
++const wchar_t kCompanyPathName[] = L"BrowserOS";
+ 
+-const wchar_t kProductPathName[] = L"Chromium";
++const wchar_t kProductPathName[] = L"BrowserOS";
+ 
+ const size_t kProductPathNameLength = _countof(kProductPathName) - 1;
+ 
+diff --git a/chrome/install_static/chromium_install_modes.h b/chrome/install_static/chromium_install_modes.h
+index 7de32cf745755..4b10fc5900fbb 100644
+--- a/chrome/install_static/chromium_install_modes.h
++++ b/chrome/install_static/chromium_install_modes.h
+@@ -33,17 +33,17 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
+             L"",  // Empty install_suffix for the primary install mode.
+         .logo_suffix = L"",  // No logo suffix for the primary install mode.
+         .app_guid =
+-            L"",  // Empty app_guid since no integration with Google Update.
+-        .base_app_name = L"Chromium",              // A distinct base_app_name.
+-        .base_app_id = L"Chromium",                // A distinct base_app_id.
+-        .browser_prog_id_prefix = L"ChromiumHTM",  // Browser ProgID prefix.
++            L"{CF887152-7CB8-4393-84CC-1BACF0EDE1D1}",  // BrowserOS app GUID.
++        .base_app_name = L"BrowserOS",              // A distinct base_app_name.
++        .base_app_id = L"BrowserOS",                // A distinct base_app_id.
++        .browser_prog_id_prefix = L"BrowserOSHTML",  // Browser ProgID prefix.
+         .browser_prog_id_description =
+-            L"Chromium HTML Document",         // Browser ProgID description.
+-        .pdf_prog_id_prefix = L"ChromiumPDF",  // PDF ProgID prefix.
++            L"BrowserOS HTML Document",         // Browser ProgID description.
++        .pdf_prog_id_prefix = L"BrowserOSPDF",  // PDF ProgID prefix.
+         .pdf_prog_id_description =
+-            L"Chromium PDF Document",  // PDF ProgID description.
++            L"BrowserOS PDF Document",  // PDF ProgID description.
+         .active_setup_guid =
+-            L"{7D2B3E1D-D096-4594-9D8F-A6667F12E0AC}",  // Active Setup
++            L"{0EF5669B-7FD7-4138-A91F-E466631ADE97}",  // Active Setup
+                                                         // GUID.
+         .legacy_command_execute_clsid =
+             L"{A2DF06F9-A21A-44A8-8A99-8B9C84F29160}",  // CommandExecuteImpl
+diff --git a/components/os_crypt/sync/keychain_password_mac.mm b/components/os_crypt/sync/keychain_password_mac.mm
+index 6b936d228cf71..164325ce05d78 100644
+--- a/components/os_crypt/sync/keychain_password_mac.mm
++++ b/components/os_crypt/sync/keychain_password_mac.mm
+@@ -33,8 +33,8 @@ namespace {
+ const char kDefaultServiceName[] = "Chrome Safe Storage";
+ const char kDefaultAccountName[] = "Chrome";
+ #else
+-const char kDefaultServiceName[] = "Chromium Safe Storage";
+-const char kDefaultAccountName[] = "Chromium";
++const char kDefaultServiceName[] = "BrowserOS Safe Storage";
++const char kDefaultAccountName[] = "BrowserOS";
+ #endif
+ 
+ // Generates a random password and adds it to the Keychain.  The added password
+-- 
+2.49.0
+

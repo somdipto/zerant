@@ -1,0 +1,44 @@
+# Minimal Linux Release Build Flags for BrowserOS
+
+# Build type
+is_debug = false
+is_official_build = true
+is_component_build = false
+use_siso=false
+
+# Compiler
+use_sysroot = true
+use_custom_libcxx = true
+is_clang = true
+clang_use_chrome_plugins = false
+fatal_linker_warnings = false
+
+# Core features
+enable_nacl = false
+enable_widevine = true
+disable_fieldtrial_testing_config = true
+
+# Media
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+
+# Hardware acceleration
+use_vaapi = true
+
+# Libraries
+use_system_libffi = false
+
+# Optimization and binary size reduction
+symbol_level = 0
+blink_symbol_level = 0
+exclude_unwind_tables = true
+
+chrome_pgo_phase = 0
+dcheck_always_on = false
+enable_swiftshader = false
+
+# API Keys (disable Google services)
+google_api_key = ""
+google_default_client_id = ""
+google_default_client_secret = ""
+use_official_google_api_keys = false

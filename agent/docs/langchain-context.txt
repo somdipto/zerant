@@ -1,0 +1,2230 @@
+
+----------- WEB PAGE -----------
+
+TITLE: How to track token usage in ChatModels | 🦜️🔗 LangChain
+
+URL: https://python.langchain.com/docs/how_to/chat_token_usage_tracking/?utm_source=chatgpt.com
+
+CONTENT:
+
+Skip to main content Our Building Ambient Agents with LangGraph course is now available on LangChain Academy! Search ⌘ K
+
+ 
+
+How-to guides 
+
+How to track token usage in ChatModels
+
+On this page
+
+How to track token usage in ChatModels
+
+PREREQUISITES
+
+This guide assumes familiarity with the following concepts:
+
+Chat models
+
+Tracking token usage to calculate cost is an important part of putting your app in production. This guide goes over how to obtain this information from your LangChain model calls.
+
+This guide requires langchain-anthropic and langchain-openai >= 0.3.11 .
+
+% pip install - qU langchain - anthropic langchain - openai
+A NOTE ON STREAMING WITH OPENAI
+
+OpenAI's Chat Completions API does not stream token usage statistics by default (see API reference here ). To recover token counts when streaming with ChatOpenAI or AzureChatOpenAI , set stream_usage=True as demonstrated in this guide.
+
+Using LangSmith # ​
+
+You can use LangSmith to help track token usage in your LLM application. See the LangSmith quick start guide .
+
+Using AIMessage.usage_metadata # ​
+
+A number of model providers return token usage information as part of the chat generation response. When available, this information will be included on the AIMessage objects produced by the corresponding model.
+
+LangChain AIMessage objects include a usage_metadata attribute. When populated, this attribute will be a UsageMetadata dictionary with standard keys (e.g., "input_tokens" and "output_tokens" ). They will also include information on cached token usage and tokens from multi-modal data.
+
+Examples:
+
+OpenAI :
+
+from langchain . chat_models import init_chat_model
+
+llm = init_chat_model ( model = "gpt-4o-mini" )
+openai_response = llm . invoke ( "hello" )
+openai_response . usage_metadata
+API Reference: init_chat_model {'input_tokens': 8, 'output_tokens': 9, 'total_tokens': 17}
+Anthropic :
+
+from langchain_anthropic import ChatAnthropic
+
+llm = ChatAnthropic ( model = "claude-3-haiku-20240307" )
+anthropic_response = llm . invoke ( "hello" )
+anthropic_response . usage_metadata
+API Reference: ChatAnthropic {'input_tokens': 8, 'output_tokens': 12, 'total_tokens': 20}
+Streaming # ​
+
+Some providers support token count metadata in a streaming context.
+
+OpenAI # ​
+
+For example, OpenAI will return a message chunk at the end of a stream with token usage information. This behavior is supported by langchain-openai >= 0.1.9 and can be enabled by setting stream_usage=True . This attribute can also be set when ChatOpenAI is instantiated.
+
+NOTE
+
+By default, the last message chunk in a stream will include a "finish_reason" in the message's response_metadata attribute. If we include token usage in streaming mode, an additional chunk containing usage metadata will be added to the end of the stream, such that "finish_reason" appears on the second to last message chunk.
+
+llm = init_chat_model ( model = "gpt-4o-mini" )
+
+aggregate = None
+for chunk in llm . stream ( "hello" , stream_usage = True ) :
+ print ( chunk )
+ aggregate = chunk if aggregate is None else aggregate + chunk
+content='' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content='Hello' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content='!' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content=' How' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content=' can' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content=' I' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content=' assist' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content=' you' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content=' today' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content='?' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content='' response_metadata={'finish_reason': 'stop', 'model_name': 'gpt-4o-mini'} id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623'
+content='' id='run-adb20c31-60c7-43a2-99b2-d4a53ca5f623' usage_metadata={'input_tokens': 8, 'output_tokens': 9, 'total_tokens': 17}
+Note that the usage metadata will be included in the sum of the individual message chunks:
+
+print ( aggregate . content )
+print ( aggregate . usage_metadata )
+Hello! How can I assist you today?
+{'input_tokens': 8, 'output_tokens': 9, 'total_tokens': 17}
+To disable streaming token counts for OpenAI, set stream_usage to False, or omit it from the parameters:
+
+aggregate = None
+for chunk in llm . stream ( "hello" ) :
+ print ( chunk )
+content='' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content='Hello' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content='!' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content=' How' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content=' can' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content=' I' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content=' assist' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content=' you' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content=' today' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content='?' id='run-8e758550-94b0-4cca-a298-57482793c25d'
+content='' response_metadata={'finish_reason': 'stop', 'model_name': 'gpt-4o-mini'} id='run-8e758550-94b0-4cca-a298-57482793c25d'
+You can also enable streaming token usage by setting stream_usage when instantiating the chat model. This can be useful when incorporating chat models into LangChain chains : usage metadata can be monitored when streaming intermediate steps or using tracing software such as LangSmith .
+
+See the below example, where we return output structured to a desired schema, but can still observe token usage streamed from intermediate steps.
+
+from pydantic import BaseModel , Field
+
+
+class Joke ( BaseModel ) :
+ """Joke to tell user."""
+
+ setup : str = Field ( description = "question to set up a joke" )
+ punchline : str = Field ( description = "answer to resolve the joke" )
+
+
+llm = init_chat_model (
+ model = "gpt-4o-mini" ,
+ stream_usage = True ,
+)
+# Under the hood, .with_structured_output binds tools to the
+# chat model and appends a parser.
+structured_llm = llm . with_structured_output ( Joke )
+
+async for event in structured_llm . astream_events ( "Tell me a joke" ) :
+ if event [ "event" ] == "on_chat_model_end" :
+ print ( f"Token usage: { event [ 'data' ] [ 'output' ] . usage_metadata } \n" )
+ elif event [ "event" ] == "on_chain_end" and event [ "name" ] == "RunnableSequence" :
+ print ( event [ "data" ] [ "output" ] )
+ else :
+ pass
+Token usage: {'input_tokens': 79, 'output_tokens': 23, 'total_tokens': 102}
+
+setup='Why was the math book sad?' punchline='Because it had too many problems.'
+Token usage is also visible in the corresponding LangSmith trace in the payload from the chat model.
+
+Using callbacks # ​
+
+REQUIRES langchain-core>=0.3.49
+
+LangChain implements a callback handler and context manager that will track token usage across calls of any chat model that returns usage_metadata .
+
+There are also some API-specific callback context managers that maintain pricing for different models, allowing for cost estimation in real time. They are currently only implemented for the OpenAI API and Bedrock Anthropic API, and are available in langchain-community :
+
+get_openai_callback
+
+get_bedrock_anthropic_callback
+
+Below, we demonstrate the general-purpose usage metadata callback manager. We can track token usage through configuration or as a context manager.
+
+Tracking token usage through configuration # ​
+
+To track token usage through configuration, instantiate a UsageMetadataCallbackHandler and pass it into the config:
+
+from langchain . chat_models import init_chat_model
+from langchain_core . callbacks import UsageMetadataCallbackHandler
+
+llm_1 = init_chat_model ( model = "openai:gpt-4o-mini" )
+llm_2 = init_chat_model ( model = "anthropic:claude-3-5-haiku-latest" )
+
+callback = UsageMetadataCallbackHandler ( )
+result_1 = llm_1 . invoke ( "Hello" , config = { "callbacks" : [ callback ] } )
+result_2 = llm_2 . invoke ( "Hello" , config = { "callbacks" : [ callback ] } )
+callback . usage_metadata
+API Reference: init_chat_model | UsageMetadataCallbackHandler {'gpt-4o-mini-2024-07-18': {'input_tokens': 8,
+ 'output_tokens': 10,
+ 'total_tokens': 18,
+ 'input_token_details': {'audio': 0, 'cache_read': 0},
+ 'output_token_details': {'audio': 0, 'reasoning': 0}},
+ 'claude-3-5-haiku-20241022': {'input_tokens': 8,
+ 'output_tokens': 21,
+ 'total_tokens': 29,
+ 'input_token_details': {'cache_read': 0, 'cache_creation': 0}}}
+Tracking token usage using a context manager # ​
+
+You can also use get_usage_metadata_callback to create a context manager and aggregate usage metadata there:
+
+from langchain . chat_models import init_chat_model
+from langchain_core . callbacks import get_usage_metadata_callback
+
+llm_1 = init_chat_model ( model = "openai:gpt-4o-mini" )
+llm_2 = init_chat_model ( model = "anthropic:claude-3-5-haiku-latest" )
+
+with get_usage_metadata_callback ( ) as cb :
+ llm_1 . invoke ( "Hello" )
+ llm_2 . invoke ( "Hello" )
+ print ( cb . usage_metadata )
+API Reference: init_chat_model | get_usage_metadata_callback {'gpt-4o-mini-2024-07-18': {'input_tokens': 8, 'output_tokens': 10, 'total_tokens': 18, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}, 'claude-3-5-haiku-20241022': {'input_tokens': 8, 'output_tokens': 21, 'total_tokens': 29, 'input_token_details': {'cache_read': 0, 'cache_creation': 0}}}
+Either of these methods will aggregate token usage across multiple calls to each model. For example, you can use it in an agent to track token usage across repeated calls to one model:
+
+% pip install - qU langgraph
+from langgraph . prebuilt import create_react_agent
+
+
+# Create a tool
+def get_weather ( location : str ) - > str :
+ """Get the weather at a location."""
+ return "It's sunny."
+
+
+callback = UsageMetadataCallbackHandler ( )
+
+tools = [ get_weather ]
+agent = create_react_agent ( "openai:gpt-4o-mini" , tools )
+for step in agent . stream (
+ { "messages" : [ { "role" : "user" , "content" : "What's the weather in Boston?" } ] } ,
+ stream_mode = "values" ,
+ config = { "callbacks" : [ callback ] } ,
+) :
+ step [ "messages" ] [ - 1 ] . pretty_print ( )
+
+
+print ( f"\nTotal usage: { callback . usage_metadata } " )
+================================[1m Human Message [0m=================================
+
+What's the weather in Boston?
+==================================[1m Ai Message [0m==================================
+Tool Calls:
+ get_weather (call_izMdhUYpp9Vhx7DTNAiybzGa)
+ Call ID: call_izMdhUYpp9Vhx7DTNAiybzGa
+ Args:
+ location: Boston
+=================================[1m Tool Message [0m=================================
+Name: get_weather
+
+It's sunny.
+==================================[1m Ai Message [0m==================================
+
+The weather in Boston is sunny.
+
+Total usage: {'gpt-4o-mini-2024-07-18': {'input_token_details': {'audio': 0, 'cache_read': 0}, 'input_tokens': 125, 'total_tokens': 149, 'output_tokens': 24, 'output_token_details': {'audio': 0, 'reasoning': 0}}}
+Next steps # ​
+
+You've now seen a few examples of how to track token usage for supported providers.
+
+Next, check out the other how-to guides chat models in this section, like how to get a model to return structured output or how to add caching to your chat models .
+
+Edit this page
+
+Community
+
+LangChain Forum
+
+Twitter
+
+Slack
+
+GitHub
+
+Organization
+
+Python
+
+JS/TS
+
+More
+
+Homepage
+
+Blog
+
+YouTube
+
+Copyright © 2025 LangChain, Inc. ------------------------------------
+
+----
+----------- WEB PAGE -----------
+
+TITLE: Chat models | 🦜️🔗 LangChain
+
+URL: https://python.langchain.com/docs/concepts/chat_models/
+
+CONTENT:
+
+Skip to main content Our Building Ambient Agents with LangGraph course is now available on LangChain Academy! Search ⌘ K
+
+ 
+
+Conceptual guide 
+
+Chat models
+
+On this page
+
+Chat models
+
+Overview # ​
+
+Large Language Models (LLMs) are advanced machine learning models that excel in a wide range of language-related tasks such as text generation, translation, summarization, question answering, and more, without needing task-specific fine tuning for every scenario.
+
+Modern LLMs are typically accessed through a chat model interface that takes a list of messages as input and returns a message as output.
+
+The newest generation of chat models offer additional capabilities:
+
+Tool calling : Many popular chat models offer a native tool calling API. This API allows developers to build rich applications that enable LLMs to interact with external services, APIs, and databases. Tool calling can also be used to extract structured information from unstructured data and perform various other tasks.
+
+Structured output : A technique to make a chat model respond in a structured format, such as JSON that matches a given schema.
+
+Multimodality : The ability to work with data other than text; for example, images, audio, and video.
+
+Features # ​
+
+LangChain provides a consistent interface for working with chat models from different providers while offering additional features for monitoring, debugging, and optimizing the performance of applications that use LLMs.
+
+Integrations with many chat model providers (e.g., Anthropic, OpenAI, Ollama, Microsoft Azure, Google Vertex, Amazon Bedrock, Hugging Face, Cohere, Groq). Please see chat model integrations for an up-to-date list of supported models.
+
+Use either LangChain's messages format or OpenAI format.
+
+Standard tool calling API : standard interface for binding tools to models, accessing tool call requests made by models, and sending tool results back to the model.
+
+Standard API for structuring outputs via the with_structured_output method.
+
+Provides support for async programming , efficient batching , a rich streaming API .
+
+Integration with LangSmith for monitoring and debugging production-grade applications based on LLMs.
+
+Additional features like standardized token usage , rate limiting , caching and more.
+
+Integrations # ​
+
+LangChain has many chat model integrations that allow you to use a wide variety of models from different providers.
+
+These integrations are one of two types:
+
+Official models : These are models that are officially supported by LangChain and/or model provider. You can find these models in the langchain-<provider> packages.
+
+Community models : There are models that are mostly contributed and supported by the community. You can find these models in the langchain-community package.
+
+LangChain chat models are named with a convention that prefixes "Chat" to their class names (e.g., ChatOllama , ChatAnthropic , ChatOpenAI , etc.).
+
+Please review the chat model integrations for a list of supported models.
+
+NOTE
+
+Models that do not include the prefix "Chat" in their name or include "LLM" as a suffix in their name typically refer to older models that do not follow the chat model interface and instead use an interface that takes a string as input and returns a string as output.
+
+Interface # ​
+
+LangChain chat models implement the BaseChatModel interface. Because BaseChatModel also implements the Runnable Interface , chat models support a standard streaming interface , async programming , optimized batching , and more. Please see the Runnable Interface for more details.
+
+Many of the key methods of chat models operate on messages as input and return messages as output.
+
+Chat models offer a standard set of parameters that can be used to configure the model. These parameters are typically used to control the behavior of the model, such as the temperature of the output, the maximum number of tokens in the response, and the maximum time to wait for a response. Please see the standard parameters section for more details.
+
+NOTE
+
+In documentation, we will often use the terms "LLM" and "Chat Model" interchangeably. This is because most modern LLMs are exposed to users via a chat model interface.
+
+However, LangChain also has implementations of older LLMs that do not follow the chat model interface and instead use an interface that takes a string as input and returns a string as output. These models are typically named without the "Chat" prefix (e.g., Ollama , Anthropic , OpenAI , etc.). These models implement the BaseLLM interface and may be named with the "LLM" suffix (e.g., OllamaLLM , AnthropicLLM , OpenAILLM , etc.). Generally, users should not use these models.
+
+Key methods # ​
+
+The key methods of a chat model are:
+
+invoke : The primary method for interacting with a chat model. It takes a list of messages as input and returns a list of messages as output.
+
+stream : A method that allows you to stream the output of a chat model as it is generated.
+
+batch : A method that allows you to batch multiple requests to a chat model together for more efficient processing.
+
+bind_tools : A method that allows you to bind a tool to a chat model for use in the model's execution context.
+
+with_structured_output : A wrapper around the invoke method for models that natively support structured output .
+
+Other important methods can be found in the BaseChatModel API Reference .
+
+Inputs and outputs # ​
+
+Modern LLMs are typically accessed through a chat model interface that takes messages as input and returns messages as output. Messages are typically associated with a role (e.g., "system", "human", "assistant") and one or more content blocks that contain text or potentially multimodal data (e.g., images, audio, video).
+
+LangChain supports two message formats to interact with chat models:
+
+LangChain Message Format : LangChain's own message format, which is used by default and is used internally by LangChain.
+
+OpenAI's Message Format : OpenAI's message format.
+
+Standard parameters # ​
+
+Many chat models have standardized parameters that can be used to configure the model:
+
+Parameter Description model The name or identifier of the specific AI model you want to use (e.g., "gpt-3.5-turbo" or "gpt-4" ). temperature Controls the randomness of the model's output. A higher value (e.g., 1.0) makes responses more creative, while a lower value (e.g., 0.0) makes them more deterministic and focused. timeout The maximum time (in seconds) to wait for a response from the model before canceling the request. Ensures the request doesn’t hang indefinitely. max_tokens Limits the total number of tokens (words and punctuation) in the response. This controls how long the output can be. stop Specifies stop sequences that indicate when the model should stop generating tokens. For example, you might use specific strings to signal the end of a response. max_retries The maximum number of attempts the system will make to resend a request if it fails due to issues like network timeouts or rate limits. api_key The API key required for authenticating with the model provider. This is usually issued when you sign up for access to the model. base_url The URL of the API endpoint where requests are sent. This is typically provided by the model's provider and is necessary for directing your requests. rate_limiter An optional BaseRateLimiter to space out requests to avoid exceeding rate limits. See rate-limiting below for more details.
+
+Some important things to note:
+
+Standard parameters only apply to model providers that expose parameters with the intended functionality. For example, some providers do not expose a configuration for maximum output tokens, so max_tokens can't be supported on these.
+
+Standard parameters are currently only enforced on integrations that have their own integration packages (e.g. langchain-openai , langchain-anthropic , etc.), they're not enforced on models in langchain-community .
+
+Chat models also accept other parameters that are specific to that integration. To find all the parameters supported by a Chat model head to the their respective API reference for that model.
+
+Tool calling # ​
+
+Chat models can call tools to perform tasks such as fetching data from a database, making API requests, or running custom code. Please see the tool calling guide for more information.
+
+Structured outputs # ​
+
+Chat models can be requested to respond in a particular format (e.g., JSON or matching a particular schema). This feature is extremely useful for information extraction tasks. Please read more about the technique in the structured outputs guide.
+
+Multimodality # ​
+
+Large Language Models (LLMs) are not limited to processing text. They can also be used to process other types of data, such as images, audio, and video. This is known as multimodality .
+
+Currently, only some LLMs support multimodal inputs, and almost none support multimodal outputs. Please consult the specific model documentation for details.
+
+Context window # ​
+
+A chat model's context window refers to the maximum size of the input sequence the model can process at one time. While the context windows of modern LLMs are quite large, they still present a limitation that developers must keep in mind when working with chat models.
+
+If the input exceeds the context window, the model may not be able to process the entire input and could raise an error. In conversational applications, this is especially important because the context window determines how much information the model can "remember" throughout a conversation. Developers often need to manage the input within the context window to maintain a coherent dialogue without exceeding the limit. For more details on handling memory in conversations, refer to the memory .
+
+The size of the input is measured in tokens which are the unit of processing that the model uses.
+
+Advanced topics # ​
+
+Rate-limiting # ​
+
+Many chat model providers impose a limit on the number of requests that can be made in a given time period.
+
+If you hit a rate limit, you will typically receive a rate limit error response from the provider, and will need to wait before making more requests.
+
+You have a few options to deal with rate limits:
+
+Try to avoid hitting rate limits by spacing out requests: Chat models accept a rate_limiter parameter that can be provided during initialization. This parameter is used to control the rate at which requests are made to the model provider. Spacing out the requests to a given model is a particularly useful strategy when benchmarking models to evaluate their performance. Please see the how to handle rate limits for more information on how to use this feature.
+
+Try to recover from rate limit errors: If you receive a rate limit error, you can wait a certain amount of time before retrying the request. The amount of time to wait can be increased with each subsequent rate limit error. Chat models have a max_retries parameter that can be used to control the number of retries. See the standard parameters section for more information.
+
+Fallback to another chat model: If you hit a rate limit with one chat model, you can switch to another chat model that is not rate-limited.
+
+Caching # ​
+
+Chat model APIs can be slow, so a natural question is whether to cache the results of previous conversations. Theoretically, caching can help improve performance by reducing the number of requests made to the model provider. In practice, caching chat model responses is a complex problem and should be approached with caution.
+
+The reason is that getting a cache hit is unlikely after the first or second interaction in a conversation if relying on caching the exact inputs into the model. For example, how likely do you think that multiple conversations start with the exact same message? What about the exact same three messages?
+
+An alternative approach is to use semantic caching, where you cache responses based on the meaning of the input rather than the exact input itself. This can be effective in some situations, but not in others.
+
+A semantic cache introduces a dependency on another model on the critical path of your application (e.g., the semantic cache may rely on an embedding model to convert text to a vector representation), and it's not guaranteed to capture the meaning of the input accurately.
+
+However, there might be situations where caching chat model responses is beneficial. For example, if you have a chat model that is used to answer frequently asked questions, caching responses can help reduce the load on the model provider, costs, and improve response times.
+
+Please see the how to cache chat model responses guide for more details.
+
+Related resources # ​
+
+How-to guides on using chat models: how-to guides .
+
+List of supported chat models: chat model integrations .
+
+Conceptual guides # ​
+
+Messages
+
+Tool calling
+
+Multimodality
+
+Structured outputs
+
+Tokens
+
+Edit this page
+
+Previous « Chat history Next Document loaders » Community
+
+LangChain Forum
+
+Twitter
+
+Slack
+
+GitHub
+
+Organization
+
+Python
+
+JS/TS
+
+More
+
+Homepage
+
+Blog
+
+YouTube
+
+Copyright © 2025 LangChain, Inc. 9 : 52 ------------------------------------
+
+------
+----------- WEB PAGE -----------
+
+TITLE: Build a simple LLM application with chat models and prompt templates | 🦜️🔗 LangChain
+
+URL: https://python.langchain.com/docs/tutorials/llm_chain/
+
+CONTENT:
+
+Skip to main content Our Building Ambient Agents with LangGraph course is now available on LangChain Academy! Search ⌘ K
+
+ 
+
+Tutorials 
+
+Build a simple LLM application with chat models and prompt templates
+
+On this page
+
+Build a simple LLM application with chat models and prompt templates
+
+In this quickstart we'll show you how to build a simple LLM application with LangChain. This application will translate text from English into another language. This is a relatively simple LLM application - it's just a single LLM call plus some prompting. Still, this is a great way to get started with LangChain - a lot of features can be built with just some prompting and an LLM call!
+
+After reading this tutorial, you'll have a high level overview of:
+
+Using language models
+
+Using prompt templates
+
+Debugging and tracing your application using LangSmith
+
+Let's dive in!
+
+Setup # ​
+
+Jupyter Notebook # ​
+
+This and other tutorials are perhaps most conveniently run in a Jupyter notebooks . Going through guides in an interactive environment is a great way to better understand them. See here for instructions on how to install.
+
+Installation # ​
+
+To install LangChain run:
+
+Pip Conda pip install langchain
+For more details, see our Installation guide .
+
+LangSmith # ​
+
+Many of the applications you build with LangChain will contain multiple steps with multiple invocations of LLM calls. As these applications get more and more complex, it becomes crucial to be able to inspect what exactly is going on inside your chain or agent. The best way to do this is with LangSmith .
+
+After you sign up at the link above, make sure to set your environment variables to start logging traces:
+
+export LANGSMITH_TRACING="true"
+export LANGSMITH_API_KEY="..."
+export LANGSMITH_PROJECT="default" # or any other project name
+Or, if in a notebook, you can set them with:
+
+import getpass
+import os
+
+try :
+ # load environment variables from .env file (requires `python-dotenv`)
+ from dotenv import load_dotenv
+
+ load_dotenv ( )
+except ImportError :
+ pass
+
+os . environ [ "LANGSMITH_TRACING" ] = "true"
+if "LANGSMITH_API_KEY" not in os . environ :
+ os . environ [ "LANGSMITH_API_KEY" ] = getpass . getpass (
+ prompt = "Enter your LangSmith API key (optional): "
+ )
+if "LANGSMITH_PROJECT" not in os . environ :
+ os . environ [ "LANGSMITH_PROJECT" ] = getpass . getpass (
+ prompt = 'Enter your LangSmith Project Name (default = "default"): '
+ )
+ if not os . environ . get ( "LANGSMITH_PROJECT" ) :
+ os . environ [ "LANGSMITH_PROJECT" ] = "default"
+Using Language Models # ​
+
+First up, let's learn how to use a language model by itself. LangChain supports many different language models that you can use interchangeably. For details on getting started with a specific model, refer to supported integrations .
+
+Select chat model : Google Gemini ▾ pip install -qU "langchain[google-genai]"
+import getpass
+import os
+
+if not os . environ . get ( "GOOGLE_API_KEY" ) :
+ os . environ [ "GOOGLE_API_KEY" ] = getpass . getpass ( "Enter API key for Google Gemini: " )
+
+from langchain . chat_models import init_chat_model
+
+model = init_chat_model ( "gemini-2.0-flash" , model_provider = "google_genai" )
+Let's first use the model directly. ChatModels are instances of LangChain Runnables , which means they expose a standard interface for interacting with them. To simply call the model, we can pass in a list of messages to the .invoke method.
+
+from langchain_core . messages import HumanMessage , SystemMessage
+
+messages = [
+ SystemMessage ( "Translate the following from English into Italian" ) ,
+ HumanMessage ( "hi!" ) ,
+]
+
+model . invoke ( messages )
+API Reference: HumanMessage | SystemMessage AIMessage(content='Ciao!', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 3, 'prompt_tokens': 20, 'total_tokens': 23, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_0705bf87c0', 'finish_reason': 'stop', 'logprobs': None}, id='run-32654a56-627c-40e1-a141-ad9350bbfd3e-0', usage_metadata={'input_tokens': 20, 'output_tokens': 3, 'total_tokens': 23, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})
+TIP
+
+If we've enabled LangSmith, we can see that this run is logged to LangSmith, and can see the LangSmith trace . The LangSmith trace reports token usage information, latency, standard model parameters (such as temperature), and other information.
+
+Note that ChatModels receive message objects as input and generate message objects as output. In addition to text content, message objects convey conversational roles and hold important data, such as tool calls and token usage counts.
+
+LangChain also supports chat model inputs via strings or OpenAI format . The following are equivalent:
+
+model . invoke ( "Hello" )
+
+model . invoke ( [ { "role" : "user" , "content" : "Hello" } ] )
+
+model . invoke ( [ HumanMessage ( "Hello" ) ] )
+Streaming # ​
+
+Because chat models are Runnables , they expose a standard interface that includes async and streaming modes of invocation. This allows us to stream individual tokens from a chat model:
+
+for token in model . stream ( messages ) :
+ print ( token . content , end = "|" )
+|C|iao|!||
+You can find more details on streaming chat model outputs in this guide .
+
+Prompt Templates # ​
+
+Right now we are passing a list of messages directly into the language model. Where does this list of messages come from? Usually, it is constructed from a combination of user input and application logic. This application logic usually takes the raw user input and transforms it into a list of messages ready to pass to the language model. Common transformations include adding a system message or formatting a template with the user input.
+
+Prompt templates are a concept in LangChain designed to assist with this transformation. They take in raw user input and return data (a prompt) that is ready to pass into a language model.
+
+Let's create a prompt template here. It will take in two user variables:
+
+language : The language to translate text into
+
+text : The text to translate
+
+from langchain_core . prompts import ChatPromptTemplate
+
+system_template = "Translate the following from English into {language}"
+
+prompt_template = ChatPromptTemplate . from_messages (
+ [ ( "system" , system_template ) , ( "user" , "{text}" ) ]
+)
+API Reference: ChatPromptTemplate
+
+Note that ChatPromptTemplate supports multiple message roles in a single template. We format the language parameter into the system message, and the user text into a user message.
+
+The input to this prompt template is a dictionary. We can play around with this prompt template by itself to see what it does by itself
+
+prompt = prompt_template . invoke ( { "language" : "Italian" , "text" : "hi!" } )
+
+prompt
+ChatPromptValue(messages=[SystemMessage(content='Translate the following from English into Italian', additional_kwargs={}, response_metadata={}), HumanMessage(content='hi!', additional_kwargs={}, response_metadata={})])
+We can see that it returns a ChatPromptValue that consists of two messages. If we want to access the messages directly we do:
+
+prompt . to_messages ( )
+[SystemMessage(content='Translate the following from English into Italian', additional_kwargs={}, response_metadata={}),
+ HumanMessage(content='hi!', additional_kwargs={}, response_metadata={})]
+Finally, we can invoke the chat model on the formatted prompt:
+
+response = model . invoke ( prompt )
+print ( response . content )
+Ciao!
+TIP
+
+Message content can contain both text and content blocks with additional structure. See this guide for more information.
+
+If we take a look at the LangSmith trace , we can see exactly what prompt the chat model receives, along with token usage information, latency, standard model parameters (such as temperature), and other information.
+
+Conclusion # ​
+
+That's it! In this tutorial you've learned how to create your first simple LLM application. You've learned how to work with language models, how to create a prompt template, and how to get great observability into applications you create with LangSmith.
+
+This just scratches the surface of what you will want to learn to become a proficient AI Engineer. Luckily - we've got a lot of other resources!
+
+For further reading on the core concepts of LangChain, we've got detailed Conceptual Guides .
+
+If you have more specific questions on these concepts, check out the following sections of the how-to guides:
+
+Chat models
+
+Prompt templates
+
+And the LangSmith docs:
+
+LangSmith
+
+Edit this page
+
+Community
+
+LangChain Forum
+
+Twitter
+
+Slack
+
+GitHub
+
+Organization
+
+Python
+
+JS/TS
+
+More
+
+Homepage
+
+Blog
+
+YouTube
+
+Copyright © 2025 LangChain, Inc. 5 : 50 
+
+------------------------------------
+
+----------- WEB PAGE -----------
+
+TITLE: Messages | 🦜️🔗 LangChain
+
+URL: https://python.langchain.com/docs/concepts/messages/
+
+CONTENT:
+
+Skip to main content Our Building Ambient Agents with LangGraph course is now available on LangChain Academy! Search ⌘ K 
+
+ 
+
+Conceptual guide 
+
+Messages
+
+On this page
+
+Messages
+
+PREREQUISITES
+
+Chat Models
+
+Overview # ​
+
+Messages are the unit of communication in chat models . They are used to represent the input and output of a chat model, as well as any additional context or metadata that may be associated with a conversation.
+
+Each message has a role (e.g., "user", "assistant") and content (e.g., text, multimodal data) with additional metadata that varies depending on the chat model provider.
+
+LangChain provides a unified message format that can be used across chat models, allowing users to work with different chat models without worrying about the specific details of the message format used by each model provider.
+
+What is inside a message? # ​
+
+A message typically consists of the following pieces of information:
+
+Role : The role of the message (e.g., "user", "assistant").
+
+Content : The content of the message (e.g., text, multimodal data).
+
+Additional metadata: id, name, token usage and other model-specific metadata.
+
+Role # ​
+
+Roles are used to distinguish between different types of messages in a conversation and help the chat model understand how to respond to a given sequence of messages.
+
+Role Description system Used to tell the chat model how to behave and provide additional context. Not supported by all chat model providers. user Represents input from a user interacting with the model, usually in the form of text or other interactive input. assistant Represents a response from the model, which can include text or a request to invoke tools. tool A message used to pass the results of a tool invocation back to the model after external data or processing has been retrieved. Used with chat models that support tool calling . function (legacy) This is a legacy role, corresponding to OpenAI's legacy function-calling API. tool role should be used instead.
+
+Content # ​
+
+The content of a message text or a list of dictionaries representing multimodal data (e.g., images, audio, video). The exact format of the content can vary between different chat model providers.
+
+Currently, most chat models support text as the primary content type, with some models also supporting multimodal data. However, support for multimodal data is still limited across most chat model providers.
+
+For more information see:
+
+SystemMessage -- for content which should be passed to direct the conversation
+
+HumanMessage -- for content in the input from the user.
+
+AIMessage -- for content in the response from the model.
+
+Multimodality -- for more information on multimodal content.
+
+Other Message Data # ​
+
+Depending on the chat model provider, messages can include other data such as:
+
+ID : An optional unique identifier for the message.
+
+Name : An optional name property which allows differentiate between different entities/speakers with the same role. Not all models support this!
+
+Metadata : Additional information about the message, such as timestamps, token usage, etc.
+
+Tool Calls : A request made by the model to call one or more tools> See tool calling for more information.
+
+Conversation Structure # ​
+
+The sequence of messages into a chat model should follow a specific structure to ensure that the chat model can generate a valid response.
+
+For example, a typical conversation structure might look like this:
+
+User Message : "Hello, how are you?"
+
+Assistant Message : "I'm doing well, thank you for asking."
+
+User Message : "Can you tell me a joke?"
+
+Assistant Message : "Sure! Why did the scarecrow win an award? Because he was outstanding in his field!"
+
+Please read the chat history guide for more information on managing chat history and ensuring that the conversation structure is correct.
+
+LangChain Messages # ​
+
+LangChain provides a unified message format that can be used across all chat models, allowing users to work with different chat models without worrying about the specific details of the message format used by each model provider.
+
+LangChain messages are Python objects that subclass from a BaseMessage .
+
+The five main message types are:
+
+SystemMessage : corresponds to system role
+
+HumanMessage : corresponds to user role
+
+AIMessage : corresponds to assistant role
+
+AIMessageChunk : corresponds to assistant role, used for streaming responses
+
+ToolMessage : corresponds to tool role
+
+Other important messages include:
+
+RemoveMessage -- does not correspond to any role. This is an abstraction, mostly used in LangGraph to manage chat history.
+
+Legacy FunctionMessage : corresponds to the function role in OpenAI's legacy function-calling API.
+
+You can find more information about messages in the API Reference .
+
+SystemMessage # ​
+
+A SystemMessage is used to prime the behavior of the AI model and provide additional context, such as instructing the model to adopt a specific persona or setting the tone of the conversation (e.g., "This is a conversation about cooking").
+
+Different chat providers may support system message in one of the following ways:
+
+Through a "system" message role : In this case, a system message is included as part of the message sequence with the role explicitly set as "system."
+
+Through a separate API parameter for system instructions : Instead of being included as a message, system instructions are passed via a dedicated API parameter.
+
+No support for system messages : Some models do not support system messages at all.
+
+Most major chat model providers support system instructions via either a chat message or a separate API parameter. LangChain will automatically adapt based on the provider’s capabilities. If the provider supports a separate API parameter for system instructions, LangChain will extract the content of a system message and pass it through that parameter.
+
+If no system message is supported by the provider, in most cases LangChain will attempt to incorporate the system message's content into a HumanMessage or raise an exception if that is not possible. However, this behavior is not yet consistently enforced across all implementations, and if using a less popular implementation of a chat model (e.g., an implementation from the langchain-community package) it is recommended to check the specific documentation for that model.
+
+HumanMessage # ​
+
+The HumanMessage corresponds to the "user" role. A human message represents input from a user interacting with the model.
+
+Text Content # ​
+
+Most chat models expect the user input to be in the form of text.
+
+from langchain_core . messages import HumanMessage
+
+model . invoke ( [ HumanMessage ( content = "Hello, how are you?" ) ] )
+API Reference: HumanMessage TIP
+
+When invoking a chat model with a string as input, LangChain will automatically convert the string into a HumanMessage object. This is mostly useful for quick testing.
+
+model . invoke ( "Hello, how are you?" )
+Multi-modal Content # ​
+
+Some chat models accept multimodal inputs, such as images, audio, video, or files like PDFs.
+
+Please see the multimodality guide for more information.
+
+AIMessage # ​
+
+AIMessage is used to represent a message with the role "assistant" . This is the response from the model, which can include text or a request to invoke tools. It could also include other media types like images, audio, or video -- though this is still uncommon at the moment.
+
+from langchain_core . messages import HumanMessage
+ai_message = model . invoke ( [ HumanMessage ( "Tell me a joke" ) ] )
+ai_message # <-- AIMessage
+API Reference: HumanMessage
+
+An AIMessage has the following attributes. The attributes which are standardized are the ones that LangChain attempts to standardize across different chat model providers. raw fields are specific to the model provider and may vary.
+
+Attribute Standardized/Raw Description content Raw Usually a string, but can be a list of content blocks. See content for details. tool_calls Standardized Tool calls associated with the message. See tool calling for details. invalid_tool_calls Standardized Tool calls with parsing errors associated with the message. See tool calling for details. usage_metadata Standardized Usage metadata for a message, such as token counts . See Usage Metadata API Reference . id Standardized An optional unique identifier for the message, ideally provided by the provider/model that created the message. response_metadata Raw Response metadata, e.g., response headers, logprobs, token counts.
+
+content # ​
+
+The content property of an AIMessage represents the response generated by the chat model.
+
+The content is either:
+
+text -- the norm for virtually all chat models.
+
+A list of dictionaries -- Each dictionary represents a content block and is associated with a type .
+
+Used by Anthropic for surfacing agent thought process when doing tool calling .
+
+Used by OpenAI for audio outputs. Please see multi-modal content for more information.
+
+IMPORTANT
+
+The content property is not standardized across different chat model providers, mostly because there are still few examples to generalize from.
+
+AIMessageChunk # ​
+
+It is common to stream responses for the chat model as they are being generated, so the user can see the response in real-time instead of waiting for the entire response to be generated before displaying it.
+
+It is returned from the stream , astream and astream_events methods of the chat model.
+
+For example,
+
+for chunk in model . stream ( [ HumanMessage ( "what color is the sky?" ) ] ) :
+ print ( chunk )
+AIMessageChunk follows nearly the same structure as AIMessage , but uses a different ToolCallChunk to be able to stream tool calling in a standardized manner.
+
+Aggregating # ​
+
+AIMessageChunks support the + operator to merge them into a single AIMessage . This is useful when you want to display the final response to the user.
+
+ai_message = chunk1 + chunk2 + chunk3 + . . .
+ToolMessage # ​
+
+This represents a message with role "tool", which contains the result of calling a tool . In addition to role and content , this message has:
+
+a tool_call_id field which conveys the id of the call to the tool that was called to produce this result.
+
+an artifact field which can be used to pass along arbitrary artifacts of the tool execution which are useful to track but which should not be sent to the model.
+
+Please see tool calling for more information.
+
+RemoveMessage # ​
+
+This is a special message type that does not correspond to any roles. It is used for managing chat history in LangGraph .
+
+Please see the following for more information on how to use the RemoveMessage :
+
+Memory conceptual guide
+
+How to delete messages
+
+(Legacy) FunctionMessage # ​
+
+This is a legacy message type, corresponding to OpenAI's legacy function-calling API. ToolMessage should be used instead to correspond to the updated tool-calling API.
+
+OpenAI Format # ​
+
+Inputs # ​
+
+Chat models also accept OpenAI's format as inputs to chat models:
+
+chat_model . invoke ( [
+ {
+ "role" : "user" ,
+ "content" : "Hello, how are you?" ,
+ } ,
+ {
+ "role" : "assistant" ,
+ "content" : "I'm doing well, thank you for asking." ,
+ } ,
+ {
+ "role" : "user" ,
+ "content" : "Can you tell me a joke?" ,
+ }
+] )
+Outputs # ​
+
+At the moment, the output of the model will be in terms of LangChain messages, so you will need to convert the output to the OpenAI format if you need OpenAI format for the output as well.
+
+The convert_to_openai_messages utility function can be used to convert from LangChain messages to OpenAI format.
+
+Edit this page
+
+Previous « LangChain Expression Language (LCEL) Next Multimodality » Community
+
+LangChain Forum
+
+Twitter
+
+Slack
+
+GitHub
+
+Organization
+
+Python
+
+JS/TS
+
+More
+
+Homepage
+
+Blog
+
+YouTube
+
+Copyright © 2025 LangChain, Inc. 8 : 34 
+
+
+------------------------------------
+
+### 1 . High‑level architecture
+
+| Layer              | What it owns                                                                                                                                                                                                   | Notes                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **MessageManager** | ‑ in‑memory (or DB) list of `BaseMessage` objects<br>‑ helpers like `add_user`, `add_ai`, `add_tool`, `window(n)`                                                                                              | You’re fully in charge of history size, persistence, redaction, etc.                     |
+| **ChatAdapter**    | Thin wrapper around a LangChain `Chat*` model (e.g. `ChatOpenAI`, `ChatAnthropic`)                                                                                                                             | Constructed with `streaming=True` so you can call `.stream / .astream`. ([LangChain][1]) |
+| **ToolRouter**     | `dict[str, Callable]` that maps the *tool name the model emits* → **your** Python function                                                                                                                     | Keep it independent of LangChain’s `Tool` objects since you said you’re not using those. |
+| **Agent loop**     | 1. Feed messages → model (stream)<br>2. Yield chunks to UI<br>3. When the final `AIMessage` arrives, inspect `.tool_calls` and decide whether to:  • run a tool  • or finish. ([LangChain][2], [LangChain][3]) | Runs until an AI turn arrives **without** tool calls.                                    |
+
+```
+user ──▶ MessageManager ──▶ ChatAdapter.stream(...) ──▶ stream chunks to UI
+                          ▲                           │
+            new ToolMessage ◀── tool result ◀─────────┘
+```
+
+---
+
+### 2 . Message primitives
+
+```python
+from langchain_core.messages import (
+    SystemMessage, HumanMessage, AIMessage, ToolMessage
+)
+
+mm = MessageManager()
+mm.add_system("You are a helpful assistant …")
+mm.add_user("What's 2×3?")
+```
+
+* `AIMessage.tool_calls` → list of `{id, name, args}`.
+* `AIMessage.invalid_tool_calls` exists for JSON‑malformed calls; decide whether to fix/ask user or just reply with an error. ([LangChain][4])
+
+When you execute a tool:
+
+```python
+tool_out = my_tools[call.name](**call.args)
+mm.add_tool(
+    ToolMessage(
+        content=json.dumps({"result": tool_out}),
+        tool_call_id=call.id
+    )
+)
+```
+
+---
+
+### 3 . Streaming
+
+```python
+chat = ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True)
+
+def stream_ai_response(messages):
+    final = None
+    for chunk in chat.stream(messages):          # sync; use .astream for async
+        if isinstance(chunk, AIMessageChunk):    # stream to user UI
+            yield chunk.content or ""
+            final = final + chunk if final else chunk
+    return final.to_ai_message()
+```
+
+*Every* LangChain `Runnable` implements `.stream / .astream`; if you later swap models the rest of your code stays the same. ([LangChain][5])
+
+---
+
+### 4 . Agent control‑loop (sync flavour)
+
+```python
+class CoreAgent:
+    def __init__(self, chat_model, tools):
+        self.llm = chat_model
+        self.tools = tools
+        self.mm = MessageManager()
+
+    def handle_user(self, text):
+        self.mm.add_user(HumanMessage(content=text))
+        while True:
+            ai_msg = self._run_once()
+            self.mm.add_ai(ai_msg)
+
+            if not ai_msg.tool_calls:         # answer is final
+                return ai_msg.content
+
+            for call in ai_msg.tool_calls:    # you control execution
+                result = self.tools[call.name](**call.args)
+                self.mm.add_tool(
+                    ToolMessage(
+                        content=json.dumps(result),
+                        tool_call_id=call.id
+                    )
+                )
+
+    def _run_once(self):
+        # collect streamed chunks & surface to UI if you want
+        final_chunks = []
+        for chunk in self.llm.stream(self.mm.history):
+            if isinstance(chunk, AIMessageChunk):
+                final_chunks.append(chunk)
+                print(chunk.content, end="", flush=True)  # live display
+        return sum(final_chunks[1:], final_chunks[0])     # chunk1 + chunk2 …
+```
+
+---
+
+### 5 . Prompting & tool schemas (without `bind_tools`)
+
+Because you’re not using LangChain’s tool layer you have two options:
+
+1. **OpenAI‑style `tools=[…]` parameter**
+
+   ```python
+   chat = ChatOpenAI(
+       model="gpt-4o-mini",
+       streaming=True,
+       model_kwargs={
+           "tools": [
+               {
+                   "type": "function",
+                   "function": {
+                       "name": "calc",
+                       "description": "Do basic arithmetic.",
+                       "parameters": {
+                           "type": "object",
+                           "properties": {"a": {"type": "number"},
+                                          "b": {"type": "number"}},
+                           "required": ["a", "b"]
+                       }
+                   }
+               }
+           ]
+       }
+   )
+   ```
+
+   LangChain will still populate `.tool_calls` when the provider emits them.
+
+2. **Pure‑prompt** (model doesn’t see formal tool‑schemas)
+   Put something like
+
+   > “When you need arithmetic, output JSON exactly like
+   >
+   > ````json
+   > { "name": "calc", "args": {"a": <num>, "b": <num>} } 
+   > ```”  
+   > ````
+
+   in a `SystemMessage`. You’ll have to parse the JSON yourself.
+
+---
+
+### 6 . Observability & production extras
+
+* **Token / cost tracking** – every `AIMessage` carries `usage_metadata` so you can log tokens & \$\$ per turn. ([LangChain][6])
+* **Rate limits** – pass a `rate_limiter` when you instantiate the chat model (built‑in leaky‑bucket implementation).
+* **Retry logic** – wrap tool execution & model calls with back‑off/retry helpers.
+* **Persistence** – swap `MessageManager`’s list for a SQL table or Redis list when you scale.
+
+---
+
+### 7 . Putting it together
+
+```python
+agent = CoreAgent(chat, tools={"calc": calc, "search": web_search})
+print(agent.handle_user("What's 2×3?"))
+```
+
+The flow:
+
+1. User text → `HumanMessage`
+2. LangChain streams out chunks; you render them.
+3. Finished `AIMessage` contains `tool_calls`: `[calc(a=2,b=3)]`
+4. You execute `calc`, add `ToolMessage`.
+5. Agent loops; model now sees the tool result and returns a normal answer like “2 × 3 = 6”.
+
+No LangChain `Tool` objects, no chains/agents overhead—just the chat adapter, messages, and your own orchestration.
+
+[1]: https://python.langchain.com/docs/how_to/streaming/?utm_source=chatgpt.com "How to stream runnables | 🦜️ LangChain"
+[2]: https://python.langchain.com/docs/concepts/tool_calling/?utm_source=chatgpt.com "Tool calling - ️ LangChain"
+[3]: https://python.langchain.com/api_reference/core/messages/langchain_core.messages.ai.AIMessage.html?utm_source=chatgpt.com "AIMessage — LangChain documentation"
+[4]: https://python.langchain.com/docs/how_to/tool_calling/?utm_source=chatgpt.com "How to use chat models to call tools | 🦜️ LangChain"
+[5]: https://python.langchain.com/docs/concepts/streaming/?utm_source=chatgpt.com "Streaming - ️ LangChain"
+[6]: https://python.langchain.com/docs/how_to/chat_token_usage_tracking/?utm_source=chatgpt.com "How to track token usage in ChatModels | 🦜️ LangChain"
+
+
+----
+----------- WEB PAGE -----------
+
+TITLE: How to stream runnables | 🦜️🔗 LangChain
+
+URL: https://python.langchain.com/docs/how_to/streaming/?utm_source=chatgpt.com
+
+CONTENT:
+
+Skip to main content Our Building Ambient Agents with LangGraph course is now available on LangChain Academy! Search ⌘ K
+
+ 
+
+How-to guides 
+
+How to stream runnables
+
+On this page
+
+How to stream runnables
+
+PREREQUISITES
+
+This guide assumes familiarity with the following concepts:
+
+Chat models
+
+LangChain Expression Language
+
+Output parsers
+
+Streaming is critical in making applications based on LLMs feel responsive to end-users.
+
+Important LangChain primitives like chat models , output parsers , prompts , retrievers , and agents implement the LangChain Runnable Interface .
+
+This interface provides two general approaches to stream content:
+
+sync stream and async astream : a default implementation of streaming that streams the final output from the chain.
+
+async astream_events and async astream_log : these provide a way to stream both intermediate steps and final output from the chain.
+
+Let's take a look at both approaches, and try to understand how to use them.
+
+INFO
+
+For a higher-level overview of streaming techniques in LangChain, see this section of the conceptual guide .
+
+Using Stream # ​
+
+All Runnable objects implement a sync method called stream and an async variant called astream .
+
+These methods are designed to stream the final output in chunks, yielding each chunk as soon as it is available.
+
+Streaming is only possible if all steps in the program know how to process an input stream ; i.e., process an input chunk one at a time, and yield a corresponding output chunk.
+
+The complexity of this processing can vary, from straightforward tasks like emitting tokens produced by an LLM, to more challenging ones like streaming parts of JSON results before the entire JSON is complete.
+
+The best place to start exploring streaming is with the single most important components in LLMs apps-- the LLMs themselves!
+
+LLMs and Chat Models # ​
+
+Large language models and their chat variants are the primary bottleneck in LLM based apps.
+
+Large language models can take several seconds to generate a complete response to a query. This is far slower than the ~200-300 ms threshold at which an application feels responsive to an end user.
+
+The key strategy to make the application feel more responsive is to show intermediate progress; viz., to stream the output from the model token by token .
+
+We will show examples of streaming using a chat model. Choose one from the options below:
+
+Select chat model : Google Gemini ▾ pip install -qU "langchain[google-genai]"
+import getpass
+import os
+
+if not os . environ . get ( "GOOGLE_API_KEY" ) :
+ os . environ [ "GOOGLE_API_KEY" ] = getpass . getpass ( "Enter API key for Google Gemini: " )
+
+from langchain . chat_models import init_chat_model
+
+model = init_chat_model ( "gemini-2.0-flash" , model_provider = "google_genai" )
+Let's start with the sync stream API:
+
+chunks = [ ]
+for chunk in model . stream ( "what color is the sky?" ) :
+ chunks . append ( chunk )
+ print ( chunk . content , end = "|" , flush = True )
+The| sky| appears| blue| during| the| day|.|
+Alternatively, if you're working in an async environment, you may consider using the async astream API:
+
+chunks = [ ]
+async for chunk in model . astream ( "what color is the sky?" ) :
+ chunks . append ( chunk )
+ print ( chunk . content , end = "|" , flush = True )
+The| sky| appears| blue| during| the| day|.|
+Let's inspect one of the chunks
+
+chunks [ 0 ]
+AIMessageChunk(content='The', id='run-b36bea64-5511-4d7a-b6a3-a07b3db0c8e7')
+We got back something called an AIMessageChunk . This chunk represents a part of an AIMessage .
+
+Message chunks are additive by design -- one can simply add them up to get the state of the response so far!
+
+chunks [ 0 ] + chunks [ 1 ] + chunks [ 2 ] + chunks [ 3 ] + chunks [ 4 ]
+AIMessageChunk(content='The sky appears blue during', id='run-b36bea64-5511-4d7a-b6a3-a07b3db0c8e7')
+Chains # ​
+
+Virtually all LLM applications involve more steps than just a call to a language model.
+
+Let's build a simple chain using LangChain Expression Language ( LCEL ) that combines a prompt, model and a parser and verify that streaming works.
+
+We will use StrOutputParser to parse the output from the model. This is a simple parser that extracts the content field from an AIMessageChunk , giving us the token returned by the model.
+
+TIP
+
+LCEL is a declarative way to specify a "program" by chainining together different LangChain primitives. Chains created using LCEL benefit from an automatic implementation of stream and astream allowing streaming of the final output. In fact, chains created with LCEL implement the entire standard Runnable interface.
+
+from langchain_core . output_parsers import StrOutputParser
+from langchain_core . prompts import ChatPromptTemplate
+
+prompt = ChatPromptTemplate . from_template ( "tell me a joke about {topic}" )
+parser = StrOutputParser ( )
+chain = prompt | model | parser
+
+async for chunk in chain . astream ( { "topic" : "parrot" } ) :
+ print ( chunk , end = "|" , flush = True )
+API Reference: StrOutputParser | ChatPromptTemplate Here|'s| a| joke| about| a| par|rot|:|
+
+A man| goes| to| a| pet| shop| to| buy| a| par|rot|.| The| shop| owner| shows| him| two| stunning| pa|rr|ots| with| beautiful| pl|um|age|.|
+
+"|There|'s| a| talking| par|rot| an|d a| non|-|talking| par|rot|,"| the| owner| says|.| "|The| talking| par|rot| costs| $|100|,| an|d the| non|-|talking| par|rot| is| $|20|."|
+
+The| man| says|,| "|I|'ll| take| the| non|-|talking| par|rot| at| $|20|."|
+
+He| pays| an|d leaves| with| the| par|rot|.| As| he|'s| walking| down| the| street|,| the| par|rot| looks| up| at| him| an|d says|,| "|You| know|,| you| really| are| a| stupi|d man|!"|
+
+The| man| is| stun|ne|d an|d looks| at| the| par|rot| in| dis|bel|ief|.| The| par|rot| continues|,| "|Yes|,| you| got| r|ippe|d off| big| time|!| I| can| talk| just| as| well| as| that| other| par|rot|,| an|d you| only| pai|d $|20| |for| me|!"|
+Note that we're getting streaming output even though we're using parser at the end of the chain above. The parser operates on each streaming chunk individidually. Many of the LCEL primitives also support this kind of transform-style passthrough streaming, which can be very convenient when constructing apps.
+
+Custom functions can be designed to return generators , which are able to operate on streams.
+
+Certain runnables, like prompt templates and chat models , cannot process individual chunks and instead aggregate all previous steps. Such runnables can interrupt the streaming process.
+
+NOTE
+
+The LangChain Expression language allows you to separate the construction of a chain from the mode in which it is used (e.g., sync/async, batch/streaming etc.). If this is not relevant to what you're building, you can also rely on a standard imperative programming approach by caling invoke , batch or stream on each component individually, assigning the results to variables and then using them downstream as you see fit.
+
+Working with Input Streams # ​
+
+What if you wanted to stream JSON from the output as it was being generated?
+
+If you were to rely on json.loads to parse the partial json, the parsing would fail as the partial json wouldn't be valid json.
+
+You'd likely be at a complete loss of what to do and claim that it wasn't possible to stream JSON.
+
+Well, turns out there is a way to do it -- the parser needs to operate on the input stream , and attempt to "auto-complete" the partial json into a valid state.
+
+Let's see such a parser in action to understand what this means.
+
+from langchain_core . output_parsers import JsonOutputParser
+
+chain = (
+ model | JsonOutputParser ( )
+) # Due to a bug in older versions of Langchain, JsonOutputParser did not stream results from some models
+async for text in chain . astream (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`"
+) :
+ print ( text , flush = True )
+API Reference: JsonOutputParser {}
+{'countries': []}
+{'countries': [{}]}
+{'countries': [{'name': ''}]}
+{'countries': [{'name': 'France'}]}
+{'countries': [{'name': 'France', 'population': 67}]}
+{'countries': [{'name': 'France', 'population': 67413}]}
+{'countries': [{'name': 'France', 'population': 67413000}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': ''}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain'}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': ''}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': 'Japan'}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': 'Japan', 'population': 125}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': 'Japan', 'population': 125584}]}
+{'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351567}, {'name': 'Japan', 'population': 125584000}]}
+Now, let's break streaming. We'll use the previous example and append an extraction function at the end that extracts the country names from the finalized JSON.
+
+WARNING
+
+Any steps in the chain that operate on finalized inputs rather than on input streams can break streaming functionality via stream or astream .
+
+TIP
+
+Later, we will discuss the astream_events API which streams results from intermediate steps. This API will stream results from intermediate steps even if the chain contains steps that only operate on finalized inputs .
+
+from langchain_core . output_parsers import (
+ JsonOutputParser ,
+)
+
+
+# A function that operates on finalized inputs
+# rather than on an input_stream
+def _extract_country_names ( inputs ) :
+ """A function that does not operates on input streams and breaks streaming."""
+ if not isinstance ( inputs , dict ) :
+ return ""
+
+ if "countries" not in inputs :
+ return ""
+
+ countries = inputs [ "countries" ]
+
+ if not isinstance ( countries , list ) :
+ return ""
+
+ country_names = [
+ country . get ( "name" ) for country in countries if isinstance ( country , dict )
+ ]
+ return country_names
+
+
+chain = model | JsonOutputParser ( ) | _extract_country_names
+
+async for text in chain . astream (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`"
+) :
+ print ( text , end = "|" , flush = True )
+API Reference: JsonOutputParser ['France', 'Spain', 'Japan']|
+Generator Functions # ​
+
+Let's fix the streaming using a generator function that can operate on the input stream .
+
+TIP
+
+A generator function (a function that uses yield ) allows writing code that operates on input streams
+
+from langchain_core . output_parsers import JsonOutputParser
+
+
+async def _extract_country_names_streaming ( input_stream ) :
+ """A function that operates on input streams."""
+ country_names_so_far = set ( )
+
+ async for input in input_stream :
+ if not isinstance ( input , dict ) :
+ continue
+
+ if "countries" not in input :
+ continue
+
+ countries = input [ "countries" ]
+
+ if not isinstance ( countries , list ) :
+ continue
+
+ for country in countries :
+ name = country . get ( "name" )
+ if not name :
+ continue
+ if name not in country_names_so_far :
+ yield name
+ country_names_so_far . add ( name )
+
+
+chain = model | JsonOutputParser ( ) | _extract_country_names_streaming
+
+async for text in chain . astream (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`" ,
+) :
+ print ( text , end = "|" , flush = True )
+API Reference: JsonOutputParser France|Spain|Japan|
+NOTE
+
+Because the code above is relying on JSON auto-completion, you may see partial names of countries (e.g., Sp and Spain ), which is not what one would want for an extraction result!
+
+We're focusing on streaming concepts, not necessarily the results of the chains.
+
+Non-streaming components # ​
+
+Some built-in components like Retrievers do not offer any streaming . What happens if we try to stream them? 🤨
+
+from langchain_community . vectorstores import FAISS
+from langchain_core . output_parsers import StrOutputParser
+from langchain_core . prompts import ChatPromptTemplate
+from langchain_core . runnables import RunnablePassthrough
+from langchain_openai import OpenAIEmbeddings
+
+template = """Answer the question based only on the following context:
+{context}
+
+Question: {question}
+"""
+prompt = ChatPromptTemplate . from_template ( template )
+
+vectorstore = FAISS . from_texts (
+ [ "harrison worked at kensho" , "harrison likes spicy food" ] ,
+ embedding = OpenAIEmbeddings ( ) ,
+)
+retriever = vectorstore . as_retriever ( )
+
+chunks = [ chunk for chunk in retriever . stream ( "where did harrison work?" ) ]
+chunks
+API Reference: FAISS | StrOutputParser | ChatPromptTemplate | RunnablePassthrough | OpenAIEmbeddings [[Document(page_content='harrison worked at kensho'),
+ Document(page_content='harrison likes spicy food')]]
+Stream just yielded the final result from that component.
+
+This is OK 🥹! Not all components have to implement streaming -- in some cases streaming is either unnecessary, difficult or just doesn't make sense.
+
+TIP
+
+An LCEL chain constructed using non-streaming components, will still be able to stream in a lot of cases, with streaming of partial output starting after the last non-streaming step in the chain.
+
+retrieval_chain = (
+ {
+ "context" : retriever . with_config ( run_name = "Docs" ) ,
+ "question" : RunnablePassthrough ( ) ,
+ }
+ | prompt
+ | model
+ | StrOutputParser ( )
+)
+for chunk in retrieval_chain . stream (
+ "Where did harrison work? Write 3 made up sentences about this place."
+) :
+ print ( chunk , end = "|" , flush = True )
+Base|d on| the| given| context|,| Harrison| worke|d at| K|ens|ho|.|
+
+Here| are| |3| |made| up| sentences| about| this| place|:|
+
+1|.| K|ens|ho| was| a| cutting|-|edge| technology| company| known| for| its| innovative| solutions| in| artificial| intelligence| an|d data| analytics|.|
+
+2|.| The| modern| office| space| at| K|ens|ho| feature|d open| floor| plans|,| collaborative| work|sp|aces|,| an|d a| vib|rant| atmosphere| that| fos|tere|d creativity| an|d team|work|.|
+
+3|.| With| its| prime| location| in| the| heart| of| the| city|,| K|ens|ho| attracte|d top| talent| from| aroun|d the| worl|d,| creating| a| diverse| an|d dynamic| work| environment|.|
+Now that we've seen how stream and astream work, let's venture into the world of streaming events. 🏞️
+
+Using Stream Events # ​
+
+Event Streaming is a beta API. This API may change a bit based on feedback.
+
+NOTE
+
+This guide demonstrates the V2 API and requires langchain-core >= 0.2. For the V1 API compatible with older versions of LangChain, see here .
+
+import langchain_core
+
+langchain_core . __version__
+For the astream_events API to work properly:
+
+Use async throughout the code to the extent possible (e.g., async tools etc)
+
+Propagate callbacks if defining custom functions / runnables
+
+Whenever using runnables without LCEL, make sure to call .astream() on LLMs rather than .ainvoke to force the LLM to stream tokens.
+
+Let us know if anything doesn't work as expected! :)
+
+Event Reference # ​
+
+Below is a reference table that shows some events that might be emitted by the various Runnable objects.
+
+NOTE
+
+When streaming is implemented properly, the inputs to a runnable will not be known until after the input stream has been entirely consumed. This means that inputs will often be included only for end events and rather than for start events.
+
+event name chunk input output on_chat_model_start [model name] {"messages": [[SystemMessage, HumanMessage]]} on_chat_model_stream [model name] AIMessageChunk(content="hello") on_chat_model_end [model name] {"messages": [[SystemMessage, HumanMessage]]} AIMessageChunk(content="hello world") on_llm_start [model name] {'input': 'hello'} on_llm_stream [model name] 'Hello' on_llm_end [model name] 'Hello human!' on_chain_start format_docs on_chain_stream format_docs "hello world!, goodbye world!" on_chain_end format_docs [Document(...)] "hello world!, goodbye world!" on_tool_start some_tool {"x": 1, "y": "2"} on_tool_end some_tool {"x": 1, "y": "2"} on_retriever_start [retriever name] {"query": "hello"} on_retriever_end [retriever name] {"query": "hello"} [Document(...), ..] on_prompt_start [template_name] {"question": "hello"} on_prompt_end [template_name] {"question": "hello"} ChatPromptValue(messages: [SystemMessage, ...])
+
+Chat Model # ​
+
+Let's start off by looking at the events produced by a chat model.
+
+events = [ ]
+async for event in model . astream_events ( "hello" ) :
+ events . append ( event )
+NOTE
+
+For langchain-core<0.3.37 , set the version kwarg explicitly (e.g., model.astream_events("hello", version="v2") ).
+
+Let's take a look at the few of the start event and a few of the end events.
+
+events [ : 3 ]
+[{'event': 'on_chat_model_start',
+ 'data': {'input': 'hello'},
+ 'name': 'ChatAnthropic',
+ 'tags': [],
+ 'run_id': 'b18d016d-8b9b-49e7-a555-44db498fcf66',
+ 'metadata': {'ls_provider': 'anthropic',
+ 'ls_model_name': 'claude-3-sonnet-20240229',
+ 'ls_model_type': 'chat',
+ 'ls_temperature': 0.0,
+ 'ls_max_tokens': 1024},
+ 'parent_ids': []},
+ {'event': 'on_chat_model_stream',
+ 'run_id': 'b18d016d-8b9b-49e7-a555-44db498fcf66',
+ 'name': 'ChatAnthropic',
+ 'tags': [],
+ 'metadata': {'ls_provider': 'anthropic',
+ 'ls_model_name': 'claude-3-sonnet-20240229',
+ 'ls_model_type': 'chat',
+ 'ls_temperature': 0.0,
+ 'ls_max_tokens': 1024},
+ 'data': {'chunk': AIMessageChunk(content='', additional_kwargs={}, response_metadata={}, id='run-b18d016d-8b9b-49e7-a555-44db498fcf66', usage_metadata={'input_tokens': 8, 'output_tokens': 4, 'total_tokens': 12, 'input_token_details': {'cache_creation': 0, 'cache_read': 0}})},
+ 'parent_ids': []},
+ {'event': 'on_chat_model_stream',
+ 'run_id': 'b18d016d-8b9b-49e7-a555-44db498fcf66',
+ 'name': 'ChatAnthropic',
+ 'tags': [],
+ 'metadata': {'ls_provider': 'anthropic',
+ 'ls_model_name': 'claude-3-sonnet-20240229',
+ 'ls_model_type': 'chat',
+ 'ls_temperature': 0.0,
+ 'ls_max_tokens': 1024},
+ 'data': {'chunk': AIMessageChunk(content='Hello! How can', additional_kwargs={}, response_metadata={}, id='run-b18d016d-8b9b-49e7-a555-44db498fcf66')},
+ 'parent_ids': []}]
+events [ - 2 : ]
+[{'event': 'on_chat_model_stream',
+ 'run_id': 'b18d016d-8b9b-49e7-a555-44db498fcf66',
+ 'name': 'ChatAnthropic',
+ 'tags': [],
+ 'metadata': {'ls_provider': 'anthropic',
+ 'ls_model_name': 'claude-3-sonnet-20240229',
+ 'ls_model_type': 'chat',
+ 'ls_temperature': 0.0,
+ 'ls_max_tokens': 1024},
+ 'data': {'chunk': AIMessageChunk(content='', additional_kwargs={}, response_metadata={'stop_reason': 'end_turn', 'stop_sequence': None}, id='run-b18d016d-8b9b-49e7-a555-44db498fcf66', usage_metadata={'input_tokens': 0, 'output_tokens': 12, 'total_tokens': 12, 'input_token_details': {}})},
+ 'parent_ids': []},
+ {'event': 'on_chat_model_end',
+ 'data': {'output': AIMessageChunk(content='Hello! How can I assist you today?', additional_kwargs={}, response_metadata={'stop_reason': 'end_turn', 'stop_sequence': None}, id='run-b18d016d-8b9b-49e7-a555-44db498fcf66', usage_metadata={'input_tokens': 8, 'output_tokens': 16, 'total_tokens': 24, 'input_token_details': {'cache_creation': 0, 'cache_read': 0}})},
+ 'run_id': 'b18d016d-8b9b-49e7-a555-44db498fcf66',
+ 'name': 'ChatAnthropic',
+ 'tags': [],
+ 'metadata': {'ls_provider': 'anthropic',
+ 'ls_model_name': 'claude-3-sonnet-20240229',
+ 'ls_model_type': 'chat',
+ 'ls_temperature': 0.0,
+ 'ls_max_tokens': 1024},
+ 'parent_ids': []}]
+Chain # ​
+
+Let's revisit the example chain that parsed streaming JSON to explore the streaming events API.
+
+chain = (
+ model | JsonOutputParser ( )
+) # Due to a bug in older versions of Langchain, JsonOutputParser did not stream results from some models
+
+events = [
+ event
+ async for event in chain . astream_events (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`" ,
+ )
+]
+If you examine at the first few events, you'll notice that there are 3 different start events rather than 2 start events.
+
+The three start events correspond to:
+
+The chain (model + parser)
+
+The model
+
+The parser
+
+events [ : 3 ]
+[{'event': 'on_chain_start',
+ 'data': {'input': 'output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`'},
+ 'name': 'RunnableSequence',
+ 'tags': [],
+ 'run_id': '4765006b-16e2-4b1d-a523-edd9fd64cb92',
+ 'metadata': {}},
+ {'event': 'on_chat_model_start',
+ 'data': {'input': {'messages': [[HumanMessage(content='output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`')]]}},
+ 'name': 'ChatAnthropic',
+ 'tags': ['seq:step:1'],
+ 'run_id': '0320c234-7b52-4a14-ae4e-5f100949e589',
+ 'metadata': {}},
+ {'event': 'on_chat_model_stream',
+ 'data': {'chunk': AIMessageChunk(content='{', id='run-0320c234-7b52-4a14-ae4e-5f100949e589')},
+ 'run_id': '0320c234-7b52-4a14-ae4e-5f100949e589',
+ 'name': 'ChatAnthropic',
+ 'tags': ['seq:step:1'],
+ 'metadata': {}}]
+What do you think you'd see if you looked at the last 3 events? what about the middle?
+
+Let's use this API to take output the stream events from the model and the parser. We're ignoring start events, end events and events from the chain.
+
+num_events = 0
+
+async for event in chain . astream_events (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`" ,
+) :
+ kind = event [ "event" ]
+ if kind == "on_chat_model_stream" :
+ print (
+ f"Chat model chunk: { repr ( event [ 'data' ] [ 'chunk' ] . content ) } " ,
+ flush = True ,
+ )
+ if kind == "on_parser_stream" :
+ print ( f"Parser chunk: { event [ 'data' ] [ 'chunk' ] } " , flush = True )
+ num_events += 1
+ if num_events > 30 :
+ # Truncate the output
+ print ( "..." )
+ break
+Chat model chunk: ''
+Chat model chunk: '{'
+Parser chunk: {}
+Chat model chunk: '\n "countries'
+Chat model chunk: '": [\n '
+Parser chunk: {'countries': []}
+Chat model chunk: '{\n "'
+Parser chunk: {'countries': [{}]}
+Chat model chunk: 'name": "France'
+Parser chunk: {'countries': [{'name': 'France'}]}
+Chat model chunk: '",\n "'
+Chat model chunk: 'population": 67'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67}]}
+Chat model chunk: '413'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413}]}
+Chat model chunk: '000\n },'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}]}
+Chat model chunk: '\n {'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}, {}]}
+Chat model chunk: '\n "name":'
+...
+Because both the model and the parser support streaming, we see streaming events from both components in real time! Kind of cool isn't it? 🦜
+
+Filtering Events # ​
+
+Because this API produces so many events, it is useful to be able to filter on events.
+
+You can filter by either component name , component tags or component type .
+
+By Name # ​
+
+chain = model . with_config ( { "run_name" : "model" } ) | JsonOutputParser ( ) . with_config (
+ { "run_name" : "my_parser" }
+)
+
+max_events = 0
+async for event in chain . astream_events (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`" ,
+ include_names = [ "my_parser" ] ,
+) :
+ print ( event )
+ max_events += 1
+ if max_events > 10 :
+ # Truncate output
+ print ( "..." )
+ break
+{'event': 'on_parser_start', 'data': {'input': 'output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`'}, 'name': 'my_parser', 'tags': ['seq:step:2'], 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'metadata': {}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': []}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France'}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67413}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67413000}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67413000}, {}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain'}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+{'event': 'on_parser_stream', 'run_id': '37ee9e85-481c-415e-863b-c9e132d24948', 'name': 'my_parser', 'tags': ['seq:step:2'], 'metadata': {}, 'data': {'chunk': {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47}]}}, 'parent_ids': ['5a0bc625-09fd-4bdf-9932-54909a9a8c29']}
+...
+By Type # ​
+
+chain = model . with_config ( { "run_name" : "model" } ) | JsonOutputParser ( ) . with_config (
+ { "run_name" : "my_parser" }
+)
+
+max_events = 0
+async for event in chain . astream_events (
+ 'output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`' ,
+ include_types = [ "chat_model" ] ,
+) :
+ print ( event )
+ max_events += 1
+ if max_events > 10 :
+ # Truncate output
+ print ( "..." )
+ break
+{'event': 'on_chat_model_start', 'data': {'input': 'output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`'}, 'name': 'model', 'tags': ['seq:step:1'], 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c', usage_metadata={'input_tokens': 56, 'output_tokens': 1, 'total_tokens': 57, 'input_token_details': {'cache_creation': 0, 'cache_read': 0}})}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='{', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='\n "countries', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='": [\n ', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='{\n "', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='name": "France', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='",\n "', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='population": 67', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='413', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='000\n },', additional_kwargs={}, response_metadata={}, id='run-156c3e40-82fb-49ff-8e41-9e998061be8c')}, 'run_id': '156c3e40-82fb-49ff-8e41-9e998061be8c', 'name': 'model', 'tags': ['seq:step:1'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['7b927055-bc1b-4b50-a34c-10d3cfcb3899']}
+...
+By Tags # ​
+
+CAUTION
+
+Tags are inherited by child components of a given runnable.
+
+If you're using tags to filter, make sure that this is what you want.
+
+chain = ( model | JsonOutputParser ( ) ) . with_config ( { "tags" : [ "my_chain" ] } )
+
+max_events = 0
+async for event in chain . astream_events (
+ 'output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`' ,
+ include_tags = [ "my_chain" ] ,
+) :
+ print ( event )
+ max_events += 1
+ if max_events > 10 :
+ # Truncate output
+ print ( "..." )
+ break
+{'event': 'on_chain_start', 'data': {'input': 'output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`'}, 'name': 'RunnableSequence', 'tags': ['my_chain'], 'run_id': '58d1302e-36ce-4df7-a3cb-47cb73d57e44', 'metadata': {}, 'parent_ids': []}
+{'event': 'on_chat_model_start', 'data': {'input': {'messages': [[HumanMessage(content='output a list of the countries france, spain and japan and their populations in JSON format. Use a dict with an outer key of "countries" which contains a list of countries. Each country should have the key `name` and `population`', additional_kwargs={}, response_metadata={})]]}}, 'name': 'ChatAnthropic', 'tags': ['seq:step:1', 'my_chain'], 'run_id': '8222e8a1-d978-4f30-87fc-b2dba838774b', 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='', additional_kwargs={}, response_metadata={}, id='run-8222e8a1-d978-4f30-87fc-b2dba838774b', usage_metadata={'input_tokens': 56, 'output_tokens': 1, 'total_tokens': 57, 'input_token_details': {'cache_creation': 0, 'cache_read': 0}})}, 'run_id': '8222e8a1-d978-4f30-87fc-b2dba838774b', 'name': 'ChatAnthropic', 'tags': ['seq:step:1', 'my_chain'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_parser_start', 'data': {}, 'name': 'JsonOutputParser', 'tags': ['seq:step:2', 'my_chain'], 'run_id': '75604c84-e1e6-494a-8b2a-950f45d932e8', 'metadata': {}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='{', additional_kwargs={}, response_metadata={}, id='run-8222e8a1-d978-4f30-87fc-b2dba838774b')}, 'run_id': '8222e8a1-d978-4f30-87fc-b2dba838774b', 'name': 'ChatAnthropic', 'tags': ['seq:step:1', 'my_chain'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_parser_stream', 'run_id': '75604c84-e1e6-494a-8b2a-950f45d932e8', 'name': 'JsonOutputParser', 'tags': ['seq:step:2', 'my_chain'], 'metadata': {}, 'data': {'chunk': {}}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_chain_stream', 'run_id': '58d1302e-36ce-4df7-a3cb-47cb73d57e44', 'name': 'RunnableSequence', 'tags': ['my_chain'], 'metadata': {}, 'data': {'chunk': {}}, 'parent_ids': []}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='\n "countries', additional_kwargs={}, response_metadata={}, id='run-8222e8a1-d978-4f30-87fc-b2dba838774b')}, 'run_id': '8222e8a1-d978-4f30-87fc-b2dba838774b', 'name': 'ChatAnthropic', 'tags': ['seq:step:1', 'my_chain'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_chat_model_stream', 'data': {'chunk': AIMessageChunk(content='": [\n ', additional_kwargs={}, response_metadata={}, id='run-8222e8a1-d978-4f30-87fc-b2dba838774b')}, 'run_id': '8222e8a1-d978-4f30-87fc-b2dba838774b', 'name': 'ChatAnthropic', 'tags': ['seq:step:1', 'my_chain'], 'metadata': {'ls_provider': 'anthropic', 'ls_model_name': 'claude-3-sonnet-20240229', 'ls_model_type': 'chat', 'ls_temperature': 0.0, 'ls_max_tokens': 1024}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_parser_stream', 'run_id': '75604c84-e1e6-494a-8b2a-950f45d932e8', 'name': 'JsonOutputParser', 'tags': ['seq:step:2', 'my_chain'], 'metadata': {}, 'data': {'chunk': {'countries': []}}, 'parent_ids': ['58d1302e-36ce-4df7-a3cb-47cb73d57e44']}
+{'event': 'on_chain_stream', 'run_id': '58d1302e-36ce-4df7-a3cb-47cb73d57e44', 'name': 'RunnableSequence', 'tags': ['my_chain'], 'metadata': {}, 'data': {'chunk': {'countries': []}}, 'parent_ids': []}
+...
+Non-streaming components # ​
+
+Remember how some components don't stream well because they don't operate on input streams ?
+
+While such components can break streaming of the final output when using astream , astream_events will still yield streaming events from intermediate steps that support streaming!
+
+# Function that does not support streaming.
+# It operates on the finalizes inputs rather than
+# operating on the input stream.
+def _extract_country_names ( inputs ) :
+ """A function that does not operates on input streams and breaks streaming."""
+ if not isinstance ( inputs , dict ) :
+ return ""
+
+ if "countries" not in inputs :
+ return ""
+
+ countries = inputs [ "countries" ]
+
+ if not isinstance ( countries , list ) :
+ return ""
+
+ country_names = [
+ country . get ( "name" ) for country in countries if isinstance ( country , dict )
+ ]
+ return country_names
+
+
+chain = (
+ model | JsonOutputParser ( ) | _extract_country_names
+) # This parser only works with OpenAI right now
+As expected, the astream API doesn't work correctly because _extract_country_names doesn't operate on streams.
+
+async for chunk in chain . astream (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`" ,
+) :
+ print ( chunk , flush = True )
+['France', 'Spain', 'Japan']
+Now, let's confirm that with astream_events we're still seeing streaming output from the model and the parser.
+
+num_events = 0
+
+async for event in chain . astream_events (
+ "output a list of the countries france, spain and japan and their populations in JSON format. "
+ 'Use a dict with an outer key of "countries" which contains a list of countries. '
+ "Each country should have the key `name` and `population`" ,
+) :
+ kind = event [ "event" ]
+ if kind == "on_chat_model_stream" :
+ print (
+ f"Chat model chunk: { repr ( event [ 'data' ] [ 'chunk' ] . content ) } " ,
+ flush = True ,
+ )
+ if kind == "on_parser_stream" :
+ print ( f"Parser chunk: { event [ 'data' ] [ 'chunk' ] } " , flush = True )
+ num_events += 1
+ if num_events > 30 :
+ # Truncate the output
+ print ( "..." )
+ break
+Chat model chunk: ''
+Chat model chunk: '{'
+Parser chunk: {}
+Chat model chunk: '\n "countries'
+Chat model chunk: '": [\n '
+Parser chunk: {'countries': []}
+Chat model chunk: '{\n "'
+Parser chunk: {'countries': [{}]}
+Chat model chunk: 'name": "France'
+Parser chunk: {'countries': [{'name': 'France'}]}
+Chat model chunk: '",\n "'
+Chat model chunk: 'population": 67'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67}]}
+Chat model chunk: '413'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413}]}
+Chat model chunk: '000\n },'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}]}
+Chat model chunk: '\n {'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}, {}]}
+Chat model chunk: '\n "name":'
+Chat model chunk: ' "Spain",'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain'}]}
+Chat model chunk: '\n "population":'
+Chat model chunk: ' 47'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47}]}
+Chat model chunk: '351'
+Parser chunk: {'countries': [{'name': 'France', 'population': 67413000}, {'name': 'Spain', 'population': 47351}]}
+...
+Propagating Callbacks # ​
+
+CAUTION
+
+If you're using invoking runnables inside your tools, you need to propagate callbacks to the runnable; otherwise, no stream events will be generated.
+
+NOTE
+
+When using RunnableLambdas or @chain decorator, callbacks are propagated automatically behind the scenes.
+
+from langchain_core . runnables import RunnableLambda
+from langchain_core . tools import tool
+
+
+def reverse_word ( word : str ) :
+ return word [ : : - 1 ]
+
+
+reverse_word = RunnableLambda ( reverse_word )
+
+
+@tool
+def bad_tool ( word : str ) :
+ """Custom tool that doesn't propagate callbacks."""
+ return reverse_word . invoke ( word )
+
+
+async for event in bad_tool . astream_events ( "hello" ) :
+ print ( event )
+API Reference: RunnableLambda | tool {'event': 'on_tool_start', 'data': {'input': 'hello'}, 'name': 'bad_tool', 'tags': [], 'run_id': 'ea900472-a8f7-425d-b627-facdef936ee8', 'metadata': {}}
+{'event': 'on_chain_start', 'data': {'input': 'hello'}, 'name': 'reverse_word', 'tags': [], 'run_id': '77b01284-0515-48f4-8d7c-eb27c1882f86', 'metadata': {}}
+{'event': 'on_chain_end', 'data': {'output': 'olleh', 'input': 'hello'}, 'run_id': '77b01284-0515-48f4-8d7c-eb27c1882f86', 'name': 'reverse_word', 'tags': [], 'metadata': {}}
+{'event': 'on_tool_end', 'data': {'output': 'olleh'}, 'run_id': 'ea900472-a8f7-425d-b627-facdef936ee8', 'name': 'bad_tool', 'tags': [], 'metadata': {}}
+Here's a re-implementation that does propagate callbacks correctly. You'll notice that now we're getting events from the reverse_word runnable as well.
+
+@tool
+def correct_tool ( word : str , callbacks ) :
+ """A tool that correctly propagates callbacks."""
+ return reverse_word . invoke ( word , { "callbacks" : callbacks } )
+
+
+async for event in correct_tool . astream_events ( "hello" ) :
+ print ( event )
+{'event': 'on_tool_start', 'data': {'input': 'hello'}, 'name': 'correct_tool', 'tags': [], 'run_id': 'd5ea83b9-9278-49cc-9f1d-aa302d671040', 'metadata': {}}
+{'event': 'on_chain_start', 'data': {'input': 'hello'}, 'name': 'reverse_word', 'tags': [], 'run_id': '44dafbf4-2f87-412b-ae0e-9f71713810df', 'metadata': {}}
+{'event': 'on_chain_end', 'data': {'output': 'olleh', 'input': 'hello'}, 'run_id': '44dafbf4-2f87-412b-ae0e-9f71713810df', 'name': 'reverse_word', 'tags': [], 'metadata': {}}
+{'event': 'on_tool_end', 'data': {'output': 'olleh'}, 'run_id': 'd5ea83b9-9278-49cc-9f1d-aa302d671040', 'name': 'correct_tool', 'tags': [], 'metadata': {}}
+If you're invoking runnables from within Runnable Lambdas or @chains , then callbacks will be passed automatically on your behalf.
+
+from langchain_core . runnables import RunnableLambda
+
+
+async def reverse_and_double ( word : str ) :
+ return await reverse_word . ainvoke ( word ) * 2
+
+
+reverse_and_double = RunnableLambda ( reverse_and_double )
+
+await reverse_and_double . ainvoke ( "1234" )
+
+async for event in reverse_and_double . astream_events ( "1234" ) :
+ print ( event )
+API Reference: RunnableLambda {'event': 'on_chain_start', 'data': {'input': '1234'}, 'name': 'reverse_and_double', 'tags': [], 'run_id': '03b0e6a1-3e60-42fc-8373-1e7829198d80', 'metadata': {}}
+{'event': 'on_chain_start', 'data': {'input': '1234'}, 'name': 'reverse_word', 'tags': [], 'run_id': '5cf26fc8-840b-4642-98ed-623dda28707a', 'metadata': {}}
+{'event': 'on_chain_end', 'data': {'output': '4321', 'input': '1234'}, 'run_id': '5cf26fc8-840b-4642-98ed-623dda28707a', 'name': 'reverse_word', 'tags': [], 'metadata': {}}
+{'event': 'on_chain_stream', 'data': {'chunk': '43214321'}, 'run_id': '03b0e6a1-3e60-42fc-8373-1e7829198d80', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
+{'event': 'on_chain_end', 'data': {'output': '43214321'}, 'run_id': '03b0e6a1-3e60-42fc-8373-1e7829198d80', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
+And with the @chain decorator:
+
+from langchain_core . runnables import chain
+
+
+@chain
+async def reverse_and_double ( word : str ) :
+ return await reverse_word . ainvoke ( word ) * 2
+
+
+await reverse_and_double . ainvoke ( "1234" )
+
+async for event in reverse_and_double . astream_events ( "1234" ) :
+ print ( event )
+API Reference: chain {'event': 'on_chain_start', 'data': {'input': '1234'}, 'name': 'reverse_and_double', 'tags': [], 'run_id': '1bfcaedc-f4aa-4d8e-beee-9bba6ef17008', 'metadata': {}}
+{'event': 'on_chain_start', 'data': {'input': '1234'}, 'name': 'reverse_word', 'tags': [], 'run_id': '64fc99f0-5d7d-442b-b4f5-4537129f67d1', 'metadata': {}}
+{'event': 'on_chain_end', 'data': {'output': '4321', 'input': '1234'}, 'run_id': '64fc99f0-5d7d-442b-b4f5-4537129f67d1', 'name': 'reverse_word', 'tags': [], 'metadata': {}}
+{'event': 'on_chain_stream', 'data': {'chunk': '43214321'}, 'run_id': '1bfcaedc-f4aa-4d8e-beee-9bba6ef17008', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
+{'event': 'on_chain_end', 'data': {'output': '43214321'}, 'run_id': '1bfcaedc-f4aa-4d8e-beee-9bba6ef17008', 'name': 'reverse_and_double', 'tags': [], 'metadata': {}}
+Next steps # ​
+
+Now you've learned some ways to stream both final outputs and internal steps with LangChain.
+
+To learn more, check out the other how-to guides in this section, or the conceptual guide on Langchain Expression Language .
+
+Edit this page
+
+Community
+
+LangChain Forum
+
+Twitter
+
+Slack
+
+GitHub
+
+Organization
+
+Python
+
+JS/TS
+
+More
+
+Homepage
+
+Blog
+
+YouTube
+
+Copyright © 2025 LangChain, Inc. 25 : 22 
+
+
+------------------------------------
+
+
+### 1 . High‑level architecture
+
+| Layer              | What it owns                                                                                                                                                                                                   | Notes                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **MessageManager** | ‑ in‑memory (or DB) list of `BaseMessage` objects<br>‑ helpers like `add_user`, `add_ai`, `add_tool`, `window(n)`                                                                                              | You’re fully in charge of history size, persistence, redaction, etc.                     |
+| **ChatAdapter**    | Thin wrapper around a LangChain `Chat*` model (e.g. `ChatOpenAI`, `ChatAnthropic`)                                                                                                                             | Constructed with `streaming=True` so you can call `.stream / .astream`. ([LangChain][1]) |
+| **ToolRouter**     | `dict[str, Callable]` that maps the *tool name the model emits* → **your** Python function                                                                                                                     | Keep it independent of LangChain’s `Tool` objects since you said you’re not using those. |
+| **Agent loop**     | 1. Feed messages → model (stream)<br>2. Yield chunks to UI<br>3. When the final `AIMessage` arrives, inspect `.tool_calls` and decide whether to:  • run a tool  • or finish. ([LangChain][2], [LangChain][3]) | Runs until an AI turn arrives **without** tool calls.                                    |
+
+```
+user ──▶ MessageManager ──▶ ChatAdapter.stream(...) ──▶ stream chunks to UI
+                          ▲                           │
+            new ToolMessage ◀── tool result ◀─────────┘
+```
+
+---
+
+### 2 . Message primitives
+
+```python
+from langchain_core.messages import (
+    SystemMessage, HumanMessage, AIMessage, ToolMessage
+)
+
+mm = MessageManager()
+mm.add_system("You are a helpful assistant …")
+mm.add_user("What's 2×3?")
+```
+
+* `AIMessage.tool_calls` → list of `{id, name, args}`.
+* `AIMessage.invalid_tool_calls` exists for JSON‑malformed calls; decide whether to fix/ask user or just reply with an error. ([LangChain][4])
+
+When you execute a tool:
+
+```python
+tool_out = my_tools[call.name](**call.args)
+mm.add_tool(
+    ToolMessage(
+        content=json.dumps({"result": tool_out}),
+        tool_call_id=call.id
+    )
+)
+```
+
+---
+
+### 3 . Streaming
+
+```python
+chat = ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True)
+
+def stream_ai_response(messages):
+    final = None
+    for chunk in chat.stream(messages):          # sync; use .astream for async
+        if isinstance(chunk, AIMessageChunk):    # stream to user UI
+            yield chunk.content or ""
+            final = final + chunk if final else chunk
+    return final.to_ai_message()
+```
+
+*Every* LangChain `Runnable` implements `.stream / .astream`; if you later swap models the rest of your code stays the same. ([LangChain][5])
+
+---
+
+### 4 . Agent control‑loop (sync flavour)
+
+```python
+class CoreAgent:
+    def __init__(self, chat_model, tools):
+        self.llm = chat_model
+        self.tools = tools
+        self.mm = MessageManager()
+
+    def handle_user(self, text):
+        self.mm.add_user(HumanMessage(content=text))
+        while True:
+            ai_msg = self._run_once()
+            self.mm.add_ai(ai_msg)
+
+            if not ai_msg.tool_calls:         # answer is final
+                return ai_msg.content
+
+            for call in ai_msg.tool_calls:    # you control execution
+                result = self.tools[call.name](**call.args)
+                self.mm.add_tool(
+                    ToolMessage(
+                        content=json.dumps(result),
+                        tool_call_id=call.id
+                    )
+                )
+
+    def _run_once(self):
+        # collect streamed chunks & surface to UI if you want
+        final_chunks = []
+        for chunk in self.llm.stream(self.mm.history):
+            if isinstance(chunk, AIMessageChunk):
+                final_chunks.append(chunk)
+                print(chunk.content, end="", flush=True)  # live display
+        return sum(final_chunks[1:], final_chunks[0])     # chunk1 + chunk2 …
+```
+
+---
+
+### 5 . Prompting & tool schemas (without `bind_tools`)
+
+Because you’re not using LangChain’s tool layer you have two options:
+
+1. **OpenAI‑style `tools=[…]` parameter**
+
+   ```python
+   chat = ChatOpenAI(
+       model="gpt-4o-mini",
+       streaming=True,
+       model_kwargs={
+           "tools": [
+               {
+                   "type": "function",
+                   "function": {
+                       "name": "calc",
+                       "description": "Do basic arithmetic.",
+                       "parameters": {
+                           "type": "object",
+                           "properties": {"a": {"type": "number"},
+                                          "b": {"type": "number"}},
+                           "required": ["a", "b"]
+                       }
+                   }
+               }
+           ]
+       }
+   )
+   ```
+
+   LangChain will still populate `.tool_calls` when the provider emits them.
+
+2. **Pure‑prompt** (model doesn’t see formal tool‑schemas)
+   Put something like
+
+   > “When you need arithmetic, output JSON exactly like
+   >
+   > ````json
+   > { "name": "calc", "args": {"a": <num>, "b": <num>} } 
+   > ```”  
+   > ````
+
+   in a `SystemMessage`. You’ll have to parse the JSON yourself.
+
+---
+
+### 6 . Observability & production extras
+
+* **Token / cost tracking** – every `AIMessage` carries `usage_metadata` so you can log tokens & \$\$ per turn. ([LangChain][6])
+* **Rate limits** – pass a `rate_limiter` when you instantiate the chat model (built‑in leaky‑bucket implementation).
+* **Retry logic** – wrap tool execution & model calls with back‑off/retry helpers.
+* **Persistence** – swap `MessageManager`’s list for a SQL table or Redis list when you scale.
+
+---
+
+### 7 . Putting it together
+
+```python
+agent = CoreAgent(chat, tools={"calc": calc, "search": web_search})
+print(agent.handle_user("What's 2×3?"))
+```
+
+The flow:
+
+1. User text → `HumanMessage`
+2. LangChain streams out chunks; you render them.
+3. Finished `AIMessage` contains `tool_calls`: `[calc(a=2,b=3)]`
+4. You execute `calc`, add `ToolMessage`.
+5. Agent loops; model now sees the tool result and returns a normal answer like “2 × 3 = 6”.
+
+No LangChain `Tool` objects, no chains/agents overhead—just the chat adapter, messages, and your own orchestration.
+
+[1]: https://python.langchain.com/docs/how_to/streaming/?utm_source=chatgpt.com "How to stream runnables | 🦜️ LangChain"
+[2]: https://python.langchain.com/docs/concepts/tool_calling/?utm_source=chatgpt.com "Tool calling - ️ LangChain"
+[3]: https://python.langchain.com/api_reference/core/messages/langchain_core.messages.ai.AIMessage.html?utm_source=chatgpt.com "AIMessage — LangChain documentation"
+[4]: https://python.langchain.com/docs/how_to/tool_calling/?utm_source=chatgpt.com "How to use chat models to call tools | 🦜️ LangChain"
+[5]: https://python.langchain.com/docs/concepts/streaming/?utm_source=chatgpt.com "Streaming - ️ LangChain"
+[6]: https://python.langchain.com/docs/how_to/chat_token_usage_tracking/?utm_source=chatgpt.com "How to track token usage in ChatModels | 🦜️ LangChain"
+
+
+
+
+
+
+
+
+
+
+

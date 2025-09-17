@@ -1,0 +1,596 @@
+From 58cceea8003f85852f48c4b073b6c7e4444fc9ef Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Thu, 24 Jul 2025 13:48:38 -0700
+Subject: [PATCH] updates: llmchat and llmhub
+
+---
+ .../browser/ui/browser_command_controller.cc  |  14 +-
+ chrome/browser/ui/views/side_panel/BUILD.gn   |   1 +
+ .../clash_of_gpts_coordinator.cc              |  14 +-
+ .../third_party_llm_panel_coordinator.cc      | 257 +++++++++++++++++-
+ .../third_party_llm_panel_coordinator.h       |  39 ++-
+ 5 files changed, 302 insertions(+), 23 deletions(-)
+
+diff --git a/chrome/browser/ui/browser_command_controller.cc b/chrome/browser/ui/browser_command_controller.cc
+index b172b393c7b2b..52f78a5a46584 100644
+--- a/chrome/browser/ui/browser_command_controller.cc
++++ b/chrome/browser/ui/browser_command_controller.cc
+@@ -930,21 +930,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
+       }
+       break;
+     case IDC_OPEN_CLASH_OF_GPTS:
+-      LOG(INFO) << "IDC_OPEN_CLASH_OF_GPTS command received";
+       if (base::FeatureList::IsEnabled(features::kClashOfGpts)) {
+-        LOG(INFO) << "kClashOfGpts feature is enabled, getting coordinator";
+         ClashOfGptsCoordinator* coordinator = ClashOfGptsCoordinator::GetOrCreateForBrowser(browser_);
+-        LOG(INFO) << "Coordinator = " << coordinator;
+-        // Toggle the window - close if showing, show if hidden
+-        if (coordinator->IsShowing()) {
+-          LOG(INFO) << "Window is showing, closing it";
++        // If not showing properly, close and recreate
++        if (!coordinator->IsShowing()) {
+           coordinator->Close();
+-        } else {
+-          LOG(INFO) << "Window is not showing, opening it";
+-          coordinator->Show();
+         }
+-      } else {
+-        LOG(INFO) << "kClashOfGpts feature is not enabled";
++        coordinator->Show();
+       }
+       break;
+     case IDC_SHOW_APP_MENU:
+diff --git a/chrome/browser/ui/views/side_panel/BUILD.gn b/chrome/browser/ui/views/side_panel/BUILD.gn
+index a06f78dc7e4b6..56021613259dc 100644
+--- a/chrome/browser/ui/views/side_panel/BUILD.gn
++++ b/chrome/browser/ui/views/side_panel/BUILD.gn
+@@ -172,6 +172,7 @@ source_set("side_panel") {
+     "//components/keyed_service/core",
+     "//components/language/core/browser",
+     "//components/language/core/common",
++    "//components/metrics/browseros_metrics",
+     "//components/omnibox/browser:vector_icons",
+     "//components/optimization_guide/core:features",
+     "//components/performance_manager",
+diff --git a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc
+index ce0ab7befb361..e6a8b8b97eada 100644
+--- a/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc
++++ b/chrome/browser/ui/views/side_panel/clash_of_gpts/clash_of_gpts_coordinator.cc
+@@ -29,6 +29,7 @@
+ #include "ui/accessibility/ax_tree_update.h"
+ #include "ui/events/keycodes/keyboard_codes.h"
+ #include "third_party/blink/public/common/input/web_input_event.h"
++#include "components/metrics/browseros_metrics/browseros_metrics.h"
+ 
+ namespace {
+ 
+@@ -61,19 +62,11 @@ ClashOfGptsCoordinator::~ClashOfGptsCoordinator() {
+ }
+ 
+ void ClashOfGptsCoordinator::Show() {
+-  LOG(INFO) << "ClashOfGptsCoordinator::Show() called";
+-  LOG(INFO) << "widget_ = " << widget_.get() << ", window_ = " << window_.get();
+-  
+   CreateWindowIfNeeded();
+-  
+-  LOG(INFO) << "After CreateWindowIfNeeded: widget_ = " << widget_.get() << ", window_ = " << window_.get();
+-  
+   if (widget_) {
+-    LOG(INFO) << "Showing and activating widget";
+     widget_->Show();
+     widget_->Activate();
+-  } else {
+-    LOG(ERROR) << "widget_ is null after CreateWindowIfNeeded!";
++    browseros_metrics::BrowserOSMetrics::Log("llmhub.shown");
+   }
+ }
+ 
+@@ -221,6 +214,9 @@ void ClashOfGptsCoordinator::SetPaneCount(int count) {
+ 
+   current_pane_count_ = count;
+   SaveState();
++  
++  browseros_metrics::BrowserOSMetrics::Log("llmhub.panecount.changed", 
++    {{"count", base::Value(count)}});
+ 
+   // Update the view if it exists
+   if (view_) {
+diff --git a/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.cc b/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.cc
+index 21a1737b9bb83..e0118e58a9990 100644
+--- a/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.cc
++++ b/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.cc
+@@ -8,6 +8,8 @@
+ #include <vector>
+ 
+ #include "base/functional/callback.h"
++#include "ui/views/controls/menu/menu_runner.h"
++#include "ui/base/mojom/menu_source_type.mojom.h"
+ #include "chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_view.h"
+ #include "base/strings/utf_string_conversions.h"
+ #include "chrome/browser/profiles/profile.h"
+@@ -34,6 +36,7 @@
+ #include "ui/views/layout/flex_layout.h"
+ #include "ui/views/vector_icons.h"
+ #include "components/vector_icons/vector_icons.h"
++#include "chrome/app/vector_icons/vector_icons.h"
+ #include "components/prefs/pref_service.h"
+ #include "components/user_prefs/user_prefs.h"
+ #include "components/pref_registry/pref_registry_syncable.h"
+@@ -48,10 +51,20 @@
+ #include "ui/base/clipboard/clipboard.h"
+ #include "ui/base/clipboard/scoped_clipboard_writer.h"
+ #include "chrome/browser/ui/browser_commands.h"
++#include "chrome/browser/ui/chrome_pages.h"
++#include "chrome/app/chrome_command_ids.h"
+ #include "chrome/browser/ui/browser_tabstrip.h"
+ #include "base/timer/timer.h"
+ #include "base/task/sequenced_task_runner.h"
+ #include "components/input/native_web_keyboard_event.h"
++#include "content/public/browser/render_widget_host_view.h"
++#include "third_party/skia/include/core/SkBitmap.h"
++#include "ui/gfx/codec/png_codec.h"
++#include "ui/gfx/image/image.h"
++#include "chrome/browser/file_select_helper.h"
++#include "content/public/browser/file_select_listener.h"
++#include "content/public/browser/render_frame_host.h"
++#include "components/metrics/browseros_metrics/browseros_metrics.h"
+ 
+ namespace {
+ 
+@@ -132,6 +145,7 @@ ThirdPartyLlmPanelCoordinator::CreateThirdPartyLlmWebView(
+   web_view_ = nullptr;
+   provider_selector_ = nullptr;
+   copy_feedback_label_ = nullptr;
++  menu_button_ = nullptr;
+ 
+   // Stop observing any previous views to prevent dangling observations.
+   view_observation_.RemoveAllObservations();
+@@ -197,6 +211,34 @@ ThirdPartyLlmPanelCoordinator::CreateThirdPartyLlmWebView(
+   copy_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+   copy_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+   
++  // Add screenshot button
++  auto* screenshot_button = header->AddChildView(
++      std::make_unique<views::ImageButton>(base::BindRepeating(
++          &ThirdPartyLlmPanelCoordinator::OnScreenshotContent,
++          weak_factory_.GetWeakPtr())));
++  screenshot_button->SetImageModel(
++      views::Button::STATE_NORMAL,
++      ui::ImageModel::FromVectorIcon(vector_icons::kPhotoChromeRefreshIcon, ui::kColorIcon, 20));
++  screenshot_button->SetAccessibleName(u"Take screenshot");
++  screenshot_button->SetTooltipText(u"Capture visible page screenshot to clipboard");
++  screenshot_button->SetPreferredSize(gfx::Size(32, 32));
++  screenshot_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
++  screenshot_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
++
++  // Add refresh button
++  auto* refresh_button = header->AddChildView(
++      std::make_unique<views::ImageButton>(base::BindRepeating(
++          &ThirdPartyLlmPanelCoordinator::OnRefreshContent,
++          weak_factory_.GetWeakPtr())));
++  refresh_button->SetImageModel(
++      views::Button::STATE_NORMAL,
++      ui::ImageModel::FromVectorIcon(vector_icons::kReloadIcon, ui::kColorIcon, 20));
++  refresh_button->SetAccessibleName(u"Refresh");
++  refresh_button->SetTooltipText(u"Reload default page for current provider");
++  refresh_button->SetPreferredSize(gfx::Size(32, 32));
++  refresh_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
++  refresh_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
++
+   // Add open in new tab button
+   auto* open_button = header->AddChildView(
+       std::make_unique<views::ImageButton>(base::BindRepeating(
+@@ -211,6 +253,23 @@ ThirdPartyLlmPanelCoordinator::CreateThirdPartyLlmWebView(
+   open_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+   open_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+   
++  // Add options menu button (3-dot menu)
++  menu_button_ = header->AddChildView(
++      std::make_unique<views::ImageButton>(base::BindRepeating(
++          &ThirdPartyLlmPanelCoordinator::ShowOptionsMenu,
++          weak_factory_.GetWeakPtr())));
++  menu_button_->SetImageModel(
++      views::Button::STATE_NORMAL,
++      ui::ImageModel::FromVectorIcon(kBrowserToolsIcon, ui::kColorIcon, 20));
++  menu_button_->SetAccessibleName(u"More options");
++  menu_button_->SetTooltipText(u"More options");
++  menu_button_->SetPreferredSize(gfx::Size(32, 32));
++  menu_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
++  menu_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
++  
++  // Observe the menu button
++  view_observation_.AddObservation(menu_button_);
++  
+   // Add separator
+   container->AddChildView(std::make_unique<views::Separator>());
+   
+@@ -286,6 +345,8 @@ ThirdPartyLlmPanelCoordinator::CreateThirdPartyLlmWebView(
+   shortcuts_label->SetFontList(
+       shortcuts_label->font_list().DeriveWithSizeDelta(-1));
+   
++  browseros_metrics::BrowserOSMetrics::Log("llmchat.created");
++  
+   return container;
+ }
+ 
+@@ -306,6 +367,8 @@ void ThirdPartyLlmPanelCoordinator::DoProviderChange(LlmProvider new_provider) {
+     return;
+ 
+   provider_change_in_progress_ = true;
++  
++  browseros_metrics::BrowserOSMetrics::Log("llmchat.provider.changed");
+ 
+   if (owned_web_contents_) {
+     GURL current_url = owned_web_contents_->GetURL();
+@@ -365,6 +428,25 @@ std::u16string ThirdPartyLlmPanelCoordinator::GetProviderName(LlmProvider provid
+   }
+ }
+ 
++void ThirdPartyLlmPanelCoordinator::OnRefreshContent() {
++  if (!owned_web_contents_) {
++    return;
++  }
++  
++  // Get the default URL for the current provider
++  GURL provider_url = GetProviderUrl(current_provider_);
++  
++  // Navigate to the default URL
++  owned_web_contents_->GetController().LoadURL(
++      provider_url,
++      content::Referrer(),
++      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
++      std::string());
++  
++  // Clear the saved URL for this provider so it uses the default next time
++  last_urls_.erase(current_provider_);
++}
++
+ void ThirdPartyLlmPanelCoordinator::OnOpenInNewTab() {
+   if (!owned_web_contents_) {
+     return;
+@@ -407,6 +489,82 @@ void ThirdPartyLlmPanelCoordinator::OnCopyContent() {
+       content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
+ }
+ 
++void ThirdPartyLlmPanelCoordinator::OnScreenshotContent() {
++  // Get the active tab's web contents
++  TabStripModel* tab_strip_model = GetBrowser().tab_strip_model();
++  if (!tab_strip_model) {
++    return;
++  }
++
++  content::WebContents* active_contents = tab_strip_model->GetActiveWebContents();
++  if (!active_contents) {
++    return;
++  }
++
++  // Get the render widget host
++  content::RenderWidgetHostView* view = active_contents->GetRenderWidgetHostView();
++  if (!view) {
++    return;
++  }
++
++  // For now, just capture the visible viewport
++  // Full page screenshot would require DevTools protocol or RenderFrameHostImpl access
++  view->CopyFromSurface(
++      gfx::Rect(),  // Empty rect = full visible surface
++      gfx::Size(),  // Empty size = original size
++      base::BindOnce([](base::WeakPtr<ThirdPartyLlmPanelCoordinator> coordinator,
++                        const SkBitmap& bitmap) {
++        if (!coordinator) {
++          return;
++        }
++        gfx::Image image;
++        if (!bitmap.drawsNothing()) {
++          image = gfx::Image::CreateFrom1xBitmap(bitmap);
++        }
++        coordinator->OnScreenshotCaptured(image);
++      }, weak_factory_.GetWeakPtr()));
++}
++
++
++void ThirdPartyLlmPanelCoordinator::OnScreenshotCaptured(
++    const gfx::Image& image) {
++  if (image.IsEmpty()) {
++    if (copy_feedback_label_) {
++      copy_feedback_label_->SetText(u"Failed to capture screenshot");
++      copy_feedback_label_->SetVisible(true);
++
++      // Start timer to hide message
++      if (feedback_timer_->IsRunning()) {
++        feedback_timer_->Stop();
++      }
++      feedback_timer_->Start(FROM_HERE, base::Seconds(2.5),
++          base::BindOnce(&ThirdPartyLlmPanelCoordinator::HideFeedbackLabel,
++                         weak_factory_.GetWeakPtr()));
++    }
++    return;
++  }
++
++  // Copy image to clipboard
++  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
++  clipboard_writer.WriteImage(image.AsBitmap());
++  
++  browseros_metrics::BrowserOSMetrics::Log("llmchat.screenshot.captured");
++
++  // Show success feedback
++  if (copy_feedback_label_) {
++    copy_feedback_label_->SetText(u"Screenshot copied to clipboard");
++    copy_feedback_label_->SetVisible(true);
++
++    // Start timer to hide message
++    if (feedback_timer_->IsRunning()) {
++      feedback_timer_->Stop();
++    }
++    feedback_timer_->Start(FROM_HERE, base::Seconds(2.5),
++        base::BindOnce(&ThirdPartyLlmPanelCoordinator::HideFeedbackLabel,
++                       weak_factory_.GetWeakPtr()));
++  }
++}
++
+ void ThirdPartyLlmPanelCoordinator::OnAccessibilityTreeReceived(
+     ui::AXTreeUpdate& update) {
+   // Build a map of node IDs to node data for easy lookup
+@@ -446,6 +604,8 @@ void ThirdPartyLlmPanelCoordinator::OnAccessibilityTreeReceived(
+     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+     clipboard_writer.WriteText(formatted_output);
+     
++    browseros_metrics::BrowserOSMetrics::Log("llmchat.content.copied");
++    
+     // Show feedback message
+     if (copy_feedback_label_) {
+       copy_feedback_label_->SetText(u"Content copied to clipboard");
+@@ -494,6 +654,10 @@ void ThirdPartyLlmPanelCoordinator::OnViewIsDeleting(views::View* observed_view)
+     web_view_ = nullptr;
+   }
+ 
++  if (observed_view == menu_button_) {
++    menu_button_ = nullptr;
++  }
++
+   // Remove observation for this view.
+   view_observation_.RemoveObservation(observed_view);
+ }
+@@ -627,6 +791,14 @@ content::WebContents* ThirdPartyLlmPanelCoordinator::AddNewContents(
+   return nullptr;
+ }
+ 
++void ThirdPartyLlmPanelCoordinator::RunFileChooser(
++    content::RenderFrameHost* render_frame_host,
++    scoped_refptr<content::FileSelectListener> listener,
++    const blink::mojom::FileChooserParams& params) {
++  // Use FileSelectHelper to handle file selection, same as regular browser tabs
++  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener), params);
++}
++
+ void ThirdPartyLlmPanelCoordinator::CycleProvider() {
+   // If a provider change is already in flight, ignore additional toggle
+   // requests to prevent state races that could desynchronize the combobox and
+@@ -814,10 +986,93 @@ void ThirdPartyLlmPanelCoordinator::OnProfileWillBeDestroyed(Profile* profile) {
+   }
+ }
+ 
++void ThirdPartyLlmPanelCoordinator::ShowOptionsMenu() {
++  if (!menu_button_) {
++    return;
++  }
++  
++  // Create menu model
++  menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
++  menu_model_->AddItemWithIcon(
++      IDC_COPY_CONTENT, 
++      u"Copy webpage to clipboard",
++      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon));
++  menu_model_->AddItemWithIcon(
++      IDC_SCREENSHOT,
++      u"Screenshot webpage and copy",
++      ui::ImageModel::FromVectorIcon(vector_icons::kPhotoChromeRefreshIcon));
++  menu_model_->AddItemWithIcon(
++      IDC_REFRESH,
++      u"Reset LLM chat",
++      ui::ImageModel::FromVectorIcon(vector_icons::kReloadIcon));
++  menu_model_->AddItemWithIcon(
++      IDC_OPEN_IN_NEW_TAB,
++      u"Open in new tab",
++      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
++  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
++  menu_model_->AddItemWithIcon(
++      IDC_CLASH_OF_GPTS,
++      u"Popout LLM Hub",
++      ui::ImageModel::FromVectorIcon(kTabGroupIcon));
++  
++  // Create and run menu
++  menu_runner_ = std::make_unique<views::MenuRunner>(
++      menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
++  menu_runner_->RunMenuAt(
++      menu_button_->GetWidget(),
++      nullptr,  // button controller
++      menu_button_->GetAnchorBoundsInScreen(),
++      views::MenuAnchorPosition::kTopRight,
++      ui::mojom::MenuSourceType::kNone);
++}
++
++void ThirdPartyLlmPanelCoordinator::ExecuteCommand(int command_id,
++                                                   int event_flags) {
++  std::string event_name;
++  switch (command_id) {
++    case IDC_COPY_CONTENT:
++      event_name = "llmchat.menu.content.copied";
++      break;
++    case IDC_SCREENSHOT:
++      event_name = "llmchat.menu.screenshot.captured";
++      break;
++    case IDC_REFRESH:
++      event_name = "llmchat.menu.refresh";
++      break;
++    case IDC_OPEN_IN_NEW_TAB:
++      event_name = "llmchat.menu.newtab";
++      break;
++    case IDC_CLASH_OF_GPTS:
++      event_name = "llmchat.menu.hub";
++      break;
++  }
++  if (!event_name.empty()) {
++    browseros_metrics::BrowserOSMetrics::Log(event_name);
++  }
++  
++  switch (command_id) {
++    case IDC_COPY_CONTENT:
++      OnCopyContent();
++      break;
++    case IDC_SCREENSHOT:
++      OnScreenshotContent();
++      break;
++    case IDC_REFRESH:
++      OnRefreshContent();
++      break;
++    case IDC_OPEN_IN_NEW_TAB:
++      OnOpenInNewTab();
++      break;
++    case IDC_CLASH_OF_GPTS:
++      chrome::ExecuteCommand(&GetBrowser(), IDC_OPEN_CLASH_OF_GPTS);
++      break;
++  }
++}
++
+ // static
+ void ThirdPartyLlmPanelCoordinator::RegisterProfilePrefs(
+     user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterIntegerPref(kThirdPartyLlmProviderPref, 0);  // Default to ChatGPT
+ }
+ 
+-BROWSER_USER_DATA_KEY_IMPL(ThirdPartyLlmPanelCoordinator);
+\ No newline at end of file
++BROWSER_USER_DATA_KEY_IMPL(ThirdPartyLlmPanelCoordinator);
+diff --git a/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.h b/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.h
+index 40a67af155c06..e781a56b451c9 100644
+--- a/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.h
++++ b/chrome/browser/ui/views/side_panel/third_party_llm/third_party_llm_panel_coordinator.h
+@@ -18,12 +18,18 @@
+ #include "components/prefs/pref_change_registrar.h"
+ #include "content/public/browser/web_contents_delegate.h"
+ #include "content/public/browser/web_contents_observer.h"
++#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+ #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+ #include "ui/accessibility/ax_node_id_forward.h"
+ #include "ui/base/window_open_disposition.h"
+ #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+ #include "url/gurl.h"
+ #include "ui/views/view_observer.h"
++#include "ui/menus/simple_menu_model.h"
++
++namespace gfx {
++class Image;
++}  // namespace gfx
+ 
+ class Browser;
+ class BrowserList;
+@@ -40,6 +46,8 @@ class PrefRegistrySyncable;
+ }  // namespace user_prefs
+ 
+ namespace content {
++class FileSelectListener;
++class RenderFrameHost;
+ class WebContents;
+ }  // namespace content
+ 
+@@ -50,7 +58,9 @@ struct AXTreeUpdate;
+ 
+ namespace views {
+ class Combobox;
++class ImageButton;
+ class Label;
++class MenuRunner;
+ class View;
+ class WebView;
+ }  // namespace views
+@@ -63,7 +73,8 @@ class ThirdPartyLlmPanelCoordinator
+       public ProfileObserver,
+       public content::WebContentsDelegate,
+       public content::WebContentsObserver,
+-      public views::ViewObserver {
++      public views::ViewObserver,
++      public ui::SimpleMenuModel::Delegate {
+  public:
+   explicit ThirdPartyLlmPanelCoordinator(Browser* browser);
+   ThirdPartyLlmPanelCoordinator(const ThirdPartyLlmPanelCoordinator&) = delete;
+@@ -89,6 +100,9 @@ class ThirdPartyLlmPanelCoordinator
+       const blink::mojom::WindowFeatures& window_features,
+       bool user_gesture,
+       bool* was_blocked) override;
++  void RunFileChooser(content::RenderFrameHost* render_frame_host,
++                      scoped_refptr<content::FileSelectListener> listener,
++                      const blink::mojom::FileChooserParams& params) override;
+   
+   // content::WebContentsObserver:
+   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+@@ -103,6 +117,9 @@ class ThirdPartyLlmPanelCoordinator
+   // ProfileObserver:
+   void OnProfileWillBeDestroyed(Profile* profile) override;
+ 
++  // ui::SimpleMenuModel::Delegate:
++  void ExecuteCommand(int command_id, int event_flags) override;
++
+  private:
+   friend class BrowserUserData<ThirdPartyLlmPanelCoordinator>;
+   
+@@ -116,13 +133,25 @@ class ThirdPartyLlmPanelCoordinator
+     kPerplexity = 4,
+   };
+ 
++  // Menu command IDs
++  enum MenuCommands {
++    IDC_COPY_CONTENT = 1,
++    IDC_SCREENSHOT,
++    IDC_REFRESH,
++    IDC_OPEN_IN_NEW_TAB,
++    IDC_CLASH_OF_GPTS,
++  };
++
+   std::unique_ptr<views::View> CreateThirdPartyLlmWebView(
+       SidePanelEntryScope& scope);
+   
+   void OnProviderChanged();
++  void OnRefreshContent();
+   void OnOpenInNewTab();
+   void OnCopyContent();
++  void OnScreenshotContent();
+   void OnAccessibilityTreeReceived(ui::AXTreeUpdate& update);
++  void OnScreenshotCaptured(const gfx::Image& image);
+   void ExtractTextFromNodeData(
+       const ui::AXNodeData* node,
+       const std::map<ui::AXNodeID, const ui::AXNodeData*>& node_map,
+@@ -131,6 +160,7 @@ class ThirdPartyLlmPanelCoordinator
+   std::u16string GetProviderName(LlmProvider provider) const;
+   void FocusInputField();
+   void HideFeedbackLabel();
++  void ShowOptionsMenu();
+ 
+   // Executes the actual provider switch after all sanity checks. Should only
+   // be called on the UI thread.  Uses |provider_change_in_progress_| to avoid
+@@ -147,6 +177,7 @@ class ThirdPartyLlmPanelCoordinator
+   raw_ptr<views::WebView> web_view_ = nullptr;
+   raw_ptr<views::Combobox> provider_selector_ = nullptr;
+   raw_ptr<views::Label> copy_feedback_label_ = nullptr;
++  raw_ptr<views::ImageButton> menu_button_ = nullptr;
+   
+   // We need to own the WebContents because WebView doesn't take ownership
+   // when we call SetWebContents with externally created WebContents
+@@ -181,8 +212,12 @@ class ThirdPartyLlmPanelCoordinator
+   base::ScopedObservation<Profile, ProfileObserver>
+       profile_observation_{this};
+ 
++  // Menu model and runner for options menu
++  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
++  std::unique_ptr<views::MenuRunner> menu_runner_;
++  
+   // Weak pointer factory for callbacks
+   base::WeakPtrFactory<ThirdPartyLlmPanelCoordinator> weak_factory_{this};
+ };
+ 
+-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_THIRD_PARTY_LLM_THIRD_PARTY_LLM_PANEL_COORDINATOR_H_
+\ No newline at end of file
++#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_THIRD_PARTY_LLM_THIRD_PARTY_LLM_PANEL_COORDINATOR_H_
+-- 
+2.49.0
+

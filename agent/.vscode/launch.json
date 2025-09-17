@@ -1,0 +1,89 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Vitest Current File",
+            "autoAttachChildProcesses": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "args": ["run", "${relativeFile}"],
+            "smartStep": true,
+            "console": "integratedTerminal",
+            "env": {
+                "LITELLM_API_KEY": "${env:LITELLM_API_KEY}",
+                "OPENROUTER_API_KEY": "${env:OPENROUTER_API_KEY}"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Jest Tests",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "${workspaceFolder}/node_modules/jest/bin/jest.js"
+            ],
+            "args": [
+                "--runInBand",
+                "--no-cache",
+                "${relativeFile}"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "disableOptimisticBPs": true
+        },
+        {
+            "name": "🚀 Debug Extension",
+            "type": "chrome",
+            "request": "launch",
+            "preLaunchTask": "Build Extension (Development)",
+            "url": "chrome://extensions/",
+            "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "userDataDir": "${workspaceFolder}/.chrome-debug-profile",
+            "runtimeArgs": [
+                "--disable-extensions-except=${workspaceFolder}/dist",
+                "--load-extension=${workspaceFolder}/dist",
+                "--disable-web-security",
+                "--disable-features=VizDisplayCompositor",
+                "--remote-debugging-port=9222",
+                "--no-first-run",
+                "--no-default-browser-check"
+            ],
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack://parallel-manus-agent/src/*": "${workspaceFolder}/src/*",
+                "webpack://parallel-manus-agent/./src/*": "${workspaceFolder}/src/*",
+                "webpack:///src/*": "${workspaceFolder}/src/*",
+                "webpack:///./src/*": "${workspaceFolder}/src/*"
+            },
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ]
+        },
+        {
+            "name": "Debug Background Script",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "targetTypes": ["service_worker"],
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack://parallel-manus-agent/src/*": "${workspaceFolder}/src/*",
+                "webpack://parallel-manus-agent/./src/*": "${workspaceFolder}/src/*",
+                "webpack:///src/*": "${workspaceFolder}/src/*",
+                "webpack:///./src/*": "${workspaceFolder}/src/*"
+            },
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ]
+        }
+    ]
+}

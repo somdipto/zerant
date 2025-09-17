@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>BrowserOS</title>
+    <link>https://cdn.browseros.com/appcast.xml</link>
+    <description>Most recent changes with links to updates.</description>
+    <language>en</language>
+
+    <!-- Updates -->
+    <item>
+      <title>BrowserOS - 0.24.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7207.69</sparkle:version>
+      <sparkle:shortVersionString>0.24.0</sparkle:shortVersionString>
+      <pubDate>Fri, 30 Aug 2025 12:00:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.24.0_arm64.dmg"
+        sparkle:edSignature="ENs4SOHQdkaJY+sVp/r0/a+LUwaIb9mZdPJXUF0ymH2zGYGUM8hL+3b5U1MBhuHoYmMukdLqcDgheEi3U6CXBQ==" 
+        length="126221017"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.23.1</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7204.69</sparkle:version>
+      <sparkle:shortVersionString>0.23.1</sparkle:shortVersionString>
+      <pubDate>Thu, 29 Aug 2025 11:30:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.23.1_arm64.dmg"
+        sparkle:edSignature="mH97ZRH6JZ+XmLXv0S9wAK5n455Dgidzj9JYVoYoWI/kIOUTBeZODPunz9sCUAOkXA6WmjxFYciazjufxflVCg=="
+        length="126211527"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.22.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7202.69</sparkle:version>
+      <sparkle:shortVersionString>0.22.0</sparkle:shortVersionString>
+      <pubDate>Thu, 22 Aug 2025 11:30:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.22.0_arm64.dmg"
+        sparkle:edSignature="pTuEhp05gDVf7bqNt0QJL51QsX+r9pe/NYNdMlV3cGW35JeDzyafbXQzBAgMYX6cQpcFGnOtDaxBLveuiK4kDw==" 
+        length="126204590"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.21.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7201.69</sparkle:version>
+      <sparkle:shortVersionString>0.21.0</sparkle:shortVersionString>
+      <pubDate>Tue, 20 Aug 2025 11:30:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.21.0_arm64.dmg"
+        sparkle:edSignature="en02Zhdpa4J/zQ3Ly11psVJnsX8Bp5DS8+sK0sr3267xocHGCkfWN8BJmsZWkae7a1mlLh+2A1835PdX5CMmDg==" 
+        length="126187683"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.20.0</title>
+      <description sparkle:format="plain-text">
+- New updated Agent UI!
+- Fixed MacOS bug which caused the app to crash on startup for some users. This unfortunately also makes a breaking change, requiring re-installation of extensions and logins.
+      </description>
+      <sparkle:version>7200.69</sparkle:version>
+      <sparkle:shortVersionString>0.20.1</sparkle:shortVersionString>
+      <pubDate>Fri, 09 Aug 2025 16:30:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.20.1_arm64.dmg"
+        sparkle:edSignature="E91Zyc0wi3fVmarYBAct5qldCeZ0cw9ZpmG4WgeW+b1/2DiYNIAO/3f1qYh5osoKLETHrjwumYDANC0ao9kfCw==" 
+        length="126189210"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.19.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7197.69</sparkle:version>
+      <sparkle:shortVersionString>0.19.0</sparkle:shortVersionString>
+      <pubDate>Fri, 08 Aug 2025 11:44:55 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.19.0_arm64.dmg"
+        sparkle:edSignature="jaX1AJIWKxOgMQo4+Z6BcBSlDZ/3J3aD0hF5cZS1gwtVxPa1T9vh4YN9RZgZH37npJ0IavyLKgn5PxCCaBk9CA==" 
+        length="126186790"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.18.0</title>
+      <description sparkle:format="plain-text">
+- New revamped Agent infra! This should improve our agents reliability and performance. Please test it out and give us your feedback!
+      </description>
+      <sparkle:version>7194.69</sparkle:version>
+      <sparkle:shortVersionString>0.18.0</sparkle:shortVersionString>
+      <pubDate>Thu, 31 Jul 2025 17:31:17 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.18.0_arm64.dmg"
+        sparkle:edSignature="s+GbkCFBmj+5zC3BaykVVsfhua98X5JKMVFZhd5alAFok4qdVaywAvd/8H77UkAgiLiMm6E2pHQLrNI6LmPvAw==" 
+        length="126180751"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.17.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7193.69</sparkle:version>
+      <sparkle:shortVersionString>0.17.0</sparkle:shortVersionString>
+      <pubDate>Thu, 31 Jul 2025 07:40:48 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.17.0_arm64.dmg"
+        sparkle:edSignature="fQKHsZp60WVUi3UEdlOw9gpI42T4WWq1SWJUhXEMHWN+qTsVJEkbiLETZn9o7KO+nZQ1s5WRCKnS1ewIhJxMCw==" 
+        length="126729542"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.16.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7192.69</sparkle:version>
+      <sparkle:shortVersionString>0.16.0</sparkle:shortVersionString>
+      <pubDate>Tue, 29 Jul 2025 12:00:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.16.0_arm64.dmg"
+        sparkle:edSignature="jSdcXs5C6Xd91r0smpxVbmHP3UfaB8avYcGrgxmHIn18jN2vPym9zJ8wL0HLxOYzYape0CjQnukZm/3t2ihCBA==" 
+        length="126951526"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.15.0</title>
+      <description sparkle:format="plain-text">
+- Support for screenshot in LLM chat.
+- New settings page `chrome://settings/browseros-settings` for configuring BrowserOS internals. Today, it supports hiding labels in toolbar.
+- Various fixes and improvesments.
+      </description>
+      <sparkle:version>7189.69</sparkle:version>
+      <sparkle:shortVersionString>0.15.0</sparkle:shortVersionString>
+      <pubDate>Sat, 26 Jul 2025 08:56:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.15.0_arm64.dmg"
+        sparkle:edSignature="If0VdDR0xIm8atPGGd9yJJXgHiCg8vIHNqP35d8mPFzB/wbsU0FqW76ERnifrlhkE/bBabq4s6s+IyU2xDhSCQ==" 
+        length="126936522"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.14.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7187.69</sparkle:version>
+      <sparkle:shortVersionString>0.14.0</sparkle:shortVersionString>
+      <pubDate>Tue, 22 Jul 2025 15:45:34 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.14.1_arm64.dmg"
+        sparkle:edSignature="pHnPKzUyVt1OXJNHZu4nNNW36TmRMEWsYqQjn2iHltyMYD5+G5b8s8NBD/2urcFb2Sq8tHNV7SvnQNhk6GXECQ==" 
+        length="126934811"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <!-- <item> -->
+    <!--   <title>BrowserOS - 0.13.0</title> -->
+    <!--   <description sparkle:format="plain-text"> -->
+    <!--   </description> -->
+    <!--   <sparkle:version>7185.69</sparkle:version> -->
+    <!--   <sparkle:shortVersionString>0.13.0</sparkle:shortVersionString> -->
+    <!--   <pubDate>Fri, 18 Jul 2025 08:25:40 -0700</pubDate> -->
+    <!--   <link>https://nxtscape.ai</link> -->
+    <!--   <enclosure -->
+    <!--     url="http://cdn.browseros.com/dmg/BrowserOS_v0.13.0_arm64.dmg" -->
+    <!--     sparkle:edSignature="EDKjlrjUsrZfbpfA+uAYY7MDqnlGpWcm70+mGzmRt1xymn3t31SdPc16rJW/+h2bAV1yC8oLGqtEcPmVWsoRBw=="  -->
+    <!--     length="126827416" -->
+    <!--     type="application/octet-stream" /> -->
+    <!--   <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion> -->
+    <!-- </item> -->
+    <item>
+      <title>BrowserOS - 0.12.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7183.69</sparkle:version>
+      <sparkle:shortVersionString>0.12.0</sparkle:shortVersionString>
+      <pubDate>Fri, 11 Jul 2025 16:49:23 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.12.1_arm64.dmg"
+        sparkle:edSignature="ylPrjpTj2JPFGdfqh3/DUSzTJxdlskrlORbZOqlsQsC04Euc1ovyzohTOBjyXKNDAekNa348ejKwQO/y7kKNBA==" 
+        length="126839083"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.11.0</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7180.69</sparkle:version>
+      <sparkle:shortVersionString>0.11.0</sparkle:shortVersionString>
+      <pubDate>Wed, 09 Jul 2025 13:39:48 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.11.1_arm64.dmg"
+        sparkle:edSignature="g4PJb3tqiSx9NcB4rwg5byFWQl48TI30jYPDF47s1lt0qCWEhewSLOWktVnDNR8Wkk07dtf61conedSxkVZ6BA==" 
+        length="126847980"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.10.0</title>
+      <description sparkle:format="plain-text">
+- BrowserOS now supports Windows. Check our GitHub page for the Windows installer.
+- Added a new easy way to report bugs and request features from the browser.
+      </description>
+      <sparkle:version>7178.69</sparkle:version>
+      <sparkle:shortVersionString>0.10.0</sparkle:shortVersionString>
+      <pubDate>Sun, 07 Jul 2025 00:00:00 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.10.0_arm64.dmg"
+        sparkle:edSignature="XMJ3Vy9/XiVf38yGS5ZxHZsKrexPTtuEHr0IzA/aKRL0sMd0MhwOAt3TD4iuQDwOuyWuLbj5Uaspq1eCXliuBA==" 
+        length="126798649"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.9.1</title>
+      <description sparkle:format="plain-text">
+      </description>
+      <sparkle:version>7177.69</sparkle:version>
+      <sparkle:shortVersionString>0.9.1</sparkle:shortVersionString>
+      <pubDate>Sat, 05 Jul 2025 09:17:24 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.9.1_arm64.dmg"
+        sparkle:edSignature="ZGaPXiLs0FI9aff7TKs2yoWyg1d+6nn+/EaHeJfLDIbe6URsRvWyNy2YmMmap1cexFyMAwYipkTbnW6G8np0Dw==" 
+        length="126804048"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.9.0</title>
+      <description sparkle:format="plain-text">
+- Minor stability improvements.
+      </description>
+      <sparkle:version>7175.69</sparkle:version>
+      <sparkle:shortVersionString>0.9.0</sparkle:shortVersionString>
+      <pubDate>Thu, 03 Jul 2025 10:29:43 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.9.0_arm64.dmg"
+        sparkle:edSignature="cGQ8f+VOOC4ZWsl02D2Wp5uaezoepaVC4Mo0a7tXxuB/Avb04d1nLQl6U7FNW4Q4EgPP3dni7TwXg61MSHX3Cg==" 
+        length="126796495"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.8.0</title>
+      <description sparkle:format="plain-text">
+- NEW FEATURE: Sidekick LLM. Brings third party LLMs to side panel.
+  - Quickly toggle between ChatGPT, Claude, Gemini, Perplexity, and Ollama
+  - Supports easy copy of web page content to paste in LLM
+      </description>
+      <sparkle:version>7174.69</sparkle:version>
+      <sparkle:shortVersionString>0.8.0</sparkle:shortVersionString>
+      <pubDate>Wed, 02 Jul 2025 14:20:34 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="http://cdn.browseros.com/dmg/BrowserOS_v0.8.0_arm64.dmg"
+        sparkle:edSignature="jKMoMY44vqIXWmv06m/3NjEGEI4SwZTTRJ1bVoVSS8zjNNfAme8CpA/SsA8aBk1RyF3lhzHL0V5Fh4QmI5IYBw=="
+        length="126966295"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.7.0</title>
+      <description sparkle:format="plain-text">
+- Improved agent to allow interruptions
+- Agent now supports pausing and resuming tasks
+      </description>
+      <sparkle:version>7170.69</sparkle:version>
+      <sparkle:shortVersionString>0.7.0</sparkle:shortVersionString>
+      <pubDate>Mon, 30 Jun 2025 17:50:17 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/nxtscape-v0.7.0-universal-new.dmg"
+        sparkle:edSignature="uxb3EtLfK8YD1vsGo72bRXQ21MZVZcLNxLcwGNxXGbxWqFcTtk70VWa2RdGG+pZTbEwGUKJIwl3U5uvQYvDQBQ==" 
+        length="232749371"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.6.0</title>
+      <description sparkle:format="plain-text">
+- Support for MacOS x86_64 with Universal binary.
+- Minor fixes to updater
+- Improvements to agent; it supports interruptions.
+      </description>
+      <sparkle:version>7167.69</sparkle:version>
+      <sparkle:shortVersionString>0.6.0</sparkle:shortVersionString>
+      <pubDate>Sat, 28 Jun 2025 10:13:17 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/nxtscape-v0.6.0-universal.dmg"
+        sparkle:edSignature="qB+KDJ0UQdQkhxX0QB89Yjo8oQIXIcdz8O6QRFJvNfLqDiZf8T7s2iiebt5LkZvvaN/Vp4c+5F3iBHokkTU2BQ=="
+        length="234987508"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.5.0</title>
+      <description sparkle:format="plain-text">
+- Improved Ollama support
+- Fixed issues with the unified agent
+      </description>
+      <sparkle:version>7158.88</sparkle:version>
+      <sparkle:shortVersionString>0.5.0</sparkle:shortVersionString>
+      <pubDate>Thu, 26 Jun 2025 17:42:44 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/nxtscape-v0.5.0-arm64.dmg"
+        sparkle:edSignature="m3ALnVjkN5FE59Kh9VoXFBc8Dhz6GWgybAh6rKvv7b38EaEnFw8JI0hnC2pmB7e8QIJwFsPJCfE2OKOJf+OxAw==" 
+        length="126848776"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.4.0</title>
+      <description sparkle:format="plain-text">
+- [Fix] OTA updates were not working correctly for some users; fixing it.
+      </description>
+      <sparkle:version>7157.87</sparkle:version>
+      <sparkle:shortVersionString>0.4.0</sparkle:shortVersionString>
+      <pubDate>Thu, 26 Jun 2025 17:42:44 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/nxtscape-v0.4.0-arm64.dmg"
+        sparkle:edSignature="1TRv5Is7eKvqexbZ+h4Sa7ksPH4Sam2Eau8krwsK+w3AzhAQbRTY8Megfww2PsLxKhWzi3dBcEKK3yu8by0/CQ==" 
+        length="126851560"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.3.0</title>
+      <description sparkle:format="plain-text">
+– Much improved AI agent for browser navigation tasks
+- Merged Productivity Agent and Browser Agent into a single AI agent
+      </description>
+      <sparkle:version>7155.85</sparkle:version>
+      <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
+      <pubDate>Thu, 26 Jun 2025 07:34:24 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/nxtscape-v0.3.0-arm64.dmg"
+        sparkle:edSignature="axUY3tBN7txWh1PMCrrtHdYiIBFQlABBbD/iHyM29m9N9FWRu99vNJjyGPLP00mfctR+XzZIBE0E8MFGcgPYCg=="
+        length="126850187"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.2.0</title>
+      <description sparkle:format="plain-text">
+– Support for overriding baseUrl in OpenAI, Claude
+– Gemini support in BYOK
+– Improved tool calling in Browser Agent
+      </description>
+      <sparkle:version>7154.84</sparkle:version>
+      <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+      <pubDate>Wed, 25 Jun 2025 14:15:31 -0700</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/nxtscape-v0.2.0-arm64.dmg"
+        sparkle:edSignature="mj8TqQBTbfBY5OxiQXpJa/XD82BPx9udDqFV7p8SwQRgBwCTHdYWuswBunL7uW6IrgEytBAtyHKTse+vcZG3BA=="
+        length="126848485"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+    <item>
+      <title>BrowserOS - 0.1.0</title>
+      <description sparkle:format="plain-text">
+– Updates to AI agent to perform better on navigation tasks
+– Improves to MacOS updater
+– Fixing history import bug
+      </description>
+      <sparkle:version>7151.139</sparkle:version>
+      <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+      <pubDate>Mon, 23 Jun 2025 00:00:00 +0000</pubDate>
+      <link>https://nxtscape.ai</link>
+      <enclosure
+        url="https://storage.googleapis.com/nxtscape/BrowserOS_v0.1.0.dmg"
+        sparkle:edSignature="mPxpc/8SPEEOiCmiKE4haTGUaMRnUQRJ8SK8w3sWek/5oZD0dg/DQFg/HxbhHjt2mtFUI8VD5iUi4+uIBWr4Dg=="
+        length="127005947"
+        type="application/octet-stream" />
+      <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+    </item>
+
+  </channel>
+</rss>

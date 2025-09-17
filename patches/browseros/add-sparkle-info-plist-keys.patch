@@ -1,0 +1,34 @@
+From 84acdc3e97b088b1c68b3cfbda04ddac80fbd35a Mon Sep 17 00:00:00 2001
+From: Nikhil Sonti <nikhilsv92@gmail.com>
+Date: Tue, 22 Jul 2025 21:35:46 -0700
+Subject: [PATCH] patch: app-info.plist changes
+
+---
+ chrome/app/app-Info.plist | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/chrome/app/app-Info.plist b/chrome/app/app-Info.plist
+index 9190c5ef6c092..cf0106b8ba53e 100644
+--- a/chrome/app/app-Info.plist
++++ b/chrome/app/app-Info.plist
+@@ -409,5 +409,17 @@
+ 	<array>
+ 		<string>_googlecast._tcp</string>
+ 	</array>
++  <key>SUPublicEDKey</key>
++  <string>LzQmcNuTsdB3/dsivo0eeN+jPfDoriRHAkkEJcfFs2A=</string>
++  <key>SUEnableAutomaticChecks</key>
++  <true/>
++  <key>SUScheduledCheckInterval</key>
++  <integer>1080</integer>
++  <key>SUAllowsAutomaticUpdates</key>
++  <true/>
++  <key>SUAutomaticallyUpdate</key>
++  <true/>
++	<key>CrProductDirName</key>
++	<string>BrowserOS</string>
+ </dict>
+ </plist>
+-- 
+2.49.0
+
