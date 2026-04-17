@@ -3,7 +3,7 @@ import { BrowserWindow, ipcMain, Menu, MenuItem } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import type { ExtensionManager } from './manager';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { IpcChannels } from '../shared/ipc-channels';
 
@@ -70,7 +70,7 @@ export class ExtensionToolbar {
 
   constructor(extensionManager: ExtensionManager) {
     this.extensionManager = extensionManager;
-    this.stateFilePath = tandemDir('extensions', 'toolbar-state.json');
+    this.stateFilePath = zerantDir('extensions', 'toolbar-state.json');
     this.loadState();
   }
 
@@ -358,7 +358,7 @@ export class ExtensionToolbar {
       menu.append(new MenuItem({
         label: 'Options',
         click: () => {
-          // Open options page in a new Tandem tab
+          // Open options page in a new Zerant tab
           if (this.mainWindow && ext.optionsUrl) {
             this.mainWindow.webContents.send(IpcChannels.OPEN_URL_IN_NEW_TAB, ext.optionsUrl);
           }
@@ -377,9 +377,9 @@ export class ExtensionToolbar {
 
     menu.append(new MenuItem({ type: 'separator' }));
 
-    // Remove from Tandem
+    // Remove from Zerant
     menu.append(new MenuItem({
-      label: 'Remove from Tandem',
+      label: 'Remove from Zerant',
       click: () => {
         // Send removal request to the renderer to handle with confirmation
         if (this.mainWindow) {

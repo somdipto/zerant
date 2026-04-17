@@ -1,10 +1,10 @@
-# Tandem Browser
+# Zerant Browser
 
 > "Two people, one vehicle, stronger together." — the tandem bicycle, and the philosophy behind this project.
 
-## What is Tandem Browser?
+## What is Zerant Browser?
 
-Tandem Browser is an Electron-based browser built for human-AI collaboration. Any AI
+Zerant Browser is an Electron-based browser built for human-AI collaboration. Any AI
 agent that speaks MCP or HTTP can control it. The name comes from the tandem
 bicycle: two riders, one machine, each contributing what the other can't do
 alone.
@@ -14,23 +14,23 @@ while AI agents operate through a built-in **MCP server** (250 tools) or a
 **300+ endpoint HTTP API** for navigation, interaction, data extraction,
 automation, sessions, sync, extensions, and developer tooling. Local agents can
 use MCP or HTTP. Remote agents on the same Tailscale network connect via HTTP
-and authenticate through Tandem's pairing system. Websites see a normal Chrome
+and authenticate through Zerant's pairing system. Websites see a normal Chrome
 browser on macOS. They don't see the AI.
 
-That distinction matters. Tandem Browser is not trying to be a generic automation shell,
+That distinction matters. Zerant Browser is not trying to be a generic automation shell,
 and it is not limited to sites that explicitly expose agent tools. It is the
 shared browser layer where a human and an AI can work together across the web as
 it exists today.
 
-Tandem was originally built for OpenClaw and continues to be maintained by an
+Zerant was originally built for OpenClaw and continues to be maintained by an
 OpenClaw maintainer, but the MCP server makes it equally accessible to Claude
 Code, Cursor, Windsurf, or any other MCP-compatible agent.
 
-The security layer exists because when an AI has access to your browser, your threat model changes. Every ad network, tracking pixel, and malicious domain is now in your agent's attack surface. Tandem Browser runs an 8-layer security shield before anything reaches the page so agents can operate with stricter containment than a conventional browser automation stack.
+The security layer exists because when an AI has access to your browser, your threat model changes. Every ad network, tracking pixel, and malicious domain is now in your agent's attack surface. Zerant Browser runs an 8-layer security shield before anything reaches the page so agents can operate with stricter containment than a conventional browser automation stack.
 
-Data stays local. Sessions are isolated. Nothing leaves the machine through Tandem Browser without going through a filter first.
+Data stays local. Sessions are isolated. Nothing leaves the machine through Zerant Browser without going through a filter first.
 
-**GitHub:** `hydro13/tandem-browser`  
+**GitHub:** `hydro13/zerant-browser`  
 **Current version:** `0.73.1`  
 **Repository status:** Public developer preview  
 **Started:** February 11, 2026
@@ -44,7 +44,7 @@ Human-AI symbiosis, not human-AI hierarchy. The goal isn't an AI that does thing
 The clearest way to describe the category is this:
 
 - **WebMCP** helps websites become more agent-readable.
-- **Tandem Browser** helps humans and agents work together in the real browser.
+- **Zerant Browser** helps humans and agents work together in the real browser.
 
 Those two ideas can complement each other, but they are not the same product
 story.
@@ -59,7 +59,7 @@ Within the product UI, the right-side assistant surface is called the Wingman pa
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Tandem Browser (Electron 40)                                   │
+│  Zerant Browser (Electron 40)                                   │
 │                                                                 │
 │  ┌──────────────────────────┐  ┌───────────────────────────┐    │
 │  │  Sidebar (shell)         │  │  Wingman Panel (shell)    │    │
@@ -107,7 +107,7 @@ Within the product UI, the right-side assistant surface is called the Wingman pa
 │                      │                                          │
 │                      ▼                                          │
 │  ┌────────────────────────────────────────────────────────────┐ │
-│  │  Tandem HTTP API — localhost:8765 (Express)                │ │
+│  │  Zerant HTTP API — localhost:8765 (Express)                │ │
 │  │  300+ route handlers across 16 route modules               │ │
 │  │                                                            │ │
 │  │  Navigation, Content, Interaction, Tabs, Screenshots       │ │
@@ -301,5 +301,5 @@ curl http://127.0.0.1:8765/status
 ## Related Projects
 
 - **OpenClaw** — AI gateway the agent runs on
-- **ClaroNote** — Voice-to-text SaaS, natively integrated in Tandem
+- **ClaroNote** — Voice-to-text SaaS, natively integrated in Zerant
 - **Kanbu** — Project management tool 

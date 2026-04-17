@@ -3,11 +3,11 @@
 > **Priority:** MEDIUM | **Effort:** ~1 day | **Dependencies:** Phase 2, 3, 4
 
 ## Goal
-Add an "Extensions" section to Tandem's settings panel with three tabs: Installed, From Chrome, and Gallery. Users can manage, import, and discover extensions without using the API directly.
+Add an "Extensions" section to Zerant's settings panel with three tabs: Installed, From Chrome, and Gallery. Users can manage, import, and discover extensions without using the API directly.
 
 ## Files to Read
 - `src/api/server.ts` — all extension API endpoints (from Phase 1-4)
-- Tandem's existing settings/panel UI files — understand the UI pattern and framework used
+- Zerant's existing settings/panel UI files — understand the UI pattern and framework used
 - `src/extensions/gallery.ts` — GalleryExtension type and categories
 
 ## Files to Modify

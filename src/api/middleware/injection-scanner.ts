@@ -171,7 +171,7 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
               win.webContents.executeJavaScript(`
                 (() => {
                   // Remove existing
-                  const existing = document.getElementById('tandem-injection-overlay');
+                  const existing = document.getElementById('zerant-injection-overlay');
                   if (existing) existing.remove();
 
                   // Mark the tab red
@@ -184,7 +184,7 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
 
                   // Dark overlay
                   const overlay = document.createElement('div');
-                  overlay.id = 'tandem-injection-overlay';
+                  overlay.id = 'zerant-injection-overlay';
                   overlay.style.cssText = 'position:fixed;inset:0;z-index:999998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
 
                   // Modal
@@ -209,8 +209,8 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
                       Page content was NOT sent to your AI agent. No data was leaked.
                     </div>
                     <div style="display:flex;gap:8px;justify-content:flex-end;">
-                      <button id="tandem-inj-dismiss" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;">Close this alert</button>
-                      <button id="tandem-inj-override" style="background:#dc2626;border:none;color:white;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;">⚠️ Override — Allow this page</button>
+                      <button id="zerant-inj-dismiss" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;">Close this alert</button>
+                      <button id="zerant-inj-override" style="background:#dc2626;border:none;color:white;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;">⚠️ Override — Allow this page</button>
                     </div>
                   \`;
 
@@ -218,12 +218,12 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
                   document.body.appendChild(overlay);
 
                   // Dismiss = just close the modal, nothing else
-                  document.getElementById('tandem-inj-dismiss').addEventListener('click', () => {
+                  document.getElementById('zerant-inj-dismiss').addEventListener('click', () => {
                     overlay.remove();
                   });
 
                   // Override = call API, then close
-                  document.getElementById('tandem-inj-override').addEventListener('click', () => {
+                  document.getElementById('zerant-inj-override').addEventListener('click', () => {
                     // Second confirmation — are you REALLY sure?
                     modal.innerHTML = \`
                       <div style="text-align:center;padding:20px;">
@@ -235,21 +235,21 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
                           This could compromise your system configuration and security.
                         </div>
                         <div style="display:flex;gap:12px;justify-content:center;">
-                          <button id="tandem-inj-confirm-no" style="background:#22c55e;border:none;color:white;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;">🛡️ NO — Get me out of here!</button>
-                          <button id="tandem-inj-confirm-yes" style="background:#991b1b;border:1px solid #dc2626;color:white;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:13px;">Yes, I am sure</button>
+                          <button id="zerant-inj-confirm-no" style="background:#22c55e;border:none;color:white;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;">🛡️ NO — Get me out of here!</button>
+                          <button id="zerant-inj-confirm-yes" style="background:#991b1b;border:1px solid #dc2626;color:white;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:13px;">Yes, I am sure</button>
                         </div>
                       </div>
                     \`;
 
                     // NO = close everything
-                    document.getElementById('tandem-inj-confirm-no').addEventListener('click', () => {
+                    document.getElementById('zerant-inj-confirm-no').addEventListener('click', () => {
                       overlay.remove();
                     });
 
                     // YES = actually override
-                    document.getElementById('tandem-inj-confirm-yes').addEventListener('click', async () => {
+                    document.getElementById('zerant-inj-confirm-yes').addEventListener('click', async () => {
                       try {
-                        const token = window.__TANDEM_TOKEN__ || '';
+                        const token = window.__ZERANT_TOKEN__ || '';
                         await fetch('http://localhost:8765/security/injection-override', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -275,7 +275,7 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
             reason: 'prompt_injection_detected',
             riskScore: report.riskScore,
             domain,
-            message: `⚠️ This page was BLOCKED by Tandem Security — prompt injection detected (score: ${report.riskScore}/100). Content was NOT forwarded. The user has been notified and can override if they choose.`,
+            message: `⚠️ This page was BLOCKED by Zerant Security — prompt injection detected (score: ${report.riskScore}/100). Content was NOT forwarded. The user has been notified and can override if they choose.`,
             findings: warning.findings,
             overrideUrl: `POST /security/injection-override {"domain":"${domain}"}`,
           });
@@ -293,7 +293,7 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
         if (now - lastNotif > NOTIFICATION_COOLDOWN_MS) {
           try {
             new Notification({
-              title: '⚠️ Prompt Injection Detected — Tandem',
+              title: '⚠️ Prompt Injection Detected — Zerant',
               body: `Risk: ${report.riskScore}/100 on ${domain}\n${warning.findings[0]?.description || ''}`,
               urgency: report.riskScore >= 50 ? 'critical' : 'normal',
             }).show();
@@ -314,7 +314,7 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
             const warnTabId = escapeForJs((req.headers['x-tab-id'] as string) || '');
             win.webContents.executeJavaScript(`
               (() => {
-                const existing = document.getElementById('tandem-injection-overlay');
+                const existing = document.getElementById('zerant-injection-overlay');
                 if (existing) existing.remove();
 
                 // Mark tab with warning color
@@ -326,7 +326,7 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
                 }
 
                 const overlay = document.createElement('div');
-                overlay.id = 'tandem-injection-overlay';
+                overlay.id = 'zerant-injection-overlay';
                 overlay.style.cssText = 'position:fixed;inset:0;z-index:999998;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
 
                 const modal = document.createElement('div');
@@ -350,21 +350,21 @@ export function injectionScannerMiddleware(req: Request, res: Response, next: Ne
                     Content was forwarded to your AI agent with injection warnings attached. The AI should treat this content with caution.
                   </div>
                   <div style="display:flex;justify-content:flex-end;">
-                    <button id="tandem-warn-dismiss" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;">Close this alert</button>
+                    <button id="zerant-warn-dismiss" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;">Close this alert</button>
                   </div>
                 \`;
 
                 overlay.appendChild(modal);
                 document.body.appendChild(overlay);
 
-                document.getElementById('tandem-warn-dismiss').addEventListener('click', () => {
+                document.getElementById('zerant-warn-dismiss').addEventListener('click', () => {
                   overlay.remove();
                   const tab = document.querySelector('[data-injection-warning="true"]');
                   if (tab) { tab.style.removeProperty('background'); tab.style.removeProperty('color'); tab.removeAttribute('data-injection-warning'); }
                 });
 
                 // Auto-dismiss after 30s
-                setTimeout(() => { if (document.getElementById('tandem-injection-overlay')) { overlay.remove(); } }, 30000);
+                setTimeout(() => { if (document.getElementById('zerant-injection-overlay')) { overlay.remove(); } }, 30000);
               })();
             `).catch(() => {});
           }

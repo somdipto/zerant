@@ -4,13 +4,13 @@
 
 ## Goal
 
-Detect and communicate when browser extensions conflict with Tandem's security stack or with each other. This phase creates the detection engine and API — Phase 10b builds the active reconciliation layer for DNR conflicts.
+Detect and communicate when browser extensions conflict with Zerant's security stack or with each other. This phase creates the detection engine and API — Phase 10b builds the active reconciliation layer for DNR conflicts.
 
 ## Background
 
 ### The DNR Conflict
 
-Tandem's security stack is wired into the `persist:tandem` session via the RequestDispatcher in `main.ts`. The Guardian (priority 1) sees every request via Electron's `session.webRequest` hooks. Extensions that use `declarativeNetRequest` (uBlock Origin, AdBlock Plus, AdBlock, Privacy Badger, Ghostery, DuckDuckGo Privacy) install rules that may block requests **before** the `webRequest` hooks fire.
+Zerant's security stack is wired into the `persist:tandem` session via the RequestDispatcher in `main.ts`. The Guardian (priority 1) sees every request via Electron's `session.webRequest` hooks. Extensions that use `declarativeNetRequest` (uBlock Origin, AdBlock Plus, AdBlock, Privacy Badger, Ghostery, DuckDuckGo Privacy) install rules that may block requests **before** the `webRequest` hooks fire.
 
 **The impact:**
 - NetworkShield has 811,000+ blocklist entries. If uBlock Origin also blocks 300,000 or those domains but earlier in the pipeline, Guardian never sees those requests.
@@ -94,7 +94,7 @@ export class ConflictDetector {
 
    **First: empirical test (before implementing any whitelist):**
 
-   Install Dark Reader extension (content scripts only). Open Tandem's DevTools console.
+   Install Dark Reader extension (content scripts only). Open Zerant's DevTools console.
    Check whether ScriptGuard logs any events for Dark Reader's content scripts:
 
    - If ScriptGuard logs the content script injections → whitelist implementation IS needed,
@@ -115,10 +115,10 @@ export class ConflictDetector {
 
 4. **Keyboard shortcut conflicts (info):**
    - Check `commands` in manifest.json for keyboard shortcuts
-   - Compare against Tandem's own keyboard shortcuts (read from keybinding config)
-   - Known Tandem shortcuts to check: Cmd+K (chat), Cmd+L (URL bar), Cmd+T (new tab), Cmd+W (close tab), Cmd+Shift+T (reopen), Cmd+1-9 (tab focus)
-   - If overlap found → `conflictType: 'keyboard-shortcut'`, `severity: 'info'` ("Extension shortcut {key} conflicts with Tandem's {action}")
-   - Document which takes priority (Tandem's shortcuts should win since they're registered at the BrowserWindow level)
+   - Compare against Zerant's own keyboard shortcuts (read from keybinding config)
+   - Known Zerant shortcuts to check: Cmd+K (chat), Cmd+L (URL bar), Cmd+T (new tab), Cmd+W (close tab), Cmd+Shift+T (reopen), Cmd+1-9 (tab focus)
+   - If overlap found → `conflictType: 'keyboard-shortcut'`, `severity: 'info'` ("Extension shortcut {key} conflicts with Zerant's {action}")
+   - Document which takes priority (Zerant's shortcuts should win since they're registered at the BrowserWindow level)
 
 ### 10a.2 Integrate with Extension Manager
 
@@ -146,7 +146,7 @@ Update extension API endpoints:
           conflictType: "dnr-overlap",
           severity: "warning",
           description: "Uses declarativeNetRequest rules that may overlap with NetworkShield",
-          recommendation: "Tandem's NetworkShield already blocks malicious domains. This extension is redundant for security but useful for ad blocking."
+          recommendation: "Zerant's NetworkShield already blocks malicious domains. This extension is redundant for security but useful for ad blocking."
         }
       ]
     }
@@ -186,7 +186,7 @@ Lay the groundwork for loading extensions in isolated sessions:
 - [ ] ConflictDetector correctly identifies extensions with `declarativeNetRequest` permissions
 - [ ] ConflictDetector correctly identifies extensions with `nativeMessaging` permissions
 - [ ] ConflictDetector correctly identifies broad content script injection patterns
-- [ ] ConflictDetector correctly identifies keyboard shortcut conflicts with Tandem
+- [ ] ConflictDetector correctly identifies keyboard shortcut conflicts with Zerant
 - [ ] Conflict severity matches Phase 1 DNR test results
 - [ ] `GET /extensions/list` includes conflicts per extension
 - [ ] `GET /extensions/conflicts` returns all conflicts with summary counts

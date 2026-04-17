@@ -138,7 +138,7 @@ describe('buildInteractionScope', () => {
         title: 'Example',
         active: true,
         source: 'user',
-        partition: 'persist:tandem',
+        partition: 'persist:zerant',
       } as any,
       source: 'active',
       sessionName: null,

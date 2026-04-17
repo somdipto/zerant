@@ -79,7 +79,7 @@
   - [x] WebSocket monitoring works (ws:// and wss:// upgrade requests detected and flagged/allowed appropriately)
   - [x] Phase 0+1 regression OK (NetworkInspector logs 100+ entries, 12+ domains tracked, blocklist check works, stealth active)
 - **Issues encountered:** None
-- **Notes for next phase:** OutboundGuard is called from within Guardian's checkRequest() (not registered as a separate dispatcher consumer). Guardian priority 1 handles both blocklist checks and outbound analysis. OutboundGuard analyzes POST/PUT/PATCH bodies for credentials and monitors WebSocket upgrades. Tandem's own internal WebSocket (127.0.0.1:18789) is flagged as unknown-ws-endpoint — consider adding localhost to KNOWN_WS_SERVICES or whitelisting in Phase 3 if this creates noise. 12 API routes now registered under /security/*. The events table supports category-filtered queries (GET /security/events?category=outbound).
+- **Notes for next phase:** OutboundGuard is called from within Guardian's checkRequest() (not registered as a separate dispatcher consumer). Guardian priority 1 handles both blocklist checks and outbound analysis. OutboundGuard analyzes POST/PUT/PATCH bodies for credentials and monitors WebSocket upgrades. Zerant's own internal WebSocket (127.0.0.1:18789) is flagged as unknown-ws-endpoint — consider adding localhost to KNOWN_WS_SERVICES or whitelisting in Phase 3 if this creates noise. 12 API routes now registered under /security/*. The events table supports category-filtered queries (GET /security/events?category=outbound).
 
 ---
 
@@ -107,7 +107,7 @@
   - Guardian.getModeForDomain is now public (needed by BehaviorMonitor)
   - DevToolsManager.getAttachedWebContents() is the new public accessor for security modules
   - 19 API routes total under /security/* (12 from Phase 1-2 + 7 new)
-  - Tandem's internal WebSocket (127.0.0.1:18789) still flagged as unknown-ws-endpoint (Phase 2 note — not addressed, not causing issues)
+  - Zerant's internal WebSocket (127.0.0.1:18789) still flagged as unknown-ws-endpoint (Phase 2 note — not addressed, not causing issues)
 - **DevToolsManager changes:**
   - Added `CDPSubscriber` interface (exported) — { name, events[], handler(method, params) }
   - Added `subscribers: CDPSubscriber[]` private field
@@ -137,10 +137,10 @@
   - [x] Phase 0-3 regression OK (18/18 endpoint tests passed, 811,812 blocklist entries, Guardian avg 0.04ms)
 - **Issues encountered:**
   - Initial "uncertain" heuristic (trust < 40) was too broad — caught all new domains (default trust=30). Tightened to trust < 20 (actively suspicious) or strict-mode scripts with trust < 50. Target: ~5% or requests.
-  - Tandem's own localhost API requests (chat polling every 2s) were being queued. Fixed by excluding localhost/127.0.0.1 from gatekeeper queueing.
+  - Zerant's own localhost API requests (chat polling every 2s) were being queued. Fixed by excluding localhost/127.0.0.1 from gatekeeper queueing.
 - **Notes for next phase:**
-  - GatekeeperWebSocket is initialized AFTER Express server starts (needs HttpServer reference). Order: SecurityManager → TandemAPI.start() → securityManager.initGatekeeper(httpServer)
-  - TandemAPI now has `getHttpServer()` public method (minimal change to server.ts)
+  - GatekeeperWebSocket is initialized AFTER Express server starts (needs HttpServer reference). Order: SecurityManager → ZerantAPI.start() → securityManager.initGatekeeper(httpServer)
+  - ZerantAPI now has `getHttpServer()` public method (minimal change to server.ts)
   - 24 API routes total under /security/* (19 from Phase 1-3 + 5 new)
   - Decision history is kept in-memory (MAX_HISTORY=500). For Phase 5, consider persisting to DB.
   - Pending queue cap: MAX_QUEUE=1000 with FIFO eviction (oldest gets defaultAction)

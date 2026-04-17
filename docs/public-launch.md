@@ -13,21 +13,21 @@ The local-first browser for shared human-AI browser context.
 
 ## Social / Announcement One-Liner
 
-Tandem Browser is now public: the local-first browser for shared human-AI browser context, released as a developer preview.
+Zerant Browser is now public: the local-first browser for shared human-AI browser context, released as a developer preview.
 
 ## Launch Post
 
-Tandem Browser is now public.
+Zerant Browser is now public.
 
-Tandem Browser is a local-first browser built for human-AI collaboration on the local
+Zerant Browser is a local-first browser built for human-AI collaboration on the local
 machine. The human browses normally. Any AI agent that speaks MCP (250 tools) or
 HTTP (300+ endpoints) can operate inside the same real browser context for
 navigation, extraction, automation, screenshots, session work, and observability,
 while websites continue to see a normal Chromium browser instead of an "AI
 browser" fingerprint.
 
-That is the point of Tandem Browser's positioning: not generic browser automation, and
-not a bet on waiting for every site to become agent-ready. Tandem Browser is the shared
+That is the point of Zerant Browser's positioning: not generic browser automation, and
+not a bet on waiting for every site to become agent-ready. Zerant Browser is the shared
 browser layer where humans and agents can work together on the web that already
 exists.
 
@@ -45,7 +45,7 @@ infrastructure, or local-first agent products, this is the layer where those
 concerns meet a real browser used by a real human.
 
 Repository:
-`https://github.com/hydro13/tandem-browser`
+`https://github.com/hydro13/zerant-browser`
 
 ## Suggested GitHub Topics
 
@@ -64,10 +64,10 @@ Repository:
 
 ## Maintainer Notes
 
-- Position Tandem Browser as the human-AI symbiotic browser and shared browser context layer.
+- Position Zerant Browser as the human-AI symbiotic browser and shared browser context layer.
 - OpenClaw is the origin story and Wingman integration, not the exclusive focus.
 - Keep the wording `developer preview` until packaging and remaining product
   rough edges are addressed.
-- Avoid framing Tandem Browser as a gimmick, wrapper, or generic browser shell with AI
+- Avoid framing Zerant Browser as a gimmick, wrapper, or generic browser shell with AI
   chat bolted on later.
-- Avoid framing Tandem Browser as just an MCP tool count or API surface.
+- Avoid framing Zerant Browser as just an MCP tool count or API surface.

@@ -6,7 +6,7 @@
  * window exports: none
  */
 
-const TOKEN = window.__TANDEM_TOKEN__ || '';
+const TOKEN = window.__ZERANT_TOKEN__ || '';
 export function getToken() { return TOKEN; }
 
 let _config = null;

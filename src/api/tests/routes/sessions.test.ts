@@ -427,7 +427,7 @@ describe('Session Routes', () => {
       expect(res.body.ok).toBe(true);
       expect(res.body.path).toBe('/path/to/state.json');
       // Default session uses DEFAULT_PARTITION
-      expect(ctx.stateManager.save).toHaveBeenCalledWith('my-state', 'persist:tandem');
+      expect(ctx.stateManager.save).toHaveBeenCalledWith('my-state', 'persist:zerant');
     });
 
     it('saves state for a named session via X-Session header', async () => {
@@ -478,7 +478,7 @@ describe('Session Routes', () => {
       expect(res.status).toBe(200);
       expect(res.body.ok).toBe(true);
       expect(res.body.cookiesRestored).toBe(42);
-      expect(ctx.stateManager.load).toHaveBeenCalledWith('my-state', 'persist:tandem');
+      expect(ctx.stateManager.load).toHaveBeenCalledWith('my-state', 'persist:zerant');
     });
 
     it('loads state for a named session via X-Session header', async () => {

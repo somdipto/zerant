@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import type { SidebarConfig, SidebarItem, SidebarState } from './types';
 
@@ -41,14 +41,14 @@ const DEFAULT_CONFIG: SidebarConfig = {
 
 // ─── Storage path ───────────────────────────────────────────────────
 
-const STORAGE_PATH = path.join(tandemDir(), 'sidebar-config.json');
+const STORAGE_PATH = path.join(zerantDir(), 'sidebar-config.json');
 
 // ─── Manager ────────────────────────────────────────────────────────
 
 /**
  * SidebarManager — sidebar layout, item visibility, and panel state.
  *
- * Persistence: ~/.tandem/sidebar-config.json
+ * Persistence: ~/.zerant/sidebar-config.json
  * API routes:  src/api/routes/sidebar.ts
  * MCP tools:   src/mcp/tools/sidebar.ts
  */
@@ -148,7 +148,7 @@ export class SidebarManager {
 
   private save(): void {
     try {
-      ensureDir(tandemDir());
+      ensureDir(zerantDir());
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(this.config, null, 2));
     } catch (e) {
       log.warn('Failed to save sidebar config:', e instanceof Error ? e.message : String(e));

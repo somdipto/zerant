@@ -1,13 +1,13 @@
 # Contributing
 
-Thanks for contributing to Tandem Browser.
+Thanks for contributing to Zerant Browser.
 
 This repository is public because outside contributors are expected to help
 improve the browser over time. If you are interested in OpenClaw workflows,
 local-first browser tooling, security, Electron infrastructure, or agent
 interfaces, contributions are welcome.
 
-Tandem is still in a stage where extra help is genuinely valuable. Bug fixes,
+Zerant is still in a stage where extra help is genuinely valuable. Bug fixes,
 repro steps, platform testing, code review, docs cleanup, and focused UX polish
 all move the project forward.
 
@@ -32,12 +32,12 @@ The repository is currently maintained as a public developer preview.
 Please keep changes honest about current product maturity. Do not present
 unfinished features as production-ready.
 
-Tandem is an agent-first browser for human-AI collaboration. Contributions
+Zerant is an agent-first browser for human-AI collaboration. Contributions
 should preserve that positioning in public docs, UX wording, and architecture
 decisions. OpenClaw remains an important runtime and the origin of the project,
-but Tandem is open to any MCP-compatible agent.
+but Zerant is open to any MCP-compatible agent.
 
-Public-facing changes should also avoid framing Tandem as a gimmick or a loose
+Public-facing changes should also avoid framing Zerant as a gimmick or a loose
 plugin integration. The project is an agent-first browser with a full MCP server
 and HTTP API, not a generic browser shell with AI bolted on.
 
@@ -49,13 +49,13 @@ Useful contribution areas right now include:
 - Linux testing and platform-specific fixes
 - browser API improvements for tabs, sessions, snapshots, and devtools
 - MCP tool improvements and new tool proposals
-- agent workflow polish and Tandem skill ergonomics
+- agent workflow polish and Zerant skill ergonomics
 - security review and containment hardening
 - UI polish in the shared human + Wingman workflow
 - docs cleanup where public setup or project status is confusing
 
 If you are unsure where to start, open a thread in
-[Discussions](https://github.com/hydro13/tandem-browser/discussions) — Q&A for
+[Discussions](https://github.com/hydro13/zerant-browser/discussions) — Q&A for
 questions, Ideas for proposals that need exploration. For concrete bugs and
 well-defined feature requests, open an issue.
 

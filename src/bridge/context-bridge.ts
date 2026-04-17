@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { EventStreamManager, BrowserEvent, BrowserEventType } from '../events/stream';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -28,10 +28,10 @@ export interface ContextSummary {
 // ─── Manager ────────────────────────────────────────────────────────
 
 /**
- * ContextBridge — Makes everything Tandem reads available to external tools.
+ * ContextBridge — Makes everything Zerant reads available to external tools.
  *
- * Stores context snapshots per URL in ~/.tandem/context/
- * Searchable, queryable via API. This is the bridge between Tandem and OpenClaw.
+ * Stores context snapshots per URL in ~/.zerant/context/
+ * Searchable, queryable via API. This is the bridge between Zerant and OpenClaw.
  */
 export class ContextBridge {
 
@@ -52,7 +52,7 @@ export class ContextBridge {
   // === 2. Constructor ===
 
   constructor() {
-    this.contextDir = tandemDir('context');
+    this.contextDir = zerantDir('context');
     this.indexPath = path.join(this.contextDir, '_index.json');
 
     if (!fs.existsSync(this.contextDir)) {
@@ -197,7 +197,7 @@ export class ContextBridge {
    * Get a compact context summary for AI consumption (~500 tokens max).
    * Format:
    *   Active tab: Google Search - https://google.com (tab-abc)
-   *   Open tabs: 4 (Google, LinkedIn, GitHub, Tandem Settings)
+   *   Open tabs: 4 (Google, LinkedIn, GitHub, Zerant Settings)
    *   Recent events: navigation to google.com (2s ago), tab switch (15s ago)
    *   Voice: inactive
    */

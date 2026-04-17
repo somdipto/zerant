@@ -31,13 +31,13 @@ app.commandLine.appendSwitch('disable-features',
   'WebContentsForceDark,ThirdPartyStoragePartitioning,TrackingProtection3pcd');
 nativeTheme.themeSource = 'system';
 import path from 'path';
-import { TandemAPI } from './api/server';
+import { ZerantAPI } from './api/server';
 import { StealthManager } from './stealth/manager';
 import { buildAppMenu } from './menu/app-menu';
 import { RequestDispatcher } from './network/dispatcher';
 import { setMainWindow } from './notifications/alert';
 import { API_PORT, WEBHOOK_PORT, DEFAULT_PARTITION, COOKIE_FLUSH_INTERVAL_MS } from './utils/constants';
-import { tandemDir } from './utils/paths';
+import { zerantDir } from './utils/paths';
 import { createLogger } from './utils/logger';
 import { createManagerRegistry, destroyRuntime, initializeRuntimeManagers, registerRuntimeIpcHandlers } from './bootstrap/runtime';
 import { registerInitialTabLifecycle } from './bootstrap/tab-session';
@@ -50,7 +50,7 @@ const log = createLogger('Main');
 const IS_DEV = process.argv.includes('--dev');
 
 let mainWindow: BrowserWindow | null = null;
-let api: TandemAPI | null = null;
+let api: ZerantAPI | null = null;
 let runtime: RuntimeManagers | null = null;
 let dispatcher: RequestDispatcher | null = null;
 let cookieFlushTimer: ReturnType<typeof setInterval> | null = null;
@@ -63,7 +63,7 @@ function registerEarlyShellAuthIpc(): void {
   try { ipcMain.removeHandler(IpcChannels.GET_API_TOKEN); } catch { /* handler may not exist yet */ }
   ipcMain.handle(IpcChannels.GET_API_TOKEN, async () => {
     try {
-      return fs.readFileSync(tandemDir('api-token'), 'utf-8').trim();
+      return fs.readFileSync(zerantDir('api-token'), 'utf-8').trim();
     } catch {
       return '';
     }
@@ -84,13 +84,13 @@ const pendingSecurityCoverageWebContentsIds: number[] = [];
 
 function readApiTokenFromDisk(): string {
   try {
-    return fs.readFileSync(tandemDir('api-token'), 'utf-8').trim();
+    return fs.readFileSync(zerantDir('api-token'), 'utf-8').trim();
   } catch {
     return '';
   }
 }
 
-function isLocalTandemApiUrl(rawUrl: string): boolean {
+function isLocalZerantApiUrl(rawUrl: string): boolean {
   const url = tryParseUrl(rawUrl);
   if (!url) {
     return false;
@@ -254,7 +254,7 @@ async function createWindow(): Promise<BrowserWindow> {
     name: 'ShellApiAuth',
     priority: 55,
     handler: (details, headers) => {
-      if (!isLocalTandemApiUrl(details.url)) {
+      if (!isLocalZerantApiUrl(details.url)) {
         return headers;
       }
 
@@ -466,7 +466,7 @@ async function createWindow(): Promise<BrowserWindow> {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
-    title: 'Tandem Browser',
+    title: 'Zerant Browser',
     ...platformWindowOptions,
     webPreferences: {
       preload: path.join(__dirname, 'preload', 'index.js'),
@@ -507,9 +507,9 @@ async function startAPI(win: BrowserWindow): Promise<void> {
     log,
   });
   const registry = createManagerRegistry(runtime);
-  api = new TandemAPI({ win, port: API_PORT, registry });
+  api = new ZerantAPI({ win, port: API_PORT, registry });
   await api.start();
-  log.info(`🧠 Tandem API running on http://localhost:${API_PORT}`);
+  log.info(`🧠 Zerant API running on http://localhost:${API_PORT}`);
 
   // Security: Monitor openclaw.json for unauthorized modifications (prompt injection defense)
   const { startConfigIntegrityMonitor } = await import('./openclaw/connect');
@@ -518,7 +518,7 @@ async function startAPI(win: BrowserWindow): Promise<void> {
     // Alert the user via notification
     const { Notification } = require('electron');
     new Notification({
-      title: '⚠️ Security Alert — Tandem Browser',
+      title: '⚠️ Security Alert — Zerant Browser',
       body: detail,
       urgency: 'critical',
     }).show();
@@ -543,7 +543,7 @@ async function startAPI(win: BrowserWindow): Promise<void> {
           level: 'unknown',
           routePath,
           scope: null,
-          reason: 'Denied native messaging WebSocket because the Tandem API is unavailable',
+          reason: 'Denied native messaging WebSocket because the Zerant API is unavailable',
           extensionId: extensionId ?? 'unknown-extension',
           runtimeId: null,
           storageId: null,

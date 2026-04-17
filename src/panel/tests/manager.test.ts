@@ -13,7 +13,7 @@ vi.mock('fs', () => ({
 
 vi.mock('../../utils/paths', () => ({
   ensureDir: vi.fn((value: string) => value),
-  tandemDir: vi.fn((...parts: string[]) => `/tmp/tandem/${parts.join('/')}`),
+  zerantDir: vi.fn((...parts: string[]) => `/tmp/zerant/${parts.join('/')}`),
 }));
 
 vi.mock('../../notifications/alert', () => ({

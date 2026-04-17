@@ -1,14 +1,14 @@
-# Tandem vs Opera — Gap Analysis & Roadmap
+# Zerant vs Opera — Gap Analysis & Roadmap
 
 > Updated: 2026-04-11 (previous: 2026-02-28)
-> Tandem v0.70.0 (231 MCP tools, 57 src modules) vs Opera Desktop (68 features)
-> Purpose: Identify remaining high-value Opera features to build into Tandem
+> Zerant v0.70.0 (231 MCP tools, 57 src modules) vs Opera Desktop (68 features)
+> Purpose: Identify remaining high-value Opera features to build into Zerant
 
 ---
 
 ## Executive Summary
 
-Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ features to v0.70.0 with 231 MCP tools, 57 source modules, and 19 API route files. Several HIGH priority gaps have been closed:
+Since the original gap analysis (Feb 2026, v0.15.1), Zerant has grown from 380+ features to v0.70.0 with 231 MCP tools, 57 source modules, and 19 API route files. Several HIGH priority gaps have been closed:
 
 ### What's Been Built Since Feb 2026
 
@@ -38,9 +38,9 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 
 ### Current Score
 
-- **19 features** Opera has that Tandem **also has** (✅) — unchanged
-- **12 features** Opera has that Tandem **partially has** (⚠️) — was 17, improved
-- **19 features** Opera has that Tandem **is missing** (❌) — was 29, many built
+- **19 features** Opera has that Zerant **also has** (✅) — unchanged
+- **12 features** Opera has that Zerant **partially has** (⚠️) — was 17, improved
+- **19 features** Opera has that Zerant **is missing** (❌) — was 29, many built
 - **5 features** excluded per Robin's preferences
 
 **The remaining pattern:** The consumer UX gap has narrowed significantly. Sidebar messengers and Pinboards — the two hardest items — are done. What remains is mostly **tab organization polish** (Islands, Split Screen, Search in Tabs), **consumer privacy UX** (ad blocker UI, private browsing window), and **lifestyle features** (battery saver, translate, themes).
@@ -66,7 +66,7 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 
 ### 🔴 HIGH Priority — Build These Next
 
-| # | Feature | Opera Description | Tandem Status | Effort |
+| # | Feature | Opera Description | Zerant Status | Effort |
 |---|---------|-------------------|---------------|--------|
 | 1 | **Tab Islands** | Auto-groups by browsing context. Collapsible. Named handles. Shift+click multi-select | ⚠️ Partial — `TabGroup` model with name/color exists, but no auto-grouping, no collapsible UI, no island handles | Medium (3-5 days) |
 | 2 | **Split Screen** | 2-4 panes, resizable, independent navigation | ❌ Missing — single-tab architecture | Medium (3-5 days) |
@@ -77,7 +77,7 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 
 ### 🟡 MEDIUM Priority — Build After Highs
 
-| # | Feature | Opera Description | Tandem Status | Effort |
+| # | Feature | Opera Description | Zerant Status | Effort |
 |---|---------|-------------------|---------------|--------|
 | 7 | **Tab Emojis** | Emoji badges on tabs, hover selector, persists across sessions | ⚠️ Partial — emoji used in workspaces/pinboards but not on individual tabs | Easy (1-2 days) |
 | 8 | **Security Badges** | Visual address bar icons: HTTPS, blocked count, VPN, permissions | ❌ Missing — security data available via APIs, no visual badges | Easy (1-2 days) |
@@ -95,7 +95,7 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 
 ### 🟢 LOW Priority — Nice to Have
 
-| # | Feature | Opera Description | Tandem Status | Effort |
+| # | Feature | Opera Description | Zerant Status | Effort |
 |---|---------|-------------------|---------------|--------|
 | 20 | **Visual Tab Cycler** | Thumbnail Ctrl+Tab preview | ❌ Missing | Medium (3-5 days) |
 | 21 | **Easy Files** | Recent downloads/clipboard in file upload dialogs | ❌ Missing | Medium (3-5 days) |
@@ -108,7 +108,7 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 | 28 | **Wallpapers** | Custom start page wallpapers | ❌ Missing | Easy (1-2 days) |
 | 29 | **Language Customization** | Browser UI localization | ❌ Missing | Medium (3-5 days) |
 | 30 | **Opera Sync** | Cross-device sync of bookmarks, tabs, history, passwords | ⚠️ Partial — Chrome bookmark import/sync exists | Hard (1-2 weeks) |
-| 31 | **My Flow** | Encrypted cross-device sharing via QR code | ❌ Missing — needs Tandem mobile | Hard (1-2 weeks) |
+| 31 | **My Flow** | Encrypted cross-device sharing via QR code | ❌ Missing — needs Zerant mobile | Hard (1-2 weeks) |
 | 32 | **Battery Saver** | Reduce background activity on battery | ❌ Missing | Medium (3-5 days) |
 | 33 | **Spotify/Music Player** | Sidebar music player, detachable | ⚠️ Now possible via sidebar — could add as sidebar panel | Easy (1-2 days) |
 | 34 | **Save Tabs as Speed Dial** | Batch save tabs to bookmark folder | ⚠️ Partial — session state save + bookmarks exist | Easy (1-2 days) |
@@ -118,11 +118,11 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 
 ## Feature-by-Feature Comparison Table
 
-| # | Feature | Opera | Tandem | Gap | Priority |
+| # | Feature | Opera | Zerant | Gap | Priority |
 |---|---------|-------|--------|-----|----------|
 | | **TAB MANAGEMENT** | | | | |
 | 1.1 | Tab Islands | Auto-grouping, collapsible, named, colored clusters | TabGroup model (name, color, tabIds) — no auto-grouping or collapse UI | ⚠️ Partial | 🔴 HIGH |
-| 1.2 | Workspaces | 5 named buckets, visual sidebar switching | ✅ Full workspaces with AI agent support, visual switching, emoji icons | ✅ **Tandem exceeds** | — |
+| 1.2 | Workspaces | 5 named buckets, visual sidebar switching | ✅ Full workspaces with AI agent support, visual switching, emoji icons | ✅ **Zerant exceeds** | — |
 | 1.3 | Split Screen | 2-4 panes, resizable, independent navigation | None | ❌ Missing | 🔴 HIGH |
 | 1.4 | Tab Emojis | Emoji badges on tabs, hover selector | Emoji on workspaces/pinboards, not individual tabs | ⚠️ Partial | 🟡 MED |
 | 1.5 | Tab Traces | Recency-based brightness highlighting | None | ❌ Missing | 🟡 MED |
@@ -135,18 +135,18 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 | 1.12 | Close Tab Variations | Close other, close right, reopen | ✅ Full set | ✅ Match | — |
 | 1.13 | Save Tabs as Speed Dial | Batch save to bookmark folder | Session state save + bookmarks | ⚠️ Partial | 🟢 LOW |
 | | **SIDEBAR** | | | | |
-| 2.1 | Sidebar Layout | Multi-panel sidebar with customizable panels | ✅ 3-section sidebar: Workspaces, Communication, Utilities. Wide/narrow/hidden modes | ✅ **Tandem exceeds** | — |
-| 2.2 | Sidebar Messengers | Webview panels for apps with notifications | ✅ WhatsApp, Discord, Slack, Telegram, Instagram, X, Gmail, Calendar | ✅ **Tandem exceeds** | — |
+| 2.1 | Sidebar Layout | Multi-panel sidebar with customizable panels | ✅ 3-section sidebar: Workspaces, Communication, Utilities. Wide/narrow/hidden modes | ✅ **Zerant exceeds** | — |
+| 2.2 | Sidebar Messengers | Webview panels for apps with notifications | ✅ WhatsApp, Discord, Slack, Telegram, Instagram, X, Gmail, Calendar | ✅ **Zerant exceeds** | — |
 | | **MESSENGERS** | | | | |
 | 3.1 | WhatsApp | Full WhatsApp Web in sidebar | ✅ Sidebar panel | ✅ Match | — |
 | 3.2 | Discord | Full Discord in sidebar | ✅ Sidebar panel | ✅ Match | — |
 | 3.3 | Slack | Full Slack in sidebar | ✅ Sidebar panel | ✅ Match | — |
 | 3.4 | Instagram | Instagram feed/DMs in sidebar | ✅ Sidebar panel | ✅ Match | — |
-| 3.5 | X/Twitter | Full X in sidebar | ✅ Sidebar panel + X-Scout agent | ✅ **Tandem exceeds** | — |
+| 3.5 | X/Twitter | Full X in sidebar | ✅ Sidebar panel + X-Scout agent | ✅ **Zerant exceeds** | — |
 | 3.6 | Spotify | Sidebar music player, detachable | Possible via sidebar framework — not preconfigured | ⚠️ Partial | 🟢 LOW |
 | 3.7 | Telegram | Telegram in sidebar | ✅ Sidebar panel | ✅ Match | — |
 | | **AI** | | | | |
-| 4.1 | Opera AI (Aria) | Contextual AI chat, image gen, web search | ✅ AI Wingman with 6-layer security, MCP (231 tools), multi-backend, prompt injection guard, awareness tools | ✅ **Tandem far exceeds** | — |
+| 4.1 | Opera AI (Aria) | Contextual AI chat, image gen, web search | ✅ AI Wingman with 6-layer security, MCP (231 tools), multi-backend, prompt injection guard, awareness tools | ✅ **Zerant far exceeds** | — |
 | | **PRIVACY & SECURITY** | | | | |
 | 5.1 | Ad Blocker | EasyList filters, YouTube ads, NoCoin, per-site | NetworkShield blocks threats + trackers, but not consumer ads | ⚠️ Partial | 🔴 HIGH |
 | 5.2 | Tracker Blocker | Block tracking scripts/pixels at network level | ✅ Active blocking with blocklists, domain allowlist, request interception | ✅ Match | — |
@@ -154,7 +154,7 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 | 5.4 | Paste Protection | Clipboard monitoring for sensitive data | ✅ Clipboard manager with read/write monitoring | ✅ Match | — |
 | 5.5 | Private Browsing | Ephemeral window, auto-delete on close | Session partition isolation exists, no incognito UI | ⚠️ Partial | 🔴 HIGH |
 | 5.6 | Security Badges | Visual address bar icons | Security APIs, no visual badges | ❌ Missing | 🟡 MED |
-| 5.7 | Phishing/Malware | Blacklist checking, warning page | ✅ 6-layer Security Shield + Prompt Injection Guard (40+ patterns, risk scoring) | ✅ **Tandem far exceeds** | — |
+| 5.7 | Phishing/Malware | Blacklist checking, warning page | ✅ 6-layer Security Shield + Prompt Injection Guard (40+ patterns, risk scoring) | ✅ **Zerant far exceeds** | — |
 | 5.8 | Do Not Track | DNT header | None | ❌ Missing | 🟢 LOW |
 | 5.9 | Certificate Management | View/manage TLS certificates | Via Chromium/Electron | ✅ Match | — |
 | 5.10 | Clear Data on Exit | Auto-delete per data type on close | None | ❌ Missing | 🟡 MED |
@@ -180,15 +180,15 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 | | **CUSTOMIZATION** | | | | |
 | 9.1 | Dynamic Themes | Animated wallpapers, sound effects | Dark/light/system + Liquid Glass | ⚠️ Partial | 🟡 MED |
 | 9.2 | Wallpapers | Custom start page wallpapers | None | ❌ Missing | 🟢 LOW |
-| 9.3 | Chrome Extensions | Chrome Web Store compatibility | ✅ CRX install, gallery, Chrome import, update management, conflict detection | ✅ **Tandem exceeds** | — |
+| 9.3 | Chrome Extensions | Chrome Web Store compatibility | ✅ CRX install, gallery, Chrome import, update management, conflict detection | ✅ **Zerant exceeds** | — |
 | 9.4 | Language Customization | Browser UI localization | None | ❌ Missing | 🟢 LOW |
-| 9.5 | Import Bookmarks | Import from Chrome, Firefox, Safari | ✅ Chrome import (profiles, bookmarks, history, cookies, extensions, continuous sync) | ✅ **Tandem exceeds** | — |
+| 9.5 | Import Bookmarks | Import from Chrome, Firefox, Safari | ✅ Chrome import (profiles, bookmarks, history, cookies, extensions, continuous sync) | ✅ **Zerant exceeds** | — |
 | 9.6 | Startup Preferences | Restore session, custom start page | Session state save/load — no "restore on startup" toggle | ⚠️ Partial | 🟡 MED |
 | | **SYNC & CROSS-DEVICE** | | | | |
 | 10.1 | Opera Sync | Cross-device sync | Chrome bookmark import/sync | ⚠️ Partial | 🟢 LOW |
-| 10.2 | My Flow | QR-paired cross-device sharing | None — needs Tandem mobile | ❌ Missing | 🟢 LOW |
+| 10.2 | My Flow | QR-paired cross-device sharing | None — needs Zerant mobile | ❌ Missing | 🟢 LOW |
 | | **PINBOARDS** | | | | |
-| 11.1 | Pinboards | Content curation boards, Kanban, sharing | ✅ Full CRUD, link/image/text/quote cards, layouts (default/spacious/dense), themes, emoji | ✅ **Tandem matches** | — |
+| 11.1 | Pinboards | Content curation boards, Kanban, sharing | ✅ Full CRUD, link/image/text/quote cards, layouts (default/spacious/dense), themes, emoji | ✅ **Zerant matches** | — |
 | | **PERFORMANCE** | | | | |
 | 13.1 | Battery Saver | Reduce background activity on battery | None | ❌ Missing | 🟢 LOW |
 | 13.2 | Tab Snoozing | Auto-suspend inactive tabs | None | ❌ Missing | 🔴 HIGH |
@@ -198,7 +198,7 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 | | **CORE BROWSER** | | | | |
 | 15.1 | Navigation | Back, forward, reload | ✅ | ✅ Match | — |
 | 15.2 | Address & Search Bar | Unified URL/search input | ✅ URL bar with autocomplete | ✅ Match | — |
-| 15.3 | Context Menus | Page, link, image context menus | ✅ 50+ context menu items | ✅ **Tandem exceeds** | — |
+| 15.3 | Context Menus | Page, link, image context menus | ✅ 50+ context menu items | ✅ **Zerant exceeds** | — |
 | 15.4 | Zoom | Per-page zoom, configurable | ✅ | ✅ Match | — |
 | 15.5 | Full Screen | Immersive mode | ✅ | ✅ Match | — |
 | 15.6 | Downloads | Progress, icon, configurable location | ✅ Download tracking + interception | ✅ Match | — |
@@ -207,9 +207,9 @@ Since the original gap analysis (Feb 2026, v0.15.1), Tandem has grown from 380+ 
 
 ---
 
-## What Tandem Has That Opera Doesn't
+## What Zerant Has That Opera Doesn't
 
-| Category | Tandem Feature | Opera Equivalent |
+| Category | Zerant Feature | Opera Equivalent |
 |----------|---------------|-----------------|
 | **AI Wingman** | 6-layer AI wingman, MCP server (231 tools), multi-backend, dual mode, emergency stop, task approval | Aria chatbot (single model, no tool use, no autonomy) |
 | **Prompt Injection Guard** | 40+ detection patterns, hidden text detection, risk scoring (0-100), user override with double-confirm | None |
@@ -299,5 +299,5 @@ The biggest wins: Sidebar (6 chat clients + Gmail/Calendar), Pinboards (full sys
 ---
 
 *Updated 2026-04-11 by Claude for Robin Waslander*
-*Source: Tandem v0.70.0 codebase analysis (231 MCP tools, 57 src modules, 19 API route files)*
-*Previous: 2026-02-28, Tandem v0.15.1*
+*Source: Zerant v0.70.0 codebase analysis (231 MCP tools, 57 src modules, 19 API route files)*
+*Previous: 2026-02-28, Zerant v0.15.1*

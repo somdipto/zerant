@@ -19,7 +19,7 @@ sensitive routes require a bearer token or an approved internal path.
 
 | File | Look for | Why |
 |------|----------|-----|
-| `src/api/server.ts` | `class TandemAPI` | current auth and CORS behavior |
+| `src/api/server.ts` | `class ZerantAPI` | current auth and CORS behavior |
 | `src/api/context.ts` | `getActiveWC()`, `getSessionWC()` | caller assumptions and tab access helpers |
 | `src/api/routes/extensions.ts` | route registration | extension-origin usage |
 | `src/main.ts` | `startAPI()` | API startup path |

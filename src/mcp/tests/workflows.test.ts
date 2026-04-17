@@ -19,8 +19,8 @@ describe('MCP workflow tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_workflow_list', () => {
-    const handler = getHandler(tools, 'tandem_workflow_list');
+  describe('zerant_workflow_list', () => {
+    const handler = getHandler(tools, 'zerant_workflow_list');
 
     it('lists workflows', async () => {
       mockApiCall.mockResolvedValueOnce([{ id: 'wf1', name: 'Deploy' }]);
@@ -30,8 +30,8 @@ describe('MCP workflow tools', () => {
     });
   });
 
-  describe('tandem_workflow_create', () => {
-    const handler = getHandler(tools, 'tandem_workflow_create');
+  describe('zerant_workflow_create', () => {
+    const handler = getHandler(tools, 'zerant_workflow_create');
 
     it('creates a workflow', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 'wf2' });
@@ -42,8 +42,8 @@ describe('MCP workflow tools', () => {
     });
   });
 
-  describe('tandem_workflow_delete', () => {
-    const handler = getHandler(tools, 'tandem_workflow_delete');
+  describe('zerant_workflow_delete', () => {
+    const handler = getHandler(tools, 'zerant_workflow_delete');
 
     it('deletes a workflow', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -53,8 +53,8 @@ describe('MCP workflow tools', () => {
     });
   });
 
-  describe('tandem_workflow_run', () => {
-    const handler = getHandler(tools, 'tandem_workflow_run');
+  describe('zerant_workflow_run', () => {
+    const handler = getHandler(tools, 'zerant_workflow_run');
 
     it('runs a workflow', async () => {
       mockApiCall.mockResolvedValueOnce({ executionId: 'exec-1' });
@@ -65,8 +65,8 @@ describe('MCP workflow tools', () => {
     });
   });
 
-  describe('tandem_workflow_status', () => {
-    const handler = getHandler(tools, 'tandem_workflow_status');
+  describe('zerant_workflow_status', () => {
+    const handler = getHandler(tools, 'zerant_workflow_status');
 
     it('gets execution status', async () => {
       mockApiCall.mockResolvedValueOnce({ status: 'running' });
@@ -75,8 +75,8 @@ describe('MCP workflow tools', () => {
     });
   });
 
-  describe('tandem_workflow_stop', () => {
-    const handler = getHandler(tools, 'tandem_workflow_stop');
+  describe('zerant_workflow_stop', () => {
+    const handler = getHandler(tools, 'zerant_workflow_stop');
 
     it('stops an execution', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -86,8 +86,8 @@ describe('MCP workflow tools', () => {
     });
   });
 
-  describe('tandem_workflow_running', () => {
-    const handler = getHandler(tools, 'tandem_workflow_running');
+  describe('zerant_workflow_running', () => {
+    const handler = getHandler(tools, 'zerant_workflow_running');
 
     it('lists running executions', async () => {
       mockApiCall.mockResolvedValueOnce([]);

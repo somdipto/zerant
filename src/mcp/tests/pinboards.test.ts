@@ -19,94 +19,94 @@ describe('MCP pinboard tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_pinboard_list', () => {
+  describe('zerant_pinboard_list', () => {
     it('lists pinboards', async () => {
       mockApiCall.mockResolvedValueOnce([{ id: 'p1', name: 'Research' }]);
-      const result = await getHandler(tools, 'tandem_pinboard_list')({});
+      const result = await getHandler(tools, 'zerant_pinboard_list')({});
       expectTextContent(result);
       expect(mockApiCall).toHaveBeenCalledWith('GET', '/pinboards');
     });
   });
 
-  describe('tandem_pinboard_create', () => {
+  describe('zerant_pinboard_create', () => {
     it('creates a pinboard', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 'p2' });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_pinboard_create')({ name: 'Ideas', emoji: '💡' });
+      await getHandler(tools, 'zerant_pinboard_create')({ name: 'Ideas', emoji: '💡' });
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/pinboards', { name: 'Ideas', emoji: '💡' });
     });
   });
 
-  describe('tandem_pinboard_get', () => {
+  describe('zerant_pinboard_get', () => {
     it('gets a pinboard', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 'p1', items: [] });
-      await getHandler(tools, 'tandem_pinboard_get')({ id: 'p1' });
+      await getHandler(tools, 'zerant_pinboard_get')({ id: 'p1' });
       expect(mockApiCall).toHaveBeenCalledWith('GET', '/pinboards/p1');
     });
   });
 
-  describe('tandem_pinboard_update', () => {
+  describe('zerant_pinboard_update', () => {
     it('updates a pinboard', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 'p1' });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_pinboard_update')({ id: 'p1', name: 'Updated' });
+      await getHandler(tools, 'zerant_pinboard_update')({ id: 'p1', name: 'Updated' });
       expect(mockApiCall).toHaveBeenCalledWith('PUT', '/pinboards/p1', { name: 'Updated' });
     });
   });
 
-  describe('tandem_pinboard_delete', () => {
+  describe('zerant_pinboard_delete', () => {
     it('deletes a pinboard', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      const result = await getHandler(tools, 'tandem_pinboard_delete')({ id: 'p1' });
+      const result = await getHandler(tools, 'zerant_pinboard_delete')({ id: 'p1' });
       expectTextContent(result, 'Deleted pinboard: p1');
     });
 
     it('handles not found', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: false });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      const result = await getHandler(tools, 'tandem_pinboard_delete')({ id: 'bad' });
+      const result = await getHandler(tools, 'zerant_pinboard_delete')({ id: 'bad' });
       expectTextContent(result, 'Pinboard not found');
     });
   });
 
-  describe('tandem_pinboard_items', () => {
+  describe('zerant_pinboard_items', () => {
     it('lists items', async () => {
       mockApiCall.mockResolvedValueOnce({ items: [] });
-      await getHandler(tools, 'tandem_pinboard_items')({ id: 'p1' });
+      await getHandler(tools, 'zerant_pinboard_items')({ id: 'p1' });
       expect(mockApiCall).toHaveBeenCalledWith('GET', '/pinboards/p1/items');
     });
   });
 
-  describe('tandem_pinboard_add_item', () => {
+  describe('zerant_pinboard_add_item', () => {
     it('adds an item', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 'item1' });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_pinboard_add_item')({ id: 'p1', type: 'link', url: 'https://a.com' });
+      await getHandler(tools, 'zerant_pinboard_add_item')({ id: 'p1', type: 'link', url: 'https://a.com' });
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/pinboards/p1/items', expect.objectContaining({ type: 'link', url: 'https://a.com' }));
     });
   });
 
-  describe('tandem_pinboard_remove_item', () => {
+  describe('zerant_pinboard_remove_item', () => {
     it('removes an item', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      const result = await getHandler(tools, 'tandem_pinboard_remove_item')({ id: 'p1', itemId: 'i1' });
+      const result = await getHandler(tools, 'zerant_pinboard_remove_item')({ id: 'p1', itemId: 'i1' });
       expectTextContent(result, 'Removed item i1');
     });
 
     it('handles not found', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: false });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      const result = await getHandler(tools, 'tandem_pinboard_remove_item')({ id: 'p1', itemId: 'bad' });
+      const result = await getHandler(tools, 'zerant_pinboard_remove_item')({ id: 'p1', itemId: 'bad' });
       expectTextContent(result, 'not found');
     });
   });
 
-  describe('tandem_pinboard_reorder_items', () => {
+  describe('zerant_pinboard_reorder_items', () => {
     it('reorders items', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
-      await getHandler(tools, 'tandem_pinboard_reorder_items')({ id: 'p1', itemIds: ['i2', 'i1'] });
+      await getHandler(tools, 'zerant_pinboard_reorder_items')({ id: 'p1', itemIds: ['i2', 'i1'] });
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/pinboards/p1/items/reorder', { itemIds: ['i2', 'i1'] });
     });
   });

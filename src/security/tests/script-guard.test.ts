@@ -303,11 +303,11 @@ describe('ScriptGuard', () => {
       guard = new ScriptGuard(makeDB(), FAKE_GUARDIAN, dt as unknown as DevToolsManager);
     });
 
-    it('registers the __tandemSecurityAlert binding', async () => {
+    it('registers the __zerantSecurityAlert binding', async () => {
       await guard.injectMonitors(42);
       const bindingCall = dt.sendCommandToTab.mock.calls.find(c => c[1] === 'Runtime.addBinding');
       expect(bindingCall).toBeDefined();
-      expect(bindingCall![2]).toEqual({ name: '__tandemSecurityAlert' });
+      expect(bindingCall![2]).toEqual({ name: '__zerantSecurityAlert' });
     });
 
     it('injects the monitor script via Page.addScriptToEvaluateOnNewDocument', async () => {
@@ -316,7 +316,7 @@ describe('ScriptGuard', () => {
       expect(pageCall).toBeDefined();
       // Should include the monitor source and use the main world
       const args = pageCall![2] as { source: string; worldName: string };
-      expect(args.source).toContain('__tandemSecurityMonitorsActive');
+      expect(args.source).toContain('__zerantSecurityMonitorsActive');
       expect(args.worldName).toBe('');
     });
 
@@ -368,7 +368,7 @@ describe('ScriptGuard', () => {
 
     const fireAlert = (alert: Record<string, unknown>) => {
       dt.fire('ScriptGuard:Alerts', 'Runtime.bindingCalled', {
-        name: '__tandemSecurityAlert',
+        name: '__zerantSecurityAlert',
         payload: JSON.stringify(alert),
       });
     };
@@ -420,7 +420,7 @@ describe('ScriptGuard', () => {
     it('survives malformed JSON payloads without throwing', () => {
       // Directly fire invalid JSON; handler must catch
       expect(() => dt.fire('ScriptGuard:Alerts', 'Runtime.bindingCalled', {
-        name: '__tandemSecurityAlert',
+        name: '__zerantSecurityAlert',
         payload: 'not-json{{',
       })).not.toThrow();
       expect(db.events).toHaveLength(0);
@@ -447,7 +447,7 @@ describe('ScriptGuard', () => {
       const guard = new ScriptGuard(makeDB(), FAKE_GUARDIAN, dt as unknown as DevToolsManager);
       await guard.injectMonitors(99);
       dt.fire('ScriptGuard:Alerts', 'Runtime.bindingCalled', {
-        name: '__tandemSecurityAlert',
+        name: '__zerantSecurityAlert',
         payload: JSON.stringify({ type: 'wasm_instantiate' }),
       });
       // No explicit wcId — should still find the active tab via getAttachedWebContents

@@ -19,8 +19,8 @@ describe('MCP script/style tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_scripts_list', () => {
-    const handler = getHandler(tools, 'tandem_scripts_list');
+  describe('zerant_scripts_list', () => {
+    const handler = getHandler(tools, 'zerant_scripts_list');
 
     it('lists scripts', async () => {
       mockApiCall.mockResolvedValueOnce([{ name: 'dark-mode' }]);
@@ -30,8 +30,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_script_add', () => {
-    const handler = getHandler(tools, 'tandem_script_add');
+  describe('zerant_script_add', () => {
+    const handler = getHandler(tools, 'zerant_script_add');
 
     it('adds a script', async () => {
       mockApiCall.mockResolvedValueOnce({ name: 'test', active: true });
@@ -41,8 +41,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_script_remove', () => {
-    const handler = getHandler(tools, 'tandem_script_remove');
+  describe('zerant_script_remove', () => {
+    const handler = getHandler(tools, 'zerant_script_remove');
 
     it('removes a script', async () => {
       mockApiCall.mockResolvedValueOnce({ removed: 'test' });
@@ -52,8 +52,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_script_enable', () => {
-    const handler = getHandler(tools, 'tandem_script_enable');
+  describe('zerant_script_enable', () => {
+    const handler = getHandler(tools, 'zerant_script_enable');
 
     it('enables a script', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -63,8 +63,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_script_disable', () => {
-    const handler = getHandler(tools, 'tandem_script_disable');
+  describe('zerant_script_disable', () => {
+    const handler = getHandler(tools, 'zerant_script_disable');
 
     it('disables a script', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -74,8 +74,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_styles_list', () => {
-    const handler = getHandler(tools, 'tandem_styles_list');
+  describe('zerant_styles_list', () => {
+    const handler = getHandler(tools, 'zerant_styles_list');
 
     it('lists styles', async () => {
       mockApiCall.mockResolvedValueOnce([{ name: 'theme' }]);
@@ -85,8 +85,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_style_add', () => {
-    const handler = getHandler(tools, 'tandem_style_add');
+  describe('zerant_style_add', () => {
+    const handler = getHandler(tools, 'zerant_style_add');
 
     it('adds a style', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -96,8 +96,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_style_remove', () => {
-    const handler = getHandler(tools, 'tandem_style_remove');
+  describe('zerant_style_remove', () => {
+    const handler = getHandler(tools, 'zerant_style_remove');
 
     it('removes a style', async () => {
       mockApiCall.mockResolvedValueOnce({ removed: 'dark' });
@@ -107,8 +107,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_style_enable', () => {
-    const handler = getHandler(tools, 'tandem_style_enable');
+  describe('zerant_style_enable', () => {
+    const handler = getHandler(tools, 'zerant_style_enable');
 
     it('enables a style', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -118,8 +118,8 @@ describe('MCP script/style tools', () => {
     });
   });
 
-  describe('tandem_style_disable', () => {
-    const handler = getHandler(tools, 'tandem_style_disable');
+  describe('zerant_style_disable', () => {
+    const handler = getHandler(tools, 'zerant_style_disable');
 
     it('disables a style', async () => {
       mockApiCall.mockResolvedValueOnce({});

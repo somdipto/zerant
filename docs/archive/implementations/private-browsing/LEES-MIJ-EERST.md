@@ -9,7 +9,7 @@
 
 ## Why this feature?
 
-Robin wil soms iets opzoeken without sporen achter te laten — a verrassing for iemand, a gevoelige zoekopdracht, or simpelweg inloggen with a ander account. Tandem has indeed session-isolatie (`POST /sessions/create`), but that is a handmatig proces with persistente data. A private-window with één toetscombinatie that alles automatisch wist bij sluiten is the default verwachting or elke browser. Zie `docs/research/gap-analysis.md` section "Private Browsing" for the Opera comparison.
+Robin wil soms iets opzoeken without sporen achter te laten — a verrassing for iemand, a gevoelige zoekopdracht, or simpelweg inloggen with a ander account. Zerant has indeed session-isolatie (`POST /sessions/create`), but that is a handmatig proces with persistente data. A private-window with één toetscombinatie that alles automatisch wist bij sluiten is the default verwachting or elke browser. Zie `docs/research/gap-analysis.md` section "Private Browsing" for the Opera comparison.
 
 ---
 
@@ -44,7 +44,7 @@ Robin wil soms iets opzoeken without sporen achter te laten — a verrassing for
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, `BrowserWindow` creatie, keyboard shortcuts | `createWindow()`, `startAPI()` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 
 ### Additional reading per phase
 
@@ -59,7 +59,7 @@ _(zie fase-1-private-window.md)_
 1. **In-memory partition** — use `session.fromPartition('private-[uuid]')` WITHOUT the `persist:` prefix. This is Electron's standard for ephemeral sessions.
 2. **Unique partition per window** — each private window gets its own UUID-based partition. Two private windows share NO cookies.
 3. **Cleanup on close** — bij the sluiten or the window: `session.clearStorageData()` aanroepen if extra zekerheid, hoewel the in-memory session already disappears.
-4. **Stealth patches actief** — verifieer that Tandem's anti-detect patches (UA, fingerprint, etc.) also in the private-partition actief are.
+4. **Stealth patches actief** — verifieer that Zerant's anti-detect patches (UA, fingerprint, etc.) also in the private-partition actief are.
 5. **Functienamen > regelnummers** — verwijs to `function createWindow()` or `function registerBrowserRoutes()`, nooit regelnummers.
 
 ---

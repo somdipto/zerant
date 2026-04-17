@@ -1,4 +1,4 @@
-# Tandem Browser — Architecture Guide
+# Zerant Browser — Architecture Guide
 
 > Structure-focused system overview for AI developers.
 > Read this to understand how the pieces fit together.
@@ -6,7 +6,7 @@
 
 ## System Overview
 
-Tandem is an Electron 40 application with three distinct layers:
+Zerant is an Electron 40 application with three distinct layers:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -324,7 +324,7 @@ README badge.
 
 ## Key Design Constraints
 
-1. **Local-first** — no data leaves the machine through Tandem
+1. **Local-first** — no data leaves the machine through Zerant
 2. **Stealth** — websites must never detect this is an AI browser
 3. **Node security** — `nodeIntegration: false`, `contextIsolation: true`
 4. **API binding** — `127.0.0.1` only, never `0.0.0.0`

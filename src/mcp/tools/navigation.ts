@@ -14,7 +14,7 @@ function summarizeActionResult(prefix: string, result: Record<string, unknown>):
 
 export function registerNavigationTools(server: McpServer): void {
   server.tool(
-    'tandem_navigate',
+    'zerant_navigate',
     'Navigate a browser tab to a URL. Supports targeting a background tab by ID.',
     {
       url: z.string().describe('The URL to navigate to'),
@@ -28,7 +28,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_go_back',
+    'zerant_go_back',
     'Go back to the previous page in browser history',
     async () => {
       await apiCall('POST', '/execute-js', { code: 'window.history.back()' });
@@ -38,7 +38,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_go_forward',
+    'zerant_go_forward',
     'Go forward to the next page in browser history',
     async () => {
       await apiCall('POST', '/execute-js', { code: 'window.history.forward()' });
@@ -48,7 +48,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_reload',
+    'zerant_reload',
     'Reload the current page',
     async () => {
       await apiCall('POST', '/execute-js', { code: 'window.location.reload()' });
@@ -58,7 +58,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_wait_for_load',
+    'zerant_wait_for_load',
     'Wait for a page to finish loading. Returns the resolved tab scope and whether the wait completed or timed out. Supports targeting a background tab by ID.',
     coerceShape({
       timeout: z.number().optional().default(10000).describe('Timeout in milliseconds (default: 10000)'),
@@ -76,7 +76,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_click',
+    'zerant_click',
     'Click an element on the page by CSS selector. Returns explicit scope, completion semantics, and post-action state. Supports targeting a background tab by ID.',
     {
       selector: z.string().describe('CSS selector of the element to click'),
@@ -90,7 +90,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_type',
+    'zerant_type',
     'Type text into an input field by CSS selector. Returns explicit scope, completion semantics, and confirmed post-type state when available. Supports targeting a background tab by ID.',
     coerceShape({
       selector: z.string().describe('CSS selector of the input field'),
@@ -106,7 +106,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_scroll',
+    'zerant_scroll',
     'Scroll the page up or down, to top/bottom, or to a specific element. Supports targeting a background tab by ID.',
     coerceShape({
       direction: z.enum(['up', 'down']).describe('Scroll direction'),
@@ -127,7 +127,7 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_press_key',
+    'zerant_press_key',
     'Send a keyboard event (keyDown + keyUp) to the browser tab. Returns explicit scope, completion semantics, and post-action page state; it does not claim a stronger guarantee than the route can confirm. Common key names: PageDown, PageUp, Escape, Enter, Tab, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Backspace, Delete, Home, End, Space. For modifier combos use the modifiers param: ["control"], ["shift"], ["meta", "shift"], ["alt"]. Supports targeting a background tab by ID.',
     coerceShape({
       key: z.string().describe('Key to press (e.g. "PageDown", "Escape", "Enter", "Tab", "a", "ArrowDown")'),
@@ -145,8 +145,8 @@ export function registerNavigationTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_press_key_combo',
-    'Send multiple key presses in sequence with a small delay between each. Returns explicit scope, completion semantics, and post-action page state; it does not claim a stronger guarantee than the route can confirm. Useful for things like pressing Tab 3 times then Enter, or typing a sequence of arrow key navigations. Uses the same key names as tandem_press_key.',
+    'zerant_press_key_combo',
+    'Send multiple key presses in sequence with a small delay between each. Returns explicit scope, completion semantics, and post-action page state; it does not claim a stronger guarantee than the route can confirm. Useful for things like pressing Tab 3 times then Enter, or typing a sequence of arrow key navigations. Uses the same key names as zerant_press_key.',
     coerceShape({
       keys: z.array(z.string()).describe('Array of key names to press in sequence (e.g. ["Tab", "Tab", "Tab", "Enter"])'),
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),

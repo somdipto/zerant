@@ -2,7 +2,7 @@
 
 > Dit document beschrijft directe Anthropic API integratie.
 > Robin has a Max Pro account — no API key beschikbaar.
-> Claude works via Cowork/Claude Code → MCP → Tandem API.
+> Claude works via Cowork/Claude Code → MCP → Zerant API.
 > Zie `VERFIJND-PLAN.md` for the correcte architectuur.
 > The "Claude" aanwezigheid in the Kees panel is a Activity Feed
 > that shows MCP tool calls, NOT a direct API backend.
@@ -13,7 +13,7 @@
 
 ## Wat is this?
 
-Claude API direct integreren if chat backend in Tandem. No IDE nodig — Claude praat rechtstreeks in the Kees panel and can the browser bedienen via tool use.
+Claude API direct integreren if chat backend in Zerant. No IDE nodig — Claude praat rechtstreeks in the Kees panel and can the browser bedienen via tool use.
 
 ## Verschil with MCP (Phase 1)
 
@@ -47,7 +47,7 @@ Claude API direct integreren if chat backend in Tandem. No IDE nodig — Claude 
 **Tool Use Flow:**
 1. Stuur bericht with tools
 2. Claude antwoordt with `tool_use` content block
-3. Voer tool out (call Tandem API)
+3. Voer tool out (call Zerant API)
 4. Stuur `tool_result` terug
 5. Claude verwerkt result and antwoordt
 6. Herhaal tot Claude complete is (no tool_use meer)
@@ -105,7 +105,7 @@ class ClaudeBackend implements ChatBackend {
 ### System Prompt
 
 ```
-You bent Kees, Robin's AI co-pilot in Tandem Browser.
+You bent Kees, Robin's AI co-pilot in Zerant Browser.
 You helpt Robin with browsen, onderzoeken, and taken uitvoeren.
 
 ## Jouw capabilities

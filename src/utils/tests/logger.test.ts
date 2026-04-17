@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createLogger } from '../logger';
 
 describe('createLogger', () => {
-  const origEnv = process.env.TANDEM_LOG_LEVEL;
+  const origEnv = process.env.ZERANT_LOG_LEVEL;
 
   beforeEach(() => {
     vi.spyOn(console, 'debug').mockImplementation(() => {});
@@ -13,18 +13,18 @@ describe('createLogger', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    process.env.TANDEM_LOG_LEVEL = origEnv;
+    process.env.ZERANT_LOG_LEVEL = origEnv;
   });
 
   it('uses [namespace] prefix', () => {
-    process.env.TANDEM_LOG_LEVEL = 'debug';
+    process.env.ZERANT_LOG_LEVEL = 'debug';
     const log = createLogger('Test');
     log.info('hello');
     expect(console.info).toHaveBeenCalledWith('[Test]', 'hello');
   });
 
-  it('defaults to info level when TANDEM_LOG_LEVEL is unset', () => {
-    delete process.env.TANDEM_LOG_LEVEL;
+  it('defaults to info level when ZERANT_LOG_LEVEL is unset', () => {
+    delete process.env.ZERANT_LOG_LEVEL;
     const log = createLogger('Test');
     log.debug('hidden');
     log.info('visible');
@@ -32,8 +32,8 @@ describe('createLogger', () => {
     expect(console.info).toHaveBeenCalledWith('[Test]', 'visible');
   });
 
-  it('respects TANDEM_LOG_LEVEL=warn', () => {
-    process.env.TANDEM_LOG_LEVEL = 'warn';
+  it('respects ZERANT_LOG_LEVEL=warn', () => {
+    process.env.ZERANT_LOG_LEVEL = 'warn';
     const log = createLogger('Test');
     log.info('hidden');
     log.warn('visible');
@@ -41,8 +41,8 @@ describe('createLogger', () => {
     expect(console.warn).toHaveBeenCalledWith('[Test]', 'visible');
   });
 
-  it('respects TANDEM_LOG_LEVEL=error', () => {
-    process.env.TANDEM_LOG_LEVEL = 'error';
+  it('respects ZERANT_LOG_LEVEL=error', () => {
+    process.env.ZERANT_LOG_LEVEL = 'error';
     const log = createLogger('Test');
     log.warn('hidden');
     log.error('visible');
@@ -50,15 +50,15 @@ describe('createLogger', () => {
     expect(console.error).toHaveBeenCalledWith('[Test]', 'visible');
   });
 
-  it('respects TANDEM_LOG_LEVEL=silent', () => {
-    process.env.TANDEM_LOG_LEVEL = 'silent';
+  it('respects ZERANT_LOG_LEVEL=silent', () => {
+    process.env.ZERANT_LOG_LEVEL = 'silent';
     const log = createLogger('Test');
     log.error('hidden');
     expect(console.error).not.toHaveBeenCalled();
   });
 
-  it('respects TANDEM_LOG_LEVEL=debug (all levels pass)', () => {
-    process.env.TANDEM_LOG_LEVEL = 'debug';
+  it('respects ZERANT_LOG_LEVEL=debug (all levels pass)', () => {
+    process.env.ZERANT_LOG_LEVEL = 'debug';
     const log = createLogger('Test');
     log.debug('d');
     log.info('i');
@@ -70,8 +70,8 @@ describe('createLogger', () => {
     expect(console.error).toHaveBeenCalledWith('[Test]', 'e');
   });
 
-  it('falls back to info for invalid TANDEM_LOG_LEVEL', () => {
-    process.env.TANDEM_LOG_LEVEL = 'invalid';
+  it('falls back to info for invalid ZERANT_LOG_LEVEL', () => {
+    process.env.ZERANT_LOG_LEVEL = 'invalid';
     const log = createLogger('Test');
     log.debug('hidden');
     log.info('visible');
@@ -80,14 +80,14 @@ describe('createLogger', () => {
   });
 
   it('passes multiple arguments', () => {
-    process.env.TANDEM_LOG_LEVEL = 'debug';
+    process.env.ZERANT_LOG_LEVEL = 'debug';
     const log = createLogger('Test');
     log.warn('message', 'extra', 42);
     expect(console.warn).toHaveBeenCalledWith('[Test]', 'message', 'extra', 42);
   });
 
   it('creates independent loggers for different namespaces', () => {
-    process.env.TANDEM_LOG_LEVEL = 'debug';
+    process.env.ZERANT_LOG_LEVEL = 'debug';
     const logA = createLogger('Alpha');
     const logB = createLogger('Beta');
     logA.info('from A');

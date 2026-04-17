@@ -10,8 +10,8 @@ let _overlay = null;
 export function initAlerts(renderer) {
   _overlay = renderer.overlay;
 
-  if (window.tandem) {
-    window.tandem.onWingmanAlert((data) => {
+  if (window.zerant) {
+    window.zerant.onWingmanAlert((data) => {
       document.getElementById('alert-title').textContent = data.title;
       document.getElementById('alert-body').textContent = data.body;
       _overlay?.classList.add('visible');

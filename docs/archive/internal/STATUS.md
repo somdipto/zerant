@@ -1,4 +1,4 @@
-# Tandem Browser — Archived Status Snapshot
+# Zerant Browser — Archived Status Snapshot
 
 This file is retained only as historical context from the earlier daily-status
 workflow.

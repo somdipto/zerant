@@ -1,10 +1,10 @@
-# Tandem Security Reference Analysis — Claude's Rapport
+# Zerant Security Reference Analysis — Claude's Rapport
 *24 feb 2026*
 
 ## Methodologie
 
 Volledige broncode gelezen or:
-- Alle 13 security-files in Tandem (`src/security/`)
+- Alle 13 security-files in Zerant (`src/security/`)
 - The full azul-bedrock repo (Go + Python plugin framework, YARA rules, identify pipeline, event system)
 - CyberChef's core architectuur + 25+ security-relevante operations (regexes, file signatures, entropy)
 - Ghidra's analyzer pipeline, BSim fingerprinting engine, call graph, ML classifier, and constraint system
@@ -25,26 +25,26 @@ Kees has goed werk gedaan but er are punten waar ik afwijk or correcties heb:
 **1. The YARA patterns that Kees noemt komen NIET out Azul's YARA rules.**
 Azul's `yara_rules.yar` contains 40+ rules for **file-type identification** (is this JavaScript? VBScript? PowerShell?), not for **threat detection**. The `code_javascript` YARA rule identifies whether a file is JavaScript, with patterns such as `eval()`, `ActiveXObject`, and `createElement()`, but it does not score a threat level. Kees translated the Azul patterns into threat rules, which is a good adaptation, but it is not "directly taken from Azul."
 
-**2. Cross-domain script fingerprinting (#4) — Tandem has this already half.**
+**2. Cross-domain script fingerprinting (#4) — Zerant has this already half.**
 `ScriptGuard` tracked already script URL+hash per domain in the `script_fingerprints` tabel, and detecteert new scripts op bekende domains. Wat ontbreekt is the **cross-domain correlatie** (the same hash op multiple domains). Kees presenteert the alsof the helemaal new must, but the is a extensie or existing functionaliteit.
 
 **3. CyberChef pipeline (#5) — Verkeerde metafoor.**
-CyberChef is a **data transformatie** pipeline (input -> decode -> extract -> output). Tandem's security is a **event-driven decision** pipeline (request -> check -> score -> allow/block). You "transformeert" no page door security operations — you analyseert and beslist. The CyberChef regexes and detection-logica are waardevol, but the pipeline-architectuur zelf past not.
+CyberChef is a **data transformatie** pipeline (input -> decode -> extract -> output). Zerant's security is a **event-driven decision** pipeline (request -> check -> score -> allow/block). You "transformeert" no page door security operations — you analyseert and beslist. The CyberChef regexes and detection-logica are waardevol, but the pipeline-architectuur zelf past not.
 
 **4. Ghidra (#6) — Kees mist the meest waardevolle.**
 Kees zegt "call graphs for BehaviorMonitor, ver weg." Maar the werkelijk waardevolle out Ghidra is **BSim's iteratieve graph-hashing** for obfuscatie-resistente fingerprints. Dit is a concreet algoritme that vertaalbaar is to JavaScript AST-analyse. Daarnaast: Ghidra's `AnalysisPriority` model (confidence-gewogen pipeline) and the Random Forest ML classifier are direct toepasbaar.
 
 ### Wat Kees helemaal gemist has:
 
-1. **Shannon Entropy analyse** (CyberChef) — High entropy in script content = sterke obfuscatie indicator. Tandem meet this nergens.
+1. **Shannon Entropy analyse** (CyberChef) — High entropy in script content = sterke obfuscatie indicator. Zerant meet this nergens.
 2. **CyberChef's Magic auto-detect system** — Speculatieve executie that encoding/obfuscatie automatisch herkent.
 3. **CyberChef's battle-tested regex patterns** — URL, domain, IP, email extractie regexes uses door the hele security community.
-4. **Existing bugs/zwakheden in Tandem** that the reference repos blootleggen (duplicate lijsten, cookie_count=0, correlateEvents() nooit aangeroepen, no blocklist scheduling).
+4. **Existing bugs/zwakheden in Zerant** that the reference repos blootleggen (duplicate lijsten, cookie_count=0, correlateEvents() nooit aangeroepen, no blocklist scheduling).
 5. **Azul's depth-limiting** — Bescherming tegen recursive extraction bombs.
 
 ---
 
-## Deel 2: Tandem's Huidige Staat
+## Deel 2: Zerant's Huidige Staat
 
 ### 5-Phase Security System
 
@@ -124,7 +124,7 @@ Skip body scanning for media uploads (image/*, audio/*, video/*, font/*). NIET f
 ### MEDIUM PRIORITEIT
 
 #### 5. Cross-Domein Script Correlatie
-**Bron:** Azul feature model + Tandem's existing script_fingerprints
+**Bron:** Azul feature model + Zerant's existing script_fingerprints
 **Effort:** 2-3 dagen | **Impact:** Hoog
 
 Extend existing fingerprinting with cross-domain lookup: if a script hash appears that also op geblokkeerde domains staat -> automatisch hoge score.

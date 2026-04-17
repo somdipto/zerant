@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { EventEmitter } from 'events';
-import { ensureDir, tandemDir } from '../utils/paths';
+import { ensureDir, zerantDir } from '../utils/paths';
 
 export const HANDOFF_STATUSES = [
   'needs_human',
@@ -154,8 +154,8 @@ export class HandoffManager extends EventEmitter {
 
   constructor() {
     super();
-    ensureDir(tandemDir());
-    this.handoffsPath = tandemDir('handoffs.json');
+    ensureDir(zerantDir());
+    this.handoffsPath = zerantDir('handoffs.json');
     this.loadFromDisk();
   }
 

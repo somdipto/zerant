@@ -21,9 +21,9 @@ describe('MCP session tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_session_list ───────────────────────────────────────────
-  describe('tandem_session_list', () => {
-    const handler = getHandler(tools, 'tandem_session_list');
+  // ── zerant_session_list ───────────────────────────────────────────
+  describe('zerant_session_list', () => {
+    const handler = getHandler(tools, 'zerant_session_list');
 
     it('lists sessions as JSON', async () => {
       const data = { sessions: [{ name: 'default', tabs: 3 }] };
@@ -37,9 +37,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_create ─────────────────────────────────────────
-  describe('tandem_session_create', () => {
-    const handler = getHandler(tools, 'tandem_session_create');
+  // ── zerant_session_create ─────────────────────────────────────────
+  describe('zerant_session_create', () => {
+    const handler = getHandler(tools, 'zerant_session_create');
 
     it('creates a session with name', async () => {
       mockApiCall.mockResolvedValueOnce({ name: 'test', partition: 'persist:test' });
@@ -61,9 +61,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_switch ─────────────────────────────────────────
-  describe('tandem_session_switch', () => {
-    const handler = getHandler(tools, 'tandem_session_switch');
+  // ── zerant_session_switch ─────────────────────────────────────────
+  describe('zerant_session_switch', () => {
+    const handler = getHandler(tools, 'zerant_session_switch');
 
     it('switches to a session', async () => {
       mockApiCall.mockResolvedValueOnce({ active: 'work' });
@@ -74,9 +74,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_destroy ────────────────────────────────────────
-  describe('tandem_session_destroy', () => {
-    const handler = getHandler(tools, 'tandem_session_destroy');
+  // ── zerant_session_destroy ────────────────────────────────────────
+  describe('zerant_session_destroy', () => {
+    const handler = getHandler(tools, 'zerant_session_destroy');
 
     it('destroys a session', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -88,9 +88,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_fetch ──────────────────────────────────────────
-  describe('tandem_session_fetch', () => {
-    const handler = getHandler(tools, 'tandem_session_fetch');
+  // ── zerant_session_fetch ──────────────────────────────────────────
+  describe('zerant_session_fetch', () => {
+    const handler = getHandler(tools, 'zerant_session_fetch');
 
     it('fetches within session context', async () => {
       mockApiCall.mockResolvedValueOnce({ status: 200, body: '{}' });
@@ -124,9 +124,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_state_save ─────────────────────────────────────
-  describe('tandem_session_state_save', () => {
-    const handler = getHandler(tools, 'tandem_session_state_save');
+  // ── zerant_session_state_save ─────────────────────────────────────
+  describe('zerant_session_state_save', () => {
+    const handler = getHandler(tools, 'zerant_session_state_save');
 
     it('saves session state', async () => {
       mockApiCall.mockResolvedValueOnce({ path: '/tmp/state.json' });
@@ -137,9 +137,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_state_load ─────────────────────────────────────
-  describe('tandem_session_state_load', () => {
-    const handler = getHandler(tools, 'tandem_session_state_load');
+  // ── zerant_session_state_load ─────────────────────────────────────
+  describe('zerant_session_state_load', () => {
+    const handler = getHandler(tools, 'zerant_session_state_load');
 
     it('loads session state', async () => {
       mockApiCall.mockResolvedValueOnce({ cookiesRestored: 12 });
@@ -150,9 +150,9 @@ describe('MCP session tools', () => {
     });
   });
 
-  // ── tandem_session_state_list ─────────────────────────────────────
-  describe('tandem_session_state_list', () => {
-    const handler = getHandler(tools, 'tandem_session_state_list');
+  // ── zerant_session_state_list ─────────────────────────────────────
+  describe('zerant_session_state_list', () => {
+    const handler = getHandler(tools, 'zerant_session_state_list');
 
     it('lists saved states', async () => {
       mockApiCall.mockResolvedValueOnce({ states: ['checkpoint', 'backup'] });
@@ -168,7 +168,7 @@ describe('MCP session tools', () => {
   describe('error propagation', () => {
     it('propagates API errors', async () => {
       mockApiCall.mockRejectedValueOnce(new Error('session not found'));
-      const handler = getHandler(tools, 'tandem_session_switch');
+      const handler = getHandler(tools, 'zerant_session_switch');
       await expect(handler({ name: 'nope' })).rejects.toThrow('session not found');
     });
   });

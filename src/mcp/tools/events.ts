@@ -7,7 +7,7 @@ export function registerEventTools(server: McpServer): void {
   // ── Events ──
 
   server.tool(
-    'tandem_events_recent',
+    'zerant_events_recent',
     'Get recent browser events (navigation, clicks, tab changes, etc.).',
     coerceShape({
       limit: z.number().optional().describe('Maximum number of events to return (default: 50)'),
@@ -25,7 +25,7 @@ export function registerEventTools(server: McpServer): void {
   // ── Live Mode ──
 
   server.tool(
-    'tandem_live_status',
+    'zerant_live_status',
     'Get current live monitoring mode status (enabled/disabled).',
     async () => {
       const data = await apiCall('GET', '/live/status');
@@ -34,7 +34,7 @@ export function registerEventTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_live_toggle',
+    'zerant_live_toggle',
     'Toggle live monitoring mode on/off. When enabled, Wingman receives real-time browser events.',
     coerceShape({
       enabled: z.boolean().optional().describe('Set live mode on (true) or off (false). Omit to toggle.'),
@@ -51,7 +51,7 @@ export function registerEventTools(server: McpServer): void {
   // ── Behavior ──
 
   server.tool(
-    'tandem_behavior_stats',
+    'zerant_behavior_stats',
     'Get behavioral learning statistics (browsing patterns, site preferences, time-of-day patterns).',
     async () => {
       const data = await apiCall('GET', '/behavior/stats');
@@ -60,7 +60,7 @@ export function registerEventTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_behavior_clear',
+    'zerant_behavior_clear',
     'Clear all collected behavioral data. This is irreversible.',
     {},
     {

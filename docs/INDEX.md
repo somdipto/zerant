@@ -1,6 +1,6 @@
 # Documentation Index
 
-> Navigation map for the entire Tandem Browser project.
+> Navigation map for the entire Zerant Browser project.
 > Read this to understand where everything lives.
 
 ## Start Here
@@ -12,7 +12,7 @@ Read these files in this order:
 3. **[AGENTS.md](../AGENTS.md)** — Rules for AI developers working on this codebase
 4. **[CONTRIBUTING.md](../CONTRIBUTING.md)** — How to contribute
 5. **[TODO.md](../TODO.md)** — Active engineering backlog (the source of truth)
-6. **[skill/SKILL.md](../skill/SKILL.md)** — Agent instruction manual for using Tandem via MCP/HTTP
+6. **[skill/SKILL.md](../skill/SKILL.md)** — Agent instruction manual for using Zerant via MCP/HTTP
 
 ## Source Code
 

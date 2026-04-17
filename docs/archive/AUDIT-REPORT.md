@@ -1,4 +1,4 @@
-# Tandem Browser Code Review & Audit Report
+# Zerant Browser Code Review & Audit Report
 
 **Reviewed by:** Kees  
 **Date:** February 12, 2026  
@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-The Tandem Browser codebase is architecturally sound and feature-rich, with excellent stealth capabilities and comprehensive API coverage (111+ endpoints). The code demonstrates good TypeScript practices and modular design. However, there are opportunities for optimization, particularly around startup performance, memory usage, and error handling robustness.
+The Zerant Browser codebase is architecturally sound and feature-rich, with excellent stealth capabilities and comprehensive API coverage (111+ endpoints). The code demonstrates good TypeScript practices and modular design. However, there are opportunities for optimization, particularly around startup performance, memory usage, and error handling robustness.
 
 **Current Status:** ✅ Zero TypeScript compilation errors
 
@@ -182,7 +182,7 @@ interface ManagerPlugin {
 ### 3. Configuration Management
 Centralize all configuration in typed config system:
 ```typescript
-interface TandemConfig {
+interface ZerantConfig {
   window: { width: number; height: number };
   stealth: { userAgent: string };
   api: { port: number };
@@ -276,7 +276,7 @@ The OpenClaw WebSocket implementation is **robust** with good practices:
 
 ## Conclusion
 
-The Tandem Browser codebase is **well-architected and feature-complete** with excellent stealth capabilities. The main areas for improvement are performance optimization and memory management rather than core functionality issues.
+The Zerant Browser codebase is **well-architected and feature-complete** with excellent stealth capabilities. The main areas for improvement are performance optimization and memory management rather than core functionality issues.
 
 **Recommended Next Steps:**
 1. Implement the critical fixes immediately

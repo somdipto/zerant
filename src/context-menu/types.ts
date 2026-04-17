@@ -10,7 +10,7 @@ import type { TabSource } from '../tabs/context';
 
 /**
  * Context info passed from Electron's context-menu event on webContents.
- * Extends the native params with Tandem-specific fields.
+ * Extends the native params with Zerant-specific fields.
  */
 export interface ContextMenuParams {
   x: number;
@@ -33,7 +33,7 @@ export interface ContextMenuParams {
     canDelete: boolean;
     canSelectAll: boolean;
   };
-  // Tandem-specific
+  // Zerant-specific
   tabId?: string;
   tabSource?: TabSource;
 }

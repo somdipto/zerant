@@ -2,14 +2,14 @@
 
 > **Date:** 2026-02-28
 > **Status:** In progress
-> **Goal:** Visual moodboards add about Tandem — lokale content-curation boards waar Robin links, images and text fragments op can collect
+> **Goal:** Visual moodboards add about Zerant — lokale content-curation boards waar Robin links, images and text fragments op can collect
 > **Order:** Phase 1 → 2 → 3 (elke phase is één session)
 
 ---
 
 ## Why this feature?
 
-Robin uses Opera's Pinboards to webcontent te collect bij research, inspiratie and projectplanning. Tandem has bookmarks and page notes, but no visual board-concept. Pinboards vullen the gap between a simpele bookmark (only URL) and a full note-app. Zie `docs/research/gap-analysis.md` — Pinboards is #2 in the top 10 aanbevolen features, status: 🔴 HIGH priority.
+Robin uses Opera's Pinboards to webcontent te collect bij research, inspiratie and projectplanning. Zerant has bookmarks and page notes, but no visual board-concept. Pinboards vullen the gap between a simpele bookmark (only URL) and a full note-app. Zie `docs/research/gap-analysis.md` — Pinboards is #2 in the top 10 aanbevolen features, status: 🔴 HIGH priority.
 
 ---
 
@@ -52,7 +52,7 @@ Context Menu (right-click)     Sidebar Panel (board UI)
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registratie | `startAPI()`, `createWindow()`, `app.on('will-quit')` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 | `src/registry.ts` | Centrale registry or alle managers | `interface ManagerRegistry` |
 | `src/api/routes/data.ts` | Voorbeeld or existing routes (bookmarks, history) | `registerDataRoutes()` |
 | `src/bookmarks/manager.ts` | Vergelijkbare manager with JSON storage | `class BookmarkManager`, `load()`, `save()` |
@@ -172,7 +172,7 @@ export interface ContextMenuDeps {
 
 ### `src/context-menu/menu-builder.ts` — new methode
 
-Voeg a `addPinboardItems()` methode toe about `ContextMenuBuilder`. This is aangeroepen vanuit `build()`, na the Tandem-specific items.
+Voeg a `addPinboardItems()` methode toe about `ContextMenuBuilder`. This is aangeroepen vanuit `build()`, na the Zerant-specific items.
 
 Drie varianten op basis or context:
 - **Link context** (`params.linkURL` not leeg): "Save link to Pinboard"

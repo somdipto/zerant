@@ -1,4 +1,4 @@
-# Code Review — Tandem Browser (full codebase)
+# Code Review — Zerant Browser (full codebase)
 
 **Date:** 2026-02-26
 **Reviewer:** Claude Opus 4.6 (5 parallelle review-agents)
@@ -237,7 +237,7 @@ The builte app heet letterlijk "Google Chrome". Trademark/impersonatie issue. Co
 
 **File:** `package.json`, line 47
 
-**Fix:** Wijzig to `"Tandem"` or `"Tandem Browser"`.
+**Fix:** Wijzig to `"Zerant"` or `"Zerant Browser"`.
 
 ---
 

@@ -1,6 +1,6 @@
-# Tandem Security Shield — Current Overview
+# Zerant Security Shield — Current Overview
 
-Tandem's security model is layered around one constraint: page content can be
+Zerant's security model is layered around one constraint: page content can be
 hostile, and an agent with browser access changes the threat model.
 
 ## Current Layers
@@ -14,7 +14,7 @@ hostile, and an agent with browser access changes the threat model.
 | 5 | Behavior Monitor | Watches permissions, resource use, and anomalous page behavior |
 | 6 | Gatekeeper | Queues ambiguous security decisions and supports human or agent review |
 | 7 | Security Intelligence | Correlation, baselines, anomaly tracking, analyzers, and reporting |
-| 8 | Prompt Injection Guard | Detects prompt-injection content before Tandem forwards page data to the agent |
+| 8 | Prompt Injection Guard | Detects prompt-injection content before Zerant forwards page data to the agent |
 
 ## Prompt-Injection Layer
 
@@ -34,7 +34,7 @@ The prompt-injection layer has two parts:
 ### Response behavior
 
 - Clean content: forwarded unchanged
-- Risk score `30-69`: response is forwarded and Tandem adds an `injectionWarnings` object to the JSON payload
+- Risk score `30-69`: response is forwarded and Zerant adds an `injectionWarnings` object to the JSON payload
 - Risk score `>= 70`: content is blocked and the original page payload is replaced with a blocked response unless the domain has an active override
 
 ### `injectionWarnings` payload
@@ -49,7 +49,7 @@ When warnings are attached, the response includes:
 ### Blocking and override flow
 
 - High-risk pages trigger an in-app alert and OS notification
-- Tandem does not forward the original page content to the agent while blocked
+- Zerant does not forward the original page content to the agent while blocked
 - `POST /security/injection-override` grants a 5-minute per-domain override
 
 ## Useful Security Endpoints

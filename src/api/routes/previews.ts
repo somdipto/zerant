@@ -1,8 +1,8 @@
 /**
  * Preview Routes — Live HTML previews built by OpenClaw agents
  *
- * Previews are persisted to ~/.tandem/previews/<id>.json so they survive
- * Tandem restarts and can be bookmarked as stable URLs.
+ * Previews are persisted to ~/.zerant/previews/<id>.json so they survive
+ * Zerant restarts and can be bookmarked as stable URLs.
  *
  * Endpoints:
  *   POST   /preview              — create a new preview (opens in new tab)
@@ -16,7 +16,7 @@
 import type { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { tandemDir } from '../../utils/paths';
+import { zerantDir } from '../../utils/paths';
 import { handleRouteError } from '../../utils/errors';
 import { assertSinglePathSegment, escapeHtml, resolvePathWithinRoot } from '../../utils/security';
 import type { RouteContext } from '../context';
@@ -27,7 +27,7 @@ const log = createLogger('PreviewRoutes');
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function previewsDir(): string {
-  const dir = path.join(tandemDir(), 'previews');
+  const dir = path.join(zerantDir(), 'previews');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -184,7 +184,7 @@ export function registerPreviewRoutes(router: Router, ctx: RouteContext): void {
 
       // Open in a new tab by default (openTab defaults to true)
       if (openTab !== false) {
-        const newTab = await ctx.tabManager.openTab(url, undefined, 'wingman', 'persist:tandem', true);
+        const newTab = await ctx.tabManager.openTab(url, undefined, 'wingman', 'persist:zerant', true);
         // Explicit focus to ensure the tab comes to the front
         if (newTab) {
           setTimeout(() => ctx.tabManager.focusTab(newTab.id), 150);
@@ -306,7 +306,7 @@ export function registerPreviewRoutes(router: Router, ctx: RouteContext): void {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Tandem Previews</title>
+  <title>Zerant Previews</title>
   <style>
     body { font-family: system-ui, sans-serif; padding: 2rem; background: #0f0f0f; color: #eee; }
     h1 { margin-bottom: 1.5rem; }
@@ -318,7 +318,7 @@ export function registerPreviewRoutes(router: Router, ctx: RouteContext): void {
   </style>
 </head>
 <body>
-  <h1>Tandem Previews</h1>
+  <h1>Zerant Previews</h1>
   ${previews.length === 0 ? '<p>No previews yet.</p>' : `
   <table>
     <thead><tr><th>Title</th><th>ID</th><th>Last updated</th><th>Version</th><th>Inspiration</th></tr></thead>

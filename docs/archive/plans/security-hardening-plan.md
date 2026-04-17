@@ -9,7 +9,7 @@
 
 ## Problem / Motivation
 
-Tandem already has a real security stack, but the current implementation does
+Zerant already has a real security stack, but the current implementation does
 not yet provide a complete containment boundary for either the human user or the
 AI runtime.
 
@@ -30,7 +30,7 @@ about, and safer for OpenClaw to use against the live web.
 
 ## User Experience — How It Should Feel
 
-> Robin browses normally. Tandem stays usable and does not drown him in prompts.
+> Robin browses normally. Zerant stays usable and does not drown him in prompts.
 > OpenClaw can still navigate, inspect, and automate, but higher-risk actions
 > are explicitly gated. Dangerous flows fail closed. Suspicious tabs or requests
 > are isolated early instead or merely being logged after the fact.

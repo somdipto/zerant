@@ -1,6 +1,6 @@
 # Opera Browser — Fully Onderzoeksrapport
 **Date:** 28 februari 2026  
-**Goal:** Alles leren or Opera's UI/UX to Tandem Browser te verbeteren  
+**Goal:** Alles leren or Opera's UI/UX to Zerant Browser te verbeteren  
 **Bron:** Opera help.opera.com + opera.com/features  
 
 ---
@@ -62,7 +62,7 @@ Tabs that vanuit the same page geopend be, be automatisch grouped in a "island":
 **⭐ VISUELE IMPLEMENTATIE (live bestudeerd):**
 Simpler than expected! Tab Islands are NOT a special container or bracket. They are tabs that sit closer together with a subtle extra gap between the groups. That is it. Example observed:
 - Island 1: [Speed Dial] [Speed Dial] — gap — Island 2: [Gemini] [Add-ons] — gap — Island 3: [GitHub] [Claude]...
-- Implementatie in Tandem: track `opener` tabId → group in tab bar via CSS margin/gap between groups. ~1 dag werk.
+- Implementatie in Zerant: track `opener` tabId → group in tab bar via CSS margin/gap between groups. ~1 dag werk.
 
 ### 2.2 Workspaces ⭐⭐⭐
 Zoals virtuele desktops, but for tabs:
@@ -116,7 +116,7 @@ Workspaces appear as colored square icons at the top of the sidebar, above all m
 
 ### 2.10 Tab Snoozing
 - Send a tab to sleep for later
-- Ontbreekt still in Tandem
+- Ontbreekt still in Zerant
 
 ---
 
@@ -151,7 +151,7 @@ Cross-device sync tool:
 - Real-time sync
 - No account needed (device-based pairing)
 
-**Tandem equivalent:** We hebben no cross-device sync. Grote kans hier.
+**Zerant equivalent:** We hebben no cross-device sync. Grote kans hier.
 
 ### 3.4 Pinboards ⭐⭐
 Visual mood board / collectie tool:
@@ -161,7 +161,7 @@ Visual mood board / collectie tool:
 - Deelbaar with anderen
 - Visual weergave (not if list but if board)
 
-**Tandem equivalent:** No. Mogelijke toevoeging for "research sessions"
+**Zerant equivalent:** No. Mogelijke toevoeging for "research sessions"
 
 ---
 
@@ -182,7 +182,7 @@ Opera's inbuilte AI assistent:
 - **Browser integratie:** Can actieve page read if context
 - **Gratis** — inbegrepen in browser, account nodig for sommige functies
 
-**Versus Tandem:** Tandem has this already via the Wingman panel and OpenClaw WebSocket integratie — but Opera's Aria has betere UX (voice, image gen, snellere sidebar toggle).
+**Versus Zerant:** Zerant has this already via the Wingman panel and OpenClaw WebSocket integratie — but Opera's Aria has betere UX (voice, image gen, snellere sidebar toggle).
 
 ---
 
@@ -237,7 +237,7 @@ Uniek and slim:
 - Waarschuwt if a externe app the clipboard has gewijzigd
 - Beschermt tegen clipboard hijacking aanvallen
 
-**Tandem equivalent:** We hebben NetworkShield + OutboundGuard — but no clipboard protection. New idee!
+**Zerant equivalent:** We hebben NetworkShield + OutboundGuard — but no clipboard protection. New idee!
 
 ### 6.5 Private Window
 - No history, no cookies, no cache
@@ -296,7 +296,7 @@ Inbuilte screenshot tool:
 - Direct delen or save
 - Knop in toolbar
 
-**Tandem equivalent:** ⚠️ GEDEELTELIJK — Tandem HAS a snapshot tool with annotatie UI (pen, rechthoek, cirkel, freehand, text, kleuren, blur/pixelate), but the kwaliteit/werking is still work in progress. Verbetering staat op the TODO.
+**Zerant equivalent:** ⚠️ GEDEELTELIJK — Zerant HAS a snapshot tool with annotatie UI (pen, rechthoek, cirkel, freehand, text, kleuren, blur/pixelate), but the kwaliteit/werking is still work in progress. Verbetering staat op the TODO.
 
 ### 8.3 Easy Files
 Upload dialoog shows recent gebruikte files at the top — no zoeken in mappenstructuur.
@@ -396,45 +396,45 @@ Default Chromium DevTools + extra:
 
 # ANALYSE: WAT KAN TANDEM HIERVAN LEREN?
 
-## 🔴 Hoge prioriteit — Dit must Tandem also hebben
+## 🔴 Hoge prioriteit — Dit must Zerant also hebben
 
 ### 1. Tab Islands (automatische tab groepering)
-Opera's beste UI innovatie. Tabs that vanuit the same parent geopend are, belong bij elkaar and Opera shows that zien. Dit is extreem intuitive. Tandem zou tabs that via wingman-navigatie geopend are if "wingman session" can group.
+Opera's beste UI innovatie. Tabs that vanuit the same parent geopend are, belong bij elkaar and Opera shows that zien. Dit is extreem intuitive. Zerant zou tabs that via wingman-navigatie geopend are if "wingman session" can group.
 
 **Implementatie:** Track `opener` tab ID for elke new tab in Electron. Automatisch in tab bar group with visual connector.
 
 ### 2. Workspaces (virtual tab desktops) ⭐⭐⭐
-Dit is a perfecte match for Tandem's use case. Stel you for:
+Dit is a perfecte match for Zerant's use case. Stel you for:
 - Workspace "Research" — Wingman works hier autonoom
 - Workspace "Work" — Robin's dagelijkse tabs
 - Workspace "Projects" — per project a workspace
 
-**Al deels aanwezig:** `/sessions/create` in Tandem doet iets vergelijkbaars but is not visual in the browser UI. Dit verbeteren to echte visual workspaces.
+**Al deels aanwezig:** `/sessions/create` in Zerant doet iets vergelijkbaars but is not visual in the browser UI. Dit verbeteren to echte visual workspaces.
 
 ### 3. Tab Preview (hover to content te zien)
 Snel even zien wat er in a tab staat without te switchen. Electron can this with `webContents.capturePage()` + thumbnail in shell.
 
 ### 4. Search in Tabs
-Ctrl+Space → alle open tabs doorzoeken. Trivial te implementeren in Tandem's shell UI.
+Ctrl+Space → alle open tabs doorzoeken. Trivial te implementeren in Zerant's shell UI.
 
 ### 5. Video Popout
 Floating video player that boven alles zweeft. Electron can this via `BrowserWindow` with `alwaysOnTop: true` + WebContents capture.
 
 ### 6. Snapshot with annotaties — ⚠️ AANWEZIG MAAR WORK IN PROGRESS
-Tandem has the tool (pen, rechthoek, cirkel, freehand, text, kleuren, blur/pixelate), but or that also lekker works is a second zaak. Staat op the TODO to te verbeteren/afmaken.
+Zerant has the tool (pen, rechthoek, cirkel, freehand, text, kleuren, blur/pixelate), but or that also lekker works is a second zaak. Staat op the TODO to te verbeteren/afmaken.
 
 ---
 
 ## 🟡 Medium prioriteit — Goede inspiratie
 
 ### 7. Easy Setup Quick Panel ⭐
-Opera's quick settings panel rechtsbovenaan is heel slim. Tandem has a settings panel but that is hidden. A "Quick Panel" knop in the toolbar with the meest gebruikte opties (security shield, wingman panel toggle, new workspace, snapshot) zou the UX enorm verbeteren.
+Opera's quick settings panel rechtsbovenaan is heel slim. Zerant has a settings panel but that is hidden. A "Quick Panel" knop in the toolbar with the meest gebruikte opties (security shield, wingman panel toggle, new workspace, snapshot) zou the UX enorm verbeteren.
 
 ### 8. ~~Lucid Mode~~ — NIET BOUWEN
-Sharpening filter op video. Complete onzin for Tandem — we are no media browser. Exists, oninteressant, nooit meer over nadenken.
+Sharpening filter op video. Complete onzin for Zerant — we are no media browser. Exists, oninteressant, nooit meer over nadenken.
 
 ### 9. Paste Protection
-Clipboard monitoring for IBAN/creditcard nummers. Past perfect bij Tandem's security-first approach! 
+Clipboard monitoring for IBAN/creditcard nummers. Past perfect bij Zerant's security-first approach! 
 
 **Implementatie:** Electron `clipboard` module + listener + alert.
 
@@ -442,17 +442,17 @@ Clipboard monitoring for IBAN/creditcard nummers. Past perfect bij Tandem's secu
 Leuke manier to tabs te identificeren. Snel te implementeren, verbetert UX significant.
 
 ### 11. Music Player (detachable module)
-Opera's music player can losgemaakt be if floating module. Tandem's Wingman panel can also detachable be made if floating widget — for snellere toegang without sidebar te openen.
+Opera's music player can losgemaakt be if floating module. Zerant's Wingman panel can also detachable be made if floating widget — for snellere toegang without sidebar te openen.
 
 ### 12. Battery Saver
-Reduce background tab activity. Relevant for Tandem — if Wingman tabs in background houdt, kan dat "sleeping" mode helpen om RAM/CPU te besparen.
+Reduce background tab activity. Relevant for Zerant — if Wingman tabs in background houdt, kan dat "sleeping" mode helpen om RAM/CPU te besparen.
 
 ---
 
 ## 🟢 Lage prioriteit — Nice to have
 
 ### 13. Tab Snoozing (already in TODO!)
-Snooze a tab for later. Opera has it, and the Tandem TODO already includes it as well.
+Snooze a tab for later. Opera has it, and the Zerant TODO already includes it as well.
 
 ### 14. Duplicate Tabs Highlighter
 Detecteer if you the same URL already open hebt. Trivial te bouwen, nuttiger than you denkt.
@@ -461,10 +461,10 @@ Detecteer if you the same URL already open hebt. Trivial te bouwen, nuttiger tha
 Visual tabherkenning via emoji. Snel te implementeren.
 
 ### 16. Personal News op start page
-Tandem's new tab page is nu leeg. A gecureerd nieuwsoverzicht (RSS feeds?) zou the nuttiger maken.
+Zerant's new tab page is nu leeg. A gecureerd nieuwsoverzicht (RSS feeds?) zou the nuttiger maken.
 
 ### 17. Save All Tabs as Collection
-Sla alle open tabs op if named collection. Opera doet this in Speed Dial folders. Tandem equivalent: "Research Session save" if named set or URLs.
+Sla alle open tabs op if named collection. Opera doet this in Speed Dial folders. Zerant equivalent: "Research Session save" if named set or URLs.
 
 ---
 
@@ -473,14 +473,14 @@ Sla alle open tabs op if named collection. Opera doet this in Speed Dial folders
 ### Idee A: "Wingman Workspace"
 Speciale workspace for Wingman's autonomous browsing — separated or Robin's own tabs. Wingman opens tabs in are own workspace, Robin sees ze but ze storen are workflow not.
 
-### Idee B: "Flow for Tandem" — Robin ↔ Kees file sync
-Opera's Flow stuurt links/files between devices. Tandem equivalent: Robin stuurt a URL to Kees via the browser chat, Kees pakt hem op and navigeert er naartoe. We hebben already the chat, but no "push URL" function.
+### Idee B: "Flow for Zerant" — Robin ↔ Kees file sync
+Opera's Flow stuurt links/files between devices. Zerant equivalent: Robin stuurt a URL to Kees via the browser chat, Kees pakt hem op and navigeert er naartoe. We hebben already the chat, but no "push URL" function.
 
 ### Idee C: Tab Islands for Wingman Sessions
 Alle tabs that Kees opens in a taak-session → automatisch in a "island" with the taaknaam. Zo zie you always organized: "this are Kees' research tabs for LinkedIn analysis".
 
 ### Idee D: Quick Panel in toolbar (Opera-stijl Easy Setup)
-Één knop in the toolbar rechtsbovenaan that the meest gebruikte Tandem-functies shows:
+Één knop in the toolbar rechtsbovenaan that the meest gebruikte Zerant-functies shows:
 - Security shield status + toggle
 - New workspace
 - Screenshot nemen
@@ -488,21 +488,21 @@ Alle tabs that Kees opens in a taak-session → automatisch in a "island" with t
 - Recent notes/links (Flow)
 
 ### Idee E: Paste Protection + Clipboard AI
-Tandem has the security voordeel. Uitbreiden: if Robin iets kopieert that op a verdachte site staat, clipboard monitoren and waarschuwen. Or: Kees can clipboard if context use ("ik zie you hebt this gekopieerd, wil you that ik the analyseer?").
+Zerant has the security voordeel. Uitbreiden: if Robin iets kopieert that op a verdachte site staat, clipboard monitoren and waarschuwen. Or: Kees can clipboard if context use ("ik zie you hebt this gekopieerd, wil you that ik the analyseer?").
 
 ---
 
 ## CONCLUSIE
 
-Opera is the meest feature-rijke consumer browser and has 30 jaar productontwikkeling. The kernlessen for Tandem:
+Opera is the meest feature-rijke consumer browser and has 30 jaar productontwikkeling. The kernlessen for Zerant:
 
-1. **Tab management is hun sterkste punt** — Tab Islands + Workspaces are briljant. Tandem must this bouwen.
-2. **Sidebar if command center** — Opera's sidebar is informatie-dicht but organized. Tandem has this but can the verbeteren (badges, quick panel).
-3. **Detachable components** — floating windows (video, music player) are enorm nuttig for productiviteit. Tandem's Wingman panel zou also detachable must are.
-4. **Security if feature, not if hinder** — Paste Protection is genius: security that you helpt without you te blokkeren. Exact the Tandem filosofie.
+1. **Tab management is hun sterkste punt** — Tab Islands + Workspaces are briljant. Zerant must this bouwen.
+2. **Sidebar if command center** — Opera's sidebar is informatie-dicht but organized. Zerant has this but can the verbeteren (badges, quick panel).
+3. **Detachable components** — floating windows (video, music player) are enorm nuttig for productiviteit. Zerant's Wingman panel zou also detachable must are.
+4. **Security if feature, not if hinder** — Paste Protection is genius: security that you helpt without you te blokkeren. Exact the Zerant filosofie.
 5. **Cross-device sync (Flow)** — we hebben Kees↔Robin communicatie but no "push URL/file to device" feature. That is a gat.
 
-**Grootste kansen for Tandem:**
+**Grootste kansen for Zerant:**
 - Visual Workspaces (UI for existing `/sessions`)
 - Tab Islands (automatisch group)
 - Video Popout (floating media player)  

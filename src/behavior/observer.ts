@@ -1,7 +1,7 @@
 import type { BrowserWindow} from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('BehaviorObserver');
@@ -12,7 +12,7 @@ const log = createLogger('BehaviorObserver');
  * BehaviorObserver — Passive observation layer for behavioral learning.
  *
  * CRITICAL: All tracking via Electron main process events (NOT in webview).
- * Appends events to ~/.tandem/behavior/raw/{date}.jsonl (append-only).
+ * Appends events to ~/.zerant/behavior/raw/{date}.jsonl (append-only).
  *
  * Tracks: mouse clicks, scroll events, keyboard timing, navigation.
  * Always runs in background, passively, minimal performance impact.
@@ -44,7 +44,7 @@ export class BehaviorObserver {
 
   constructor(win: BrowserWindow) {
     this.win = win;
-    this.rawDir = tandemDir('behavior', 'raw');
+    this.rawDir = zerantDir('behavior', 'raw');
     if (!fs.existsSync(this.rawDir)) {
       fs.mkdirSync(this.rawDir, { recursive: true });
     }

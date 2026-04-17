@@ -2,7 +2,7 @@
 
 ## Wat is this?
 
-Multiple AI's simultaneously actief in Tandem. OpenClaw and Claude werken together, or multiple Claude instanties with verschillende rollen. Robin orchestrates.
+Multiple AI's simultaneously actief in Zerant. OpenClaw and Claude werken together, or multiple Claude instanties with verschillende rollen. Robin orchestrates.
 
 ## Scenario's
 

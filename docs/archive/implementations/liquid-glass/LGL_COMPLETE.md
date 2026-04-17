@@ -1,7 +1,7 @@
 # ✨ Liquid Glass Lite Integration — COMPLETE
 
 **Status:** ✅ Ready for testing and demo  
-**Repository:** `~/genx/tandem-browser/`  
+**Repository:** `~/genx/zerant-browser/`  
 **Branch:** `main`  
 **Commits:** `03d4b0a`, `83a6dfd`  
 
@@ -25,7 +25,7 @@
 ## How to Test
 
 ```bash
-cd ~/genx/tandem-browser
+cd ~/genx/zerant-browser
 npm run start
 ```
 
@@ -217,7 +217,7 @@ When recording the demo:
 
 **Test command:**
 ```bash
-cd ~/genx/tandem-browser && npm run start
+cd ~/genx/zerant-browser && npm run start
 ```
 
 **Docs to read:**
@@ -229,4 +229,4 @@ cd ~/genx/tandem-browser && npm run start
 
 **Status:** 🎉 **READY FOR TESTING AND DEMO!** ✨
 
-The browser now has beautiful, production-ready glass effects. This is Tandem's first real-world LGL implementation, and it's going to look stunning in demo videos.
+The browser now has beautiful, production-ready glass effects. This is Zerant's first real-world LGL implementation, and it's going to look stunning in demo videos.

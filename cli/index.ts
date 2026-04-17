@@ -13,7 +13,7 @@ const program = new Command();
 
 program
   .name('tandem')
-  .description('CLI for Tandem Browser API')
+  .description('CLI for Zerant Browser API')
   .version('0.1.0')
   .option('--session <name>', 'Use a named browser session (X-Session header)');
 

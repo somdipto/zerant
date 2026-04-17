@@ -2,7 +2,7 @@
 
 ## Our Standard
 
-Tandem Browser is a technical project, but collaboration still needs basic
+Zerant Browser is a technical project, but collaboration still needs basic
 professional standards. Participants are expected to be respectful, direct, and
 constructive in issues, pull requests, discussions, and review feedback.
 

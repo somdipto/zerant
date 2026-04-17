@@ -1,5 +1,5 @@
 /**
- * X Scout Agent — Tandem Browser
+ * X Scout Agent — Zerant Browser
  * 
  * A slow, human-paced agent that browses X.com on Robin's behalf.
  * 
@@ -8,14 +8,14 @@
  * - Browse like Robin would: read, pause, scroll, think
  * - Find interesting people and tweets
  * - Prepare replies but NEVER post without approval
- * - Report findings via Tandem chat for Robin to review
+ * - Report findings via Zerant chat for Robin to review
  * - Stop immediately if Robin says stop
  * 
  * Architecture:
- * - Runs as a background task via Tandem API
- * - Uses humanized delays from Tandem's input system
+ * - Runs as a background task via Zerant API
+ * - Uses humanized delays from Zerant's input system
  * - Reports via POST /chat
- * - Stores state in ~/.tandem/x-scout/
+ * - Stores state in ~/.zerant/x-scout/
  */
 
 import * as fs from 'fs';
@@ -23,7 +23,7 @@ import * as path from 'path';
 import { API_PORT } from '../utils/constants';
 
 const API = `http://localhost:${API_PORT}`;
-const SCOUT_DIR = path.join(process.env.HOME || '', '.tandem', 'x-scout');
+const SCOUT_DIR = path.join(process.env.HOME || '', '.zerant', 'x-scout');
 const STATE_FILE = path.join(SCOUT_DIR, 'state.json');
 const FINDINGS_FILE = path.join(SCOUT_DIR, 'findings.json');
 
@@ -307,7 +307,7 @@ async function runSession(state: ScoutState): Promise<void> {
   saveState(state);
 }
 
-// ============ API Endpoints (to be registered in Tandem) ============
+// ============ API Endpoints (to be registered in Zerant) ============
 
 export interface XScoutAPI {
   start(): Promise<void>;

@@ -47,8 +47,8 @@ const TOOL_HTML_STAT = /(<span class="stat-num">)(\d+)(<\/span><span class="stat
 /** TODO.md summary line: "MCP server: 236 tools" */
 const TOOL_TODO_SUMMARY = /MCP server: (\d+) tools/g;
 const VERSION_JSON = /("version"\s*:\s*")([^"]+)(")/g;
-const VERSION_LOCKFILE_ROOT = /("name":\s*"tandem-browser",\s*\n\s*"version":\s*")([^"]+)(")/g;
-const VERSION_LOCKFILE_PACKAGE = /("":\s*{\s*\n\s*"name":\s*"tandem-browser",\s*\n\s*"version":\s*")([^"]+)(")/g;
+const VERSION_LOCKFILE_ROOT = /("name":\s*"zerant-browser",\s*\n\s*"version":\s*")([^"]+)(")/g;
+const VERSION_LOCKFILE_PACKAGE = /("":\s*{\s*\n\s*"name":\s*"zerant-browser",\s*\n\s*"version":\s*")([^"]+)(")/g;
 const VERSION_PROJECT = /(\*\*Current version:\*\*\s*`)([^`]+)(`)/g;
 const VERSION_README = /(- Current version:\s*`)([^`]+)(`)/g;
 const VERSION_HERO = /(developer preview &middot; v)([^<]+)(<\/div>)/g;

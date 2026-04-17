@@ -332,7 +332,7 @@ export const GALLERY_DEFAULTS: GalleryExtension[] = [
   {
     id: 'aapbdbdomjkkjkaonfhkkikfgjllcleb',
     name: 'Google Translate',
-    description: 'Page translation via Google Translate API. Omnibox button missing (Tandem has custom URL bar).',
+    description: 'Page translation via Google Translate API. Omnibox button missing (Zerant has custom URL bar).',
     category: 'language',
     compatibility: 'partial',
     compatibilityNote: 'Page translation works via context menu. Omnibox translate button not available.',

@@ -25,7 +25,7 @@ export function buildAppMenu(deps: MenuDeps): void {
 
   const template: Electron.MenuItemConstructorOptions[] = [
     {
-      label: 'Tandem Browser',
+      label: 'Zerant Browser',
       submenu: [
         { label: 'Settings', accelerator: 'CmdOrCtrl+,', click: () => send('open-settings') },
         { type: 'separator' },
@@ -83,7 +83,7 @@ export function buildAppMenu(deps: MenuDeps): void {
         { type: 'separator' },
         { label: 'Show Onboarding', click: () => send('show-onboarding') },
         { type: 'separator' },
-        { label: 'About Tandem Browser', click: () => send('show-about') },
+        { label: 'About Zerant Browser', click: () => send('show-about') },
       ],
     },
   ];

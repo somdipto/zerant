@@ -10,7 +10,7 @@ example:
 - `docs/implementations/sidebar-infra`
 
 ```text
-You are working in /Users/robinwaslander/Documents/dev/tandem-browser.
+You are working in /Users/robinwaslander/Documents/dev/zerant-browser.
 
 This session is for the multi-phase implementation track at:
 [TRACK PATH]

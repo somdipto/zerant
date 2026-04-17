@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { WEBHOOK_PORT } from '../utils/constants';
 import { createLogger } from '../utils/logger';
 
@@ -17,10 +17,10 @@ export interface QuickLinkConfig {
 }
 
 /**
- * TandemConfig — All configurable settings for Tandem Browser.
- * Stored in ~/.tandem/config.json
+ * ZerantConfig — All configurable settings for Zerant Browser.
+ * Stored in ~/.zerant/config.json
  */
-export interface TandemConfig {
+export interface ZerantConfig {
   // General
   general: {
     startPage: 'wingman' | 'duckduckgo' | 'custom';
@@ -71,7 +71,7 @@ export interface TandemConfig {
   // Configure via POST /sync/config API. Settings UI is future work.
   deviceSync: {
     enabled: boolean;
-    syncRoot: string;      // e.g. "/Users/robin/Google Drive/My Drive/Tandem"
+    syncRoot: string;      // e.g. "/Users/robin/Google Drive/My Drive/Zerant"
     deviceName: string;    // e.g. "macbook-air" (default: os.hostname())
   };
 
@@ -124,7 +124,7 @@ function normalizeQuickLinkUrl(rawUrl: string): string {
   return parsed.toString();
 }
 
-const DEFAULT_CONFIG: TandemConfig = {
+const DEFAULT_CONFIG: ZerantConfig = {
   general: {
     startPage: 'wingman',
     customStartUrl: '',
@@ -141,7 +141,7 @@ const DEFAULT_CONFIG: TandemConfig = {
   screenshots: {
     clipboard: true,
     localFolder: true,
-    localFolderPath: path.join(os.homedir(), 'Pictures', 'Tandem'),
+    localFolderPath: path.join(os.homedir(), 'Pictures', 'Zerant'),
     applePhotos: false,
     googlePhotos: false,
   },
@@ -193,21 +193,21 @@ const DEFAULT_CONFIG: TandemConfig = {
 // ─── Manager ───
 
 /**
- * ConfigManager — Manages Tandem's configuration.
+ * ConfigManager — Manages Zerant's configuration.
  *
- * Loads from ~/.tandem/config.json on startup.
+ * Loads from ~/.zerant/config.json on startup.
  * Supports partial updates via PATCH semantics.
  * Emits change callbacks for live application of settings.
  */
 export class ConfigManager {
   // === 1. Private state ===
-  private config: TandemConfig;
+  private config: ZerantConfig;
   private configPath: string;
-  private changeListeners: Array<(config: TandemConfig, changed: Partial<TandemConfig>) => void> = [];
+  private changeListeners: Array<(config: ZerantConfig, changed: Partial<ZerantConfig>) => void> = [];
 
   // === 2. Constructor ===
   constructor() {
-    const baseDir = tandemDir();
+    const baseDir = zerantDir();
     if (!fs.existsSync(baseDir)) {
       fs.mkdirSync(baseDir, { recursive: true });
     }
@@ -221,18 +221,18 @@ export class ConfigManager {
   // === 4. Public methods ===
 
   /** Get the full config */
-  getConfig(): TandemConfig {
+  getConfig(): ZerantConfig {
     return JSON.parse(JSON.stringify(this.config));
   }
 
   /** Partial update — deep merges the patch into config */
-  updateConfig(patch: Record<string, unknown>): TandemConfig {
-    const merged = this.deepMerge(this.config as unknown as Record<string, unknown>, patch) as unknown as TandemConfig;
+  updateConfig(patch: Record<string, unknown>): ZerantConfig {
+    const merged = this.deepMerge(this.config as unknown as Record<string, unknown>, patch) as unknown as ZerantConfig;
     // Enforce clipboard always true
     merged.screenshots.clipboard = true;
     this.config = this.normalizeConfig(merged);
     this.save();
-    this.notifyListeners(patch as Partial<TandemConfig>);
+    this.notifyListeners(patch as Partial<ZerantConfig>);
     return this.getConfig();
   }
 
@@ -251,7 +251,7 @@ export class ConfigManager {
     }
   }
 
-  addQuickLink(label: string, url: string): TandemConfig {
+  addQuickLink(label: string, url: string): ZerantConfig {
     const normalizedLabel = label.trim();
     const normalizedUrl = normalizeQuickLinkUrl(url);
     const existing = this.config.general.quickLinks.filter((link) => {
@@ -275,7 +275,7 @@ export class ConfigManager {
     });
   }
 
-  removeQuickLink(url: string): TandemConfig {
+  removeQuickLink(url: string): ZerantConfig {
     const normalizedUrl = normalizeQuickLinkUrl(url);
     return this.updateConfig({
       general: {
@@ -291,7 +291,7 @@ export class ConfigManager {
   }
 
   /** Register a change listener */
-  onChange(listener: (config: TandemConfig, changed: Partial<TandemConfig>) => void): void {
+  onChange(listener: (config: ZerantConfig, changed: Partial<ZerantConfig>) => void): void {
     this.changeListeners.push(listener);
   }
 
@@ -317,7 +317,7 @@ export class ConfigManager {
   }
 
   /** Load config from disk, merging with defaults */
-  private load(): TandemConfig {
+  private load(): ZerantConfig {
     try {
       if (fs.existsSync(this.configPath)) {
         const raw = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'));
@@ -340,13 +340,13 @@ export class ConfigManager {
           delete raw.general.keesPanelPosition;
           delete raw.general.keesPanelDefaultOpen;
         }
-        const merged = this.deepMerge(DEFAULT_CONFIG as unknown as Record<string, unknown>, raw) as unknown as TandemConfig;
+        const merged = this.deepMerge(DEFAULT_CONFIG as unknown as Record<string, unknown>, raw) as unknown as ZerantConfig;
         return this.normalizeConfig(merged);
       }
     } catch (e) {
       log.warn('Config file corrupted, using defaults:', e instanceof Error ? e.message : String(e));
     }
-    return this.normalizeConfig(JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as TandemConfig);
+    return this.normalizeConfig(JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as ZerantConfig);
   }
 
   /** Save config to disk */
@@ -380,7 +380,7 @@ export class ConfigManager {
     return result;
   }
 
-  private normalizeConfig(config: TandemConfig): TandemConfig {
+  private normalizeConfig(config: ZerantConfig): ZerantConfig {
     return {
       ...config,
       general: {
@@ -425,7 +425,7 @@ export class ConfigManager {
   }
 
   /** Notify all change listeners */
-  private notifyListeners(changed: Partial<TandemConfig>): void {
+  private notifyListeners(changed: Partial<ZerantConfig>): void {
     for (const listener of this.changeListeners) {
       try {
         listener(this.config, changed);

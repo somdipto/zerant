@@ -84,7 +84,7 @@ export function registerAllTools(server: McpServer): void {
 export function registerAllResources(server: McpServer): void {
   server.resource(
     'page-current',
-    'tandem://page/current',
+    'zerant://page/current',
     { description: 'Current page content (title, URL, text)' },
     async () => {
       const data = await apiCall('GET', '/page-content');
@@ -93,13 +93,13 @@ export function registerAllResources(server: McpServer): void {
       const bodyText = truncateToWords(data.text || '', 2000);
 
       const text = `# ${title}\n**URL:** ${url}\n\n${bodyText}`;
-      return { contents: [{ uri: 'tandem://page/current', mimeType: 'text/plain', text }] };
+      return { contents: [{ uri: 'zerant://page/current', mimeType: 'text/plain', text }] };
     }
   );
 
   server.resource(
     'tabs-list',
-    'tandem://tabs/list',
+    'zerant://tabs/list',
     { description: 'All open browser tabs with workspace/source context when known' },
     async () => {
       const data = await apiCall('GET', '/active-tab/context');
@@ -121,13 +121,13 @@ export function registerAllResources(server: McpServer): void {
         const suffix = details.length > 0 ? ` [${details.join(', ')}]` : '';
         text += `${marker}[${tab.id}] ${tab.title || '(untitled)'} — ${tab.url}${suffix}\n`;
       }
-      return { contents: [{ uri: 'tandem://tabs/list', mimeType: 'text/plain', text }] };
+      return { contents: [{ uri: 'zerant://tabs/list', mimeType: 'text/plain', text }] };
     }
   );
 
   server.resource(
     'chat-history',
-    'tandem://chat/history',
+    'zerant://chat/history',
     { description: 'Recent chat messages from the Wingman panel' },
     async () => {
       const data = await apiCall('GET', '/chat?limit=50');
@@ -138,13 +138,13 @@ export function registerAllResources(server: McpServer): void {
         const time = new Date(msg.timestamp).toLocaleTimeString();
         text += `[${time}] ${msg.from}: ${msg.text}\n`;
       }
-      return { contents: [{ uri: 'tandem://chat/history', mimeType: 'text/plain', text }] };
+      return { contents: [{ uri: 'zerant://chat/history', mimeType: 'text/plain', text }] };
     }
   );
 
   server.resource(
     'handoffs-open',
-    'tandem://handoffs/open',
+    'zerant://handoffs/open',
     { description: 'Open human↔agent handoffs that still need attention or review' },
     async () => {
       const data = await apiCall('GET', '/handoffs?openOnly=true');
@@ -167,13 +167,13 @@ export function registerAllResources(server: McpServer): void {
         ].filter(Boolean).join(' | ');
         text += `- [${handoff.id}] ${handoff.title}${details ? ` (${details})` : ''}\n`;
       }
-      return { contents: [{ uri: 'tandem://handoffs/open', mimeType: 'text/plain', text }] };
+      return { contents: [{ uri: 'zerant://handoffs/open', mimeType: 'text/plain', text }] };
     }
   );
 
   server.resource(
     'context',
-    'tandem://context',
+    'zerant://context',
     { description: 'Live browser context including active workspace/tab ownership and recent events' },
     async () => {
       const [summary, activeTabContext, recentEventsData] = await Promise.all([
@@ -225,7 +225,7 @@ export function registerAllResources(server: McpServer): void {
         lines.push(summary.text);
       }
 
-      return { contents: [{ uri: 'tandem://context', mimeType: 'text/plain', text: lines.join('\n') }] };
+      return { contents: [{ uri: 'zerant://context', mimeType: 'text/plain', text: lines.join('\n') }] };
     }
   );
 }

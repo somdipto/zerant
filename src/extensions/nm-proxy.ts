@@ -9,7 +9,7 @@
  *
  * To work around this, the action-polyfill overrides chrome.runtime via
  * a Proxy so that connectNative() / sendNativeMessage() route through
- * Tandem's local HTTP/WebSocket API instead.
+ * Zerant's local HTTP/WebSocket API instead.
  *
  * Endpoints:
  *   POST /extensions/native-message      — sendNativeMessage (one-shot)
@@ -29,7 +29,7 @@ import path from 'path';
 import os from 'os';
 import type { ExtensionRouteAccessDecision } from './manager';
 import { createLogger } from '../utils/logger';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { assertNativeMessagingHostName, assertPathWithinRoot, resolvePathWithinRoot } from '../utils/security';
 
 const log = createLogger('NMProxy');
@@ -51,22 +51,22 @@ export interface NativeMessagingProxyAuthOptions {
 // When spawning BrowserSupport, we use this ID as the origin argument because
 // 1Password validates extension IDs against its own internal list (not just
 // the Chrome manifest's allowed_origins). The CWS ID is in 1Password's
-// internal list; our Tandem-extracted ID is not.
+// internal list; our Zerant-extracted ID is not.
 const ONEPW_CHROME_ORIGIN = 'chrome-extension://aeblfdkhhhdcdjpifhhbdiojplfjncoa/';
 
-// Relay binary inside our signed Tandem Browser.app bundle.
+// Relay binary inside our signed Zerant Browser.app bundle.
 // BrowserSupport checks its parent process's code signature to determine the
 // browser identity. When spawned from Electron dev (ad-hoc signed, identifier
 // "Electron"), 1Password returns browser_state:{type:"Unknown"} and exits 1.
 // When spawned from a process inside a properly-signed .app with bundle ID
-// com.tandem.browser (which we registered via "Add Browser" + Touch ID),
+// com.zerant.browser (which we registered via "Add Browser" + Touch ID),
 // 1Password should return an authorized or trusted browser state.
-const NM_RELAY = '/Applications/Tandem Browser.app/Contents/MacOS/nm-relay';
+const NM_RELAY = '/Applications/Zerant Browser.app/Contents/MacOS/nm-relay';
 
 // Directories to search for native messaging manifests (macOS)
 const MANIFEST_DIRS = [
   path.join(os.homedir(), 'Library', 'Application Support', 'Google', 'Chrome', 'NativeMessagingHosts'),
-  path.join(os.homedir(), 'Library', 'Application Support', 'Tandem Browser', 'NativeMessagingHosts'),
+  path.join(os.homedir(), 'Library', 'Application Support', 'Zerant Browser', 'NativeMessagingHosts'),
   '/Library/Google/Chrome/NativeMessagingHosts',
 ];
 
@@ -131,10 +131,10 @@ function writeNativeMessage(msg: unknown): Buffer {
 
 function sendOneShot(binary: string, message: unknown): Promise<unknown> {
   return new Promise((resolve, reject) => {
-    // Spawn via nm-relay (properly signed com.tandem.browser binary inside
-    // Tandem Browser.app) so BrowserSupport sees a recognized parent process.
+    // Spawn via nm-relay (properly signed com.zerant.browser binary inside
+    // Zerant Browser.app) so BrowserSupport sees a recognized parent process.
     // Use the CWS origin — BrowserSupport validates extension IDs against its
-    // own internal list; our Tandem-extracted ID is not in that list.
+    // own internal list; our Zerant-extracted ID is not in that list.
     const relayAvailable = fs.existsSync(NM_RELAY);
     const [cmd, cmdArgs] = relayAvailable
       ? [NM_RELAY, [binary, ONEPW_CHROME_ORIGIN]]
@@ -190,8 +190,8 @@ function handlePersistentConnection(
   host: string,
   actorLabel: string,
 ): void {
-  // Spawn via nm-relay (properly signed com.tandem.browser binary inside
-  // Tandem Browser.app) so BrowserSupport sees a recognized parent process.
+  // Spawn via nm-relay (properly signed com.zerant.browser binary inside
+  // Zerant Browser.app) so BrowserSupport sees a recognized parent process.
   const relayAvailable = fs.existsSync(NM_RELAY);
   const [cmd, cmdArgs] = relayAvailable
     ? [NM_RELAY, [binary, ONEPW_CHROME_ORIGIN]]
@@ -267,7 +267,7 @@ function handlePersistentConnection(
 export class NativeMessagingProxy {
   /**
    * Register POST /extensions/native-message on the Express router.
-   * Must be called after body-parser middleware is in place. TandemAPI applies
+   * Must be called after body-parser middleware is in place. ZerantAPI applies
    * the trusted-extension auth check before this handler runs.
    */
   registerRoutes(router: Router): void {
@@ -385,12 +385,12 @@ export class NativeMessagingProxy {
 
   /**
    * Patch the content_security_policy of an extracted extension manifest
-   * to allow connections to the Tandem API (http/ws on port 8765).
+   * to allow connections to the Zerant API (http/ws on port 8765).
    * Called before session.extensions.loadExtension() so the SW can reach our proxy.
    */
   patchManifestCSP(manifestPath: string): boolean {
     try {
-      const extensionsRoot = tandemDir('extensions');
+      const extensionsRoot = zerantDir('extensions');
       const safeManifestPath = assertPathWithinRoot(extensionsRoot, manifestPath);
       if (path.basename(safeManifestPath) !== 'manifest.json') {
         throw new Error('Manifest path must target manifest.json');

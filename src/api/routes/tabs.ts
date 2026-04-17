@@ -38,7 +38,7 @@ export function registerTabRoutes(router: Router, ctx: RouteContext): void {
         url,
         groupId,
         tabSource,
-        'persist:tandem',
+        'persist:zerant',
         shouldFocusAfterWorkspaceMove ? false : focus,
         inheritSessionFrom ? { inheritSessionFrom } : undefined,
       );

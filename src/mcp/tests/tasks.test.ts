@@ -21,8 +21,8 @@ describe('MCP task tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_create_task', () => {
-    const handler = getHandler(tools, 'tandem_create_task');
+  describe('zerant_create_task', () => {
+    const handler = getHandler(tools, 'zerant_create_task');
 
     it('creates a task with steps', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 'task-1', status: 'pending' });
@@ -36,8 +36,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_emergency_stop', () => {
-    const handler = getHandler(tools, 'tandem_emergency_stop');
+  describe('zerant_emergency_stop', () => {
+    const handler = getHandler(tools, 'zerant_emergency_stop');
 
     it('stops all tasks', async () => {
       mockApiCall.mockResolvedValueOnce({ stopped: 3 });
@@ -47,8 +47,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_task_list', () => {
-    const handler = getHandler(tools, 'tandem_task_list');
+  describe('zerant_task_list', () => {
+    const handler = getHandler(tools, 'zerant_task_list');
 
     it('lists tasks', async () => {
       mockApiCall.mockResolvedValueOnce([{ id: 't1', status: 'done' }]);
@@ -58,8 +58,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_task_get', () => {
-    const handler = getHandler(tools, 'tandem_task_get');
+  describe('zerant_task_get', () => {
+    const handler = getHandler(tools, 'zerant_task_get');
 
     it('gets task details', async () => {
       mockApiCall.mockResolvedValueOnce({ id: 't1', steps: [] });
@@ -69,8 +69,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_task_approve', () => {
-    const handler = getHandler(tools, 'tandem_task_approve');
+  describe('zerant_task_approve', () => {
+    const handler = getHandler(tools, 'zerant_task_approve');
 
     it('approves a step', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -80,8 +80,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_task_reject', () => {
-    const handler = getHandler(tools, 'tandem_task_reject');
+  describe('zerant_task_reject', () => {
+    const handler = getHandler(tools, 'zerant_task_reject');
 
     it('rejects a step', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -91,8 +91,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_tab_lock', () => {
-    const handler = getHandler(tools, 'tandem_tab_lock');
+  describe('zerant_tab_lock', () => {
+    const handler = getHandler(tools, 'zerant_tab_lock');
 
     it('acquires a tab lock', async () => {
       mockApiCall.mockResolvedValueOnce({ locked: true });
@@ -102,8 +102,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_tab_unlock', () => {
-    const handler = getHandler(tools, 'tandem_tab_unlock');
+  describe('zerant_tab_unlock', () => {
+    const handler = getHandler(tools, 'zerant_tab_unlock');
 
     it('releases a tab lock', async () => {
       mockApiCall.mockResolvedValueOnce({ released: true });
@@ -113,8 +113,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_task_check_approval', () => {
-    const handler = getHandler(tools, 'tandem_task_check_approval');
+  describe('zerant_task_check_approval', () => {
+    const handler = getHandler(tools, 'zerant_task_check_approval');
 
     it('checks approval with filters', async () => {
       mockApiCall.mockResolvedValueOnce({ required: true });
@@ -125,8 +125,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_autonomy_get', () => {
-    const handler = getHandler(tools, 'tandem_autonomy_get');
+  describe('zerant_autonomy_get', () => {
+    const handler = getHandler(tools, 'zerant_autonomy_get');
 
     it('gets autonomy settings', async () => {
       mockApiCall.mockResolvedValueOnce({ level: 'supervised' });
@@ -136,8 +136,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_autonomy_update', () => {
-    const handler = getHandler(tools, 'tandem_autonomy_update');
+  describe('zerant_autonomy_update', () => {
+    const handler = getHandler(tools, 'zerant_autonomy_update');
 
     it('updates autonomy settings', async () => {
       mockApiCall.mockResolvedValueOnce({ level: 'autonomous' });
@@ -146,8 +146,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_agent_activity_log', () => {
-    const handler = getHandler(tools, 'tandem_agent_activity_log');
+  describe('zerant_agent_activity_log', () => {
+    const handler = getHandler(tools, 'zerant_agent_activity_log');
 
     it('gets agent activity with limit', async () => {
       mockApiCall.mockResolvedValueOnce({ entries: [] });
@@ -157,8 +157,8 @@ describe('MCP task tools', () => {
     });
   });
 
-  describe('tandem_tab_lock_status', () => {
-    const handler = getHandler(tools, 'tandem_tab_lock_status');
+  describe('zerant_tab_lock_status', () => {
+    const handler = getHandler(tools, 'zerant_tab_lock_status');
 
     it('checks tab lock status', async () => {
       mockApiCall.mockResolvedValueOnce({ locked: false });

@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerNetworkTools(server: McpServer): void {
   server.tool(
-    'tandem_network_log',
+    'zerant_network_log',
     'Get the webRequest-based network log for the active tab by default, or for a specific background tab when tabId is provided. Lighter-weight than DevTools network and useful for recent request inspection.',
     coerceShape({
       domain: z.string().optional().describe('Filter by domain'),
@@ -26,7 +26,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_apis',
+    'zerant_network_apis',
     'Get a summary of detected API endpoints for the active tab by default, or for a specific background tab when tabId is provided.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a specific tab instead of the active tab'),
@@ -38,7 +38,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_domains',
+    'zerant_network_domains',
     'Get a list of request domains for the active tab by default, or for a specific background tab when tabId is provided.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a specific tab instead of the active tab'),
@@ -50,7 +50,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_har',
+    'zerant_network_har',
     'Export the active tab network log as a HAR (HTTP Archive) by default, or export a specific background tab when tabId is provided.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a specific tab instead of the active tab'),
@@ -62,7 +62,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_mock',
+    'zerant_network_mock',
     'Add a network mock rule to intercept and override HTTP responses. Matched requests will return the specified status, body, and headers instead of hitting the real server. WARNING: This modifies network behavior.',
     coerceShape({
       url: z.string().describe('URL pattern to match (supports wildcards)'),
@@ -88,7 +88,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_unmock',
+    'zerant_network_unmock',
     'Remove a network mock rule by URL pattern. The matching pattern must be the same as the one used when creating the mock.',
     {
       url: z.string().describe('URL pattern of the mock to remove'),
@@ -100,7 +100,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_mocks',
+    'zerant_network_mocks',
     'List all active network mock rules. Shows the URL patterns being intercepted and their configured responses.',
     async () => {
       const data = await apiCall('GET', '/network/mocks');
@@ -109,7 +109,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_clear',
+    'zerant_network_clear',
     'Clear the webRequest-level network log for the active tab by default, or for a specific background tab when tabId is provided.',
     {
       tabId: z.string().optional().describe('Optional tab ID to clear a specific tab instead of the active tab'),
@@ -121,7 +121,7 @@ export function registerNetworkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_network_mock_clear',
+    'zerant_network_mock_clear',
     'Remove all active network mock rules at once. WARNING: This clears all mock rules — real network requests will resume for all previously mocked patterns.',
     {},
     {

@@ -1,5 +1,5 @@
 (() => {
-  if (!window.tandem) return;
+  if (!window.zerant) return;
 
   const overlayBar = document.getElementById('recording-overlay-bar');
   const timerEl = document.getElementById('recording-timer');
@@ -127,7 +127,7 @@
         });
       } else {
         // macOS/Windows: use Electron desktopCapturer
-        const source = await window.tandem.getDesktopSource();
+        const source = await window.zerant.getDesktopSource();
         if (!source) {
           console.error('[video-recorder] No desktop source found');
           alert('Screen recording is not available. No capture source found.');
@@ -135,7 +135,7 @@
         }
         if (source.error === 'screen-permission-denied') {
           console.warn('[video-recorder] Screen Recording permission denied');
-          alert('Screen Recording permission is required.\n\nGo to System Settings → Privacy & Security → Screen Recording and enable Tandem.');
+          alert('Screen Recording permission is required.\n\nGo to System Settings → Privacy & Security → Screen Recording and enable Zerant.');
           return;
         }
 
@@ -235,7 +235,7 @@
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           event.data.arrayBuffer().then(buf => {
-            window.tandem.sendRecordingChunk(buf);
+            window.zerant.sendRecordingChunk(buf);
           });
         }
       };
@@ -245,7 +245,7 @@
       };
 
       // Tell main process we're starting
-      await window.tandem.startRecording(mode, region);
+      await window.zerant.startRecording(mode, region);
 
       mediaRecorder.start(1000); // chunk every 1s
       isRecording = true;
@@ -280,7 +280,7 @@
 
     // Tell main to finalize (ffmpeg conversion) - non-blocking
     try {
-      await window.tandem.stopRecording();
+      await window.zerant.stopRecording();
       console.log('[video-recorder] Backend stop completed');
     } catch (err) {
       console.error('[video-recorder] Backend stop failed:', err);
@@ -331,7 +331,7 @@
 
   // ── IPC listeners ──
 
-  window.tandem.onRecordingModeSelected(async (mode) => {
+  window.zerant.onRecordingModeSelected(async (mode) => {
     if (isRecording) return;
 
     if (mode === 'region') {
@@ -345,7 +345,7 @@
     }
   });
 
-  window.tandem.onRecordingFinished((data) => {
+  window.zerant.onRecordingFinished((data) => {
     console.log('[video-recorder] Recording saved:', data.filename, `(${data.duration}s)`);
   });
 })();

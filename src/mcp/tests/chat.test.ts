@@ -26,8 +26,8 @@ describe('MCP chat tools', () => {
     mockGetMcpSource.mockReturnValue('wingman');
   });
 
-  describe('tandem_send_message', () => {
-    const handler = getHandler(tools, 'tandem_send_message');
+  describe('zerant_send_message', () => {
+    const handler = getHandler(tools, 'zerant_send_message');
 
     it('sends a message', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -45,8 +45,8 @@ describe('MCP chat tools', () => {
     });
   });
 
-  describe('tandem_get_chat_history', () => {
-    const handler = getHandler(tools, 'tandem_get_chat_history');
+  describe('zerant_get_chat_history', () => {
+    const handler = getHandler(tools, 'zerant_get_chat_history');
 
     it('returns formatted chat history', async () => {
       mockApiCall.mockResolvedValueOnce({
@@ -64,8 +64,8 @@ describe('MCP chat tools', () => {
     });
   });
 
-  describe('tandem_get_context', () => {
-    const handler = getHandler(tools, 'tandem_get_context');
+  describe('zerant_get_context', () => {
+    const handler = getHandler(tools, 'zerant_get_context');
 
     it('returns browser context overview', async () => {
       mockApiCall.mockResolvedValueOnce({ title: 'Google', url: 'https://google.com', loading: false });
@@ -80,8 +80,8 @@ describe('MCP chat tools', () => {
     });
   });
 
-  describe('tandem_wingman_alert', () => {
-    const handler = getHandler(tools, 'tandem_wingman_alert');
+  describe('zerant_wingman_alert', () => {
+    const handler = getHandler(tools, 'zerant_wingman_alert');
 
     it('sends an alert', async () => {
       mockApiCall.mockResolvedValueOnce({});

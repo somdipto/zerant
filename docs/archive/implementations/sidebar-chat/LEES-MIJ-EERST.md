@@ -9,7 +9,7 @@
 
 ## Why this feature?
 
-Robin uses daily 6 chat-apps and must nu constant schakelen between Tandem and losse apps. Door this if sidebar panels in te bouwen can he chatten terwijl he browst — without context te verliezen. Opera has this if kern-feature; the is the #1 gap in onze gap analyse (zie `docs/research/gap-analysis.md`, section "Sidebar Chat Clients — Full Spec").
+Robin uses daily 6 chat-apps and must nu constant schakelen between Zerant and losse apps. Door this if sidebar panels in te bouwen can he chatten terwijl he browst — without context te verliezen. Opera has this if kern-feature; the is the #1 gap in onze gap analyse (zie `docs/research/gap-analysis.md`, section "Sidebar Chat Clients — Full Spec").
 
 ---
 
@@ -48,7 +48,7 @@ SidebarManager (main process)
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registratie, will-quit cleanup | `startAPI()`, `app.on('will-quit')` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 | `src/registry.ts` | ManagerRegistry interface — alle managers | `interface ManagerRegistry` |
 | `src/api/context.ts` | RouteContext type definitie | `type RouteContext` |
 | `shell/index.html` | Browser UI — zoek to `<div class="main-layout">` for the plek waar sidebar HTML must | `<div class="main-layout">` |
@@ -70,7 +70,7 @@ _(see the relevant phase file)_
 
 3. **Own partitions per messenger** — nooit `persist:tandem` use for sidebar panels. Elke messenger gets are own partition zodat sessions fully geïsoleerd are.
 
-4. **Default Chrome User-Agent for sidebar webviews** — sommige messengers (WhatsApp Web) weigeren non-Chrome UA's. Usage a default Chrome UA, not the Tandem stealth UA.
+4. **Default Chrome User-Agent for sidebar webviews** — sommige messengers (WhatsApp Web) weigeren non-Chrome UA's. Usage a default Chrome UA, not the Zerant stealth UA.
 
 5. **No new npm packages** — alles is built with Electron's native `<webview>` tag and existing IPC patterns.
 

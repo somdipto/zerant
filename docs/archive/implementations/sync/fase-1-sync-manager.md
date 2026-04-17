@@ -6,7 +6,7 @@
 
 ## Overview
 
-SyncManager enables cross-device sync for Tandem Browser by writing and reading
+SyncManager enables cross-device sync for Zerant Browser by writing and reading
 data to/from a shared folder (Google Drive, iCloud, Dropbox, or any local path).
 
 ## Architecture
@@ -31,7 +31,7 @@ data to/from a shared folder (Google Drive, iCloud, Dropbox, or any local path).
 
 ### Config
 
-Added `deviceSync` field to `TandemConfig` (in `src/config/manager.ts`):
+Added `deviceSync` field to `ZerantConfig` (in `src/config/manager.ts`):
 
 ```typescript
 deviceSync: {
@@ -50,7 +50,7 @@ Note: The existing `sync` config key is for Chrome bookmark import.
 |------|--------|
 | `src/sync/manager.ts` | **New** — SyncManager class |
 | `src/api/routes/sync.ts` | **New** — API endpoints |
-| `src/config/manager.ts` | Added `deviceSync` to TandemConfig |
+| `src/config/manager.ts` | Added `deviceSync` to ZerantConfig |
 | `src/tabs/manager.ts` | Added `setSyncManager()` + debounced publish |
 | `src/history/manager.ts` | Added `setSyncManager()` + publish after save |
 | `src/workspaces/manager.ts` | Added `setSyncManager()` + publish after save |
@@ -85,7 +85,7 @@ Via API:
 curl -X POST http://localhost:8765/sync/config \
   -H "Authorization: Bearer $(cat ~/.tandem/api-token)" \
   -H "Content-Type: application/json" \
-  -d '{"enabled": true, "syncRoot": "/Users/you/Google Drive/My Drive/Tandem"}'
+  -d '{"enabled": true, "syncRoot": "/Users/you/Google Drive/My Drive/Zerant"}'
 ```
 
 ### Future work (Phase 2+)

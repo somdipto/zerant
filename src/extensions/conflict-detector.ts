@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('ConflictDetector');
@@ -22,17 +22,17 @@ export interface ExtensionConflict {
   recommendation: string;
 }
 
-// ─── Tandem Keyboard Shortcuts ───────────────────────────────────────────────
+// ─── Zerant Keyboard Shortcuts ───────────────────────────────────────────────
 // Registered at the BrowserWindow level via Electron Menu accelerators.
-// Tandem shortcuts always win over extension shortcuts.
+// Zerant shortcuts always win over extension shortcuts.
 
-interface TandemShortcut {
+interface ZerantShortcut {
   /** Normalized form: e.g. "Ctrl+T", "Ctrl+Shift+B" (Ctrl = Cmd on macOS) */
   key: string;
   action: string;
 }
 
-const TANDEM_SHORTCUTS: TandemShortcut[] = [
+const ZERANT_SHORTCUTS: ZerantShortcut[] = [
   { key: 'Ctrl+,', action: 'Settings' },
   { key: 'Ctrl+T', action: 'New Tab' },
   { key: 'Ctrl+W', action: 'Close Tab' },
@@ -77,13 +77,13 @@ const BROAD_CONTENT_SCRIPT_PATTERNS = [
 
 /**
  * ConflictDetector — Analyzes extension manifests for potential conflicts
- * with Tandem's security stack, keyboard shortcuts, and each other.
+ * with Zerant's security stack, keyboard shortcuts, and each other.
  *
  * Conflict types:
  * - dnr-overlap: Extension uses declarativeNetRequest (may overlap with NetworkShield)
  * - native-messaging: Extension requires a desktop companion app
  * - content-script-broad: Extension injects scripts into all pages
- * - keyboard-shortcut: Extension shortcut conflicts with Tandem shortcut
+ * - keyboard-shortcut: Extension shortcut conflicts with Zerant shortcut
  *
  * Phase 1 DNR test result: Guardian's dispatcher still fires with DNR extensions
  * loaded (2 onBeforeRequest consumers registered). DNR may block some requests
@@ -133,7 +133,7 @@ export class ConflictDetector {
         conflictType: 'dnr-overlap',
         severity: 'warning',
         description: 'Uses declarativeNetRequest rules that may overlap with NetworkShield',
-        recommendation: "Tandem's NetworkShield already blocks malicious domains. This extension is redundant for security but useful for ad blocking.",
+        recommendation: "Zerant's NetworkShield already blocks malicious domains. This extension is redundant for security but useful for ad blocking.",
       });
     }
 
@@ -202,15 +202,15 @@ export class ConflictDetector {
 
           for (const rawKey of keysToCheck) {
             const normalized = normalizeShortcut(rawKey);
-            const tandemMatch = TANDEM_SHORTCUTS.find(s => s.key === normalized);
-            if (tandemMatch) {
+            const zerantMatch = ZERANT_SHORTCUTS.find(s => s.key === normalized);
+            if (zerantMatch) {
               conflicts.push({
                 extensionId,
                 extensionName,
                 conflictType: 'keyboard-shortcut',
                 severity: 'info',
-                description: `Shortcut "${rawKey}" (${cmdName}) conflicts with Tandem's "${tandemMatch.action}"`,
-                recommendation: "Tandem's shortcut takes priority (registered at BrowserWindow level). The extension shortcut will not fire.",
+                description: `Shortcut "${rawKey}" (${cmdName}) conflicts with Zerant's "${zerantMatch.action}"`,
+                recommendation: "Zerant's shortcut takes priority (registered at BrowserWindow level). The extension shortcut will not fire.",
               });
             }
           }
@@ -223,11 +223,11 @@ export class ConflictDetector {
 
   /**
    * Analyze all installed extensions in the extensions directory.
-   * @param extensionsDir - Path to ~/.tandem/extensions/
+   * @param extensionsDir - Path to ~/.zerant/extensions/
    * @returns Map of extension ID → conflicts
    */
   analyzeAll(extensionsDir?: string): Map<string, ExtensionConflict[]> {
-    const dir = extensionsDir || tandemDir('extensions');
+    const dir = extensionsDir || zerantDir('extensions');
     const result = new Map<string, ExtensionConflict[]>();
 
     try {

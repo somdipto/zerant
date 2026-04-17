@@ -2,7 +2,7 @@ import https from 'https';
 import path from 'path';
 import fs from 'fs';
 import AdmZip from 'adm-zip';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { assertChromeExtensionId, resolvePathWithinRoot } from '../utils/security';
 
@@ -47,13 +47,13 @@ const DOWNLOAD_TIMEOUT_MS = 30000;
 
 /**
  * CrxDownloader — Downloads CRX files from Chrome Web Store,
- * verifies integrity, extracts, and installs them to ~/.tandem/extensions/.
+ * verifies integrity, extracts, and installs them to ~/.zerant/extensions/.
  */
 export class CrxDownloader {
   private extensionsDir: string;
 
   constructor() {
-    this.extensionsDir = ensureDir(tandemDir('extensions'));
+    this.extensionsDir = ensureDir(zerantDir('extensions'));
   }
 
   /**

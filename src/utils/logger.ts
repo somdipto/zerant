@@ -1,12 +1,12 @@
 /**
- * Logger utility for Tandem Browser.
+ * Logger utility for Zerant Browser.
  *
  * Usage:
  *   const log = createLogger('MyModule');
  *   log.info('initialized');
  *   log.warn('retrying:', err.message);
  *
- * Minimum level is controlled by the TANDEM_LOG_LEVEL environment variable.
+ * Minimum level is controlled by the ZERANT_LOG_LEVEL environment variable.
  * Valid values: debug | info | warn | error | silent  (default: info)
  */
 /* eslint-disable no-console -- console is the logger backend by design */
@@ -22,7 +22,7 @@ const LEVELS: Record<LogLevel, number> = {
 };
 
 function minLevel(): LogLevel {
-  const v = process.env.TANDEM_LOG_LEVEL as LogLevel;
+  const v = process.env.ZERANT_LOG_LEVEL as LogLevel;
   return v && v in LEVELS ? v : 'info';
 }
 

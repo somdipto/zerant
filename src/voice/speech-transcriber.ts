@@ -10,8 +10,8 @@ type TranscriberBackend = 'apple' | 'whisper' | 'none';
 
 function getAppleSpeechBinary(): string {
   // Check bundled binary first, then dev location
-  const bundled = path.join(process.resourcesPath || '', 'native', 'tandem-speech');
-  const dev = path.join(__dirname, '..', '..', 'native', 'speech', 'tandem-speech');
+  const bundled = path.join(process.resourcesPath || '', 'native', 'zerant-speech');
+  const dev = path.join(__dirname, '..', '..', 'native', 'speech', 'zerant-speech');
   if (fs.existsSync(bundled)) return bundled;
   if (fs.existsSync(dev)) return dev;
   return '';
@@ -47,7 +47,7 @@ export async function transcribeAudio(
   }
 
   // Write audio buffer to temp file — use .webm since MediaRecorder outputs webm
-  const tmpFile = path.join(os.tmpdir(), `tandem-audio-${Date.now()}.webm`);
+  const tmpFile = path.join(os.tmpdir(), `zerant-audio-${Date.now()}.webm`);
   try {
     fs.writeFileSync(tmpFile, audioBuffer);
   } catch (e) {

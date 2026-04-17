@@ -5,7 +5,7 @@ import { apiCall, logActivity } from '../api-client.js';
 export function registerClipboardTools(server: McpServer): void {
 
   server.tool(
-    'tandem_clipboard_read',
+    'zerant_clipboard_read',
     'Read what is on the clipboard. Returns text and/or image. Use this to see what the user has copied — if there is an image you will receive it visually.',
     {},
     {
@@ -40,7 +40,7 @@ export function registerClipboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_clipboard_write',
+    'zerant_clipboard_write',
     'Write text or an image to the clipboard so the user can paste it somewhere. For images, provide base64-encoded image data.',
     {
       text: z.string().optional().describe('Text to place on the clipboard'),
@@ -69,7 +69,7 @@ export function registerClipboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_clipboard_save',
+    'zerant_clipboard_save',
     'Save the current clipboard content as a file. Choose a descriptive filename that reflects the content. Use jpg for photos/screenshots, png for graphics with transparency, txt for text.',
     {
       filename: z.string().describe('Descriptive filename, e.g. "vercel-503-error.png" or "meeting-notes.txt"'),

@@ -13,15 +13,15 @@ Robin wants to use his chat apps next to his browser without constantly switchin
 
 **Opera has:** Sidebar webview panels for WhatsApp, Discord, Slack, Telegram, Instagram, and X/Twitter. Each messenger runs as a separate webview next to the browser content. Sidebar icons with notification badges, pin/unpin, mute per panel, adjustable panel width, and independent login per service.
 
-**Tandem has now:** A Wingman panel (left or right) and no messenger sidebar. The Wingman panel is a separate concept — it is the AI-human communication channel. There is no place for external chat apps.
+**Zerant has now:** A Wingman panel (left or right) and no messenger sidebar. The Wingman panel is a separate concept — it is the AI-human communication channel. There is no place for external chat apps.
 
-**Gap:** No sidebar messenger integration. Robin currently has to switch between Tandem and separate apps/tabs for all or his communication.
+**Gap:** No sidebar messenger integration. Robin currently has to switch between Zerant and separate apps/tabs for all or his communication.
 
 ---
 
 ## User Experience — How It Works
 
-> Robin opens Tandem. On the left side he sees a narrow icon strip with 6 chat icons: WhatsApp, Discord, Slack, Telegram, Instagram, X. Each icon can show a notification badge (for example "3" for 3 unread messages).
+> Robin opens Zerant. On the left side he sees a narrow icon strip with 6 chat icons: WhatsApp, Discord, Slack, Telegram, Instagram, X. Each icon can show a notification badge (for example "3" for 3 unread messages).
 >
 > Robin clicks the WhatsApp icon. A panel slides open between the icon strip and the browser content, about 420px wide. WhatsApp Web loads inside it. Robin logs in once via QR code. His session stays persisted (`persist:whatsapp` partition).
 >
@@ -47,7 +47,7 @@ Robin wants to use his chat apps next to his browser without constantly switchin
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Tandem Browser Window                                          │
+│  Zerant Browser Window                                          │
 │                                                                 │
 │  ┌──────┐  ┌──────────────┐  ┌──────────────────────────────┐  │
 │  │ Icon │  │  Sidebar     │  │                              │  │
@@ -174,7 +174,7 @@ Everything is built with Electron's native `<webview>` tag and existing IPC patt
 
 ## Risks / Pitfalls
 
-- **WhatsApp Web UA check:** WhatsApp Web checks the User-Agent and rejects non-Chrome browsers. The sidebar webview must use a standard Chrome UA, not the Tandem stealth UA. Mitigation: set an explicit Chrome UA per sidebar webview via `webview.setUserAgent()`.
+- **WhatsApp Web UA check:** WhatsApp Web checks the User-Agent and rejects non-Chrome browsers. The sidebar webview must use a standard Chrome UA, not the Zerant stealth UA. Mitigation: set an explicit Chrome UA per sidebar webview via `webview.setUserAgent()`.
 
 - **Discord CAPTCHA on first login:** Discord sometimes shows CAPTCHAs when logging in from a "new" browser profile. Mitigation: persistent partition (`persist:discord`) so the session is remembered after first login. Optional: send a standard Chrome UA.
 
@@ -196,7 +196,7 @@ Sidebar messenger panels are **DIFFERENT** from Wingman-driven browsing activity
 
 - ✅ **Separate partitions** — messenger panels do not share cookies/storage with the main session (`persist:tandem`). This is desired: Robin's WhatsApp login must not leak into his browsing session and vice versa.
 
-- ⚠️ **User-Agent:** Sidebar webviews must use a standard Chrome User-Agent. Some messengers (WhatsApp Web) reject non-Chrome UAs. Tandem's stealth UA patches do not apply here because they are for the main webview.
+- ⚠️ **User-Agent:** Sidebar webviews must use a standard Chrome User-Agent. Some messengers (WhatsApp Web) reject non-Chrome UAs. Zerant's stealth UA patches do not apply here because they are for the main webview.
 
 - ⚠️ **Stealth script injection:** The `web-contents-created` handler in `createWindow()` injects stealth scripts into ALL webviews. Sidebar webviews must **NOT** receive the stealth script. Those patches are meant for sites where Wingman is active, not for Robin's own messenger use. Consider checking the partition name and skipping stealth for `persist:whatsapp`, `persist:discord`, etc.
 

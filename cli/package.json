@@ -1,9 +1,9 @@
 {
-  "name": "@hydro13/tandem-cli",
+  "name": "@zerant/zerant-cli",
   "version": "0.1.0",
-  "description": "CLI for Tandem Browser API",
+  "description": "CLI for Zerant Browser API",
   "bin": {
-    "tandem": "./dist/index.js"
+    "zerant": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

@@ -20,7 +20,7 @@ vi.mock('fs', async () => {
 });
 
 vi.mock('../../utils/paths', () => ({
-  tandemDir: vi.fn((...parts: string[]) => `/tmp/tandem/${parts.join('/')}`),
+  zerantDir: vi.fn((...parts: string[]) => `/tmp/zerant/${parts.join('/')}`),
   ensureDir: vi.fn((value: string) => value),
 }));
 

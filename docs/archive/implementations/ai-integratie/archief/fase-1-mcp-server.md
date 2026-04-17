@@ -2,7 +2,7 @@
 
 ## Wat is this?
 
-A MCP (Model Context Protocol) server that Claude Code and Claude Cowork in staat stelt the Tandem Browser te bedienen via tools. MCP is Anthropic's default protocol for tool-integratie.
+A MCP (Model Context Protocol) server that Claude Code and Claude Cowork in staat stelt the Zerant Browser te bedienen via tools. MCP is Anthropic's default protocol for tool-integratie.
 
 ## Why MCP?
 
@@ -13,7 +13,7 @@ A MCP (Model Context Protocol) server that Claude Code and Claude Cowork in staa
 
 ## Existing API that gewrapped is
 
-Tandem has a HTTP API op `localhost:8765`. The MCP server is a dunne wrapper daaromheen.
+Zerant has a HTTP API op `localhost:8765`. The MCP server is a dunne wrapper daaromheen.
 
 **API Authenticatie:**
 - Token in `~/.tandem/api-token` (32-byte hex)
@@ -122,7 +122,7 @@ File template: `tandem-mcp-config.json`
 ```json
 {
   "mcpServers": {
-    "tandem-browser": {
+    "zerant-browser": {
       "command": "node",
       "args": ["<pad-to-tandem>/dist/mcp/server.js"],
       "env": {}
@@ -150,7 +150,7 @@ Voeg toe about `tsconfig.json`:
 ## Test Strategie
 
 ### Handmatig testen
-1. Start Tandem: `npm start`
+1. Start Zerant: `npm start`
 2. Start MCP server apart: `node dist/mcp/server.js`
 3. Test with Claude Code: configureer MCP, question Claude to page to read
 
@@ -165,7 +165,7 @@ Maak a test script: `scripts/test-mcp.ts`
 
 1. **MCP SDK versie:** Check the latest versie, API can veranderd are
 2. **stdio transport:** MCP server must op stdin/stdout communicate, no console.log use for debugging (usage stderr)
-3. **Tandem must draaien:** MCP server faalt if API not beschikbaar is — geef duidelijke error
+3. **Zerant must draaien:** MCP server faalt if API not beschikbaar is — geef duidelijke error
 4. **Screenshot formaat:** MCP tools ondersteunen `image` content type — usage this for screenshots
 5. **Async tools:** Alle API calls are async, MCP tools must this correct afhandelen
 

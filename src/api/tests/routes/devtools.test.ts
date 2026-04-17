@@ -78,7 +78,7 @@ describe('Devtools Routes', () => {
 
     it('returns scoped status when valid X-Tab-Id header is provided', async () => {
       vi.mocked(ctx.tabManager.listTabs).mockReturnValue([
-        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:tandem' } as any,
+        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:zerant' } as any,
       ]);
       const managerStatus = { attached: true, tabId: 'tab-2', wcId: 202 };
       const scopedStatus = { attached: true, tabId: 'tab-2', wcId: 202, console: { entries: 1, errors: 0, lastId: 1 }, network: { entries: 0 } };
@@ -163,7 +163,7 @@ describe('Devtools Routes', () => {
 
     it('uses X-Tab-Id to scope console retrieval to a background tab', async () => {
       vi.mocked(ctx.tabManager.listTabs).mockReturnValue([
-        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:tandem' } as any,
+        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:zerant' } as any,
       ]);
       vi.mocked(ctx.devToolsManager.getConsoleEntries).mockReturnValue([] as any);
       vi.mocked(ctx.devToolsManager.getConsoleCounts).mockReturnValue({} as any);
@@ -282,7 +282,7 @@ describe('Devtools Routes', () => {
 
     it('clears a specific background tab when tabId is in body', async () => {
       vi.mocked(ctx.tabManager.listTabs).mockReturnValue([
-        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:tandem' } as any,
+        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:zerant' } as any,
       ]);
 
       const res = await request(app).post('/devtools/console/clear').send({ tabId: 'tab-2' });

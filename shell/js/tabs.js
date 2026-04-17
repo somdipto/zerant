@@ -99,16 +99,16 @@
       tabEl.addEventListener('click', (event) => {
         if (event.target.classList.contains('tab-close')) return;
         const currentTabId = tabEl.dataset.tabId;
-        if (currentTabId && window.tandem) {
+        if (currentTabId && window.zerant) {
           nextFocusClaimsOwnership = true;
-          window.tandem.focusTab(currentTabId);
+          window.zerant.focusTab(currentTabId);
         }
       });
 
       tabEl.addEventListener('contextmenu', (event) => {
         event.preventDefault();
-        if (window.__tandemShowTabContextMenu) {
-          window.__tandemShowTabContextMenu(tabEl.dataset.tabId, event.clientX, event.clientY);
+        if (window.__zerantShowTabContextMenu) {
+          window.__zerantShowTabContextMenu(tabEl.dataset.tabId, event.clientX, event.clientY);
         }
       });
 
@@ -119,8 +119,8 @@
 
       tabEl.querySelector('.tab-close').addEventListener('click', () => {
         const currentTabId = tabEl.dataset.tabId;
-        if (currentTabId && window.tandem) {
-          window.tandem.closeTab(currentTabId);
+        if (currentTabId && window.zerant) {
+          window.zerant.closeTab(currentTabId);
         }
       });
 
@@ -130,22 +130,22 @@
     function wireActivityEvents(webview, getTabId) {
       webview.addEventListener('did-navigate', (event) => {
         const tabId = getTabId();
-        if (tabId && window.tandem) {
-          window.tandem.sendWebviewEvent({ type: 'did-navigate', url: event.url, tabId });
+        if (tabId && window.zerant) {
+          window.zerant.sendWebviewEvent({ type: 'did-navigate', url: event.url, tabId });
         }
       });
 
       webview.addEventListener('did-navigate-in-page', (event) => {
         const tabId = getTabId();
-        if (event.isMainFrame && tabId && window.tandem) {
-          window.tandem.sendWebviewEvent({ type: 'did-navigate-in-page', url: event.url, tabId });
+        if (event.isMainFrame && tabId && window.zerant) {
+          window.zerant.sendWebviewEvent({ type: 'did-navigate-in-page', url: event.url, tabId });
         }
       });
 
       webview.addEventListener('did-finish-load', () => {
         const tabId = getTabId();
-        if (tabId && window.tandem) {
-          window.tandem.sendWebviewEvent({
+        if (tabId && window.zerant) {
+          window.zerant.sendWebviewEvent({
             type: 'did-finish-load',
             url: webview.getURL(),
             title: webview.getTitle(),
@@ -159,8 +159,8 @@
         if (tabId === activeTabId) {
           statusDot.classList.add('loading');
         }
-        if (tabId && window.tandem) {
-          window.tandem.sendWebviewEvent({ type: 'loading-start', tabId });
+        if (tabId && window.zerant) {
+          window.zerant.sendWebviewEvent({ type: 'loading-start', tabId });
         }
       });
 
@@ -169,8 +169,8 @@
         if (tabId === activeTabId) {
           statusDot.classList.remove('loading');
         }
-        if (tabId && window.tandem) {
-          window.tandem.sendWebviewEvent({ type: 'loading-stop', tabId });
+        if (tabId && window.zerant) {
+          window.zerant.sendWebviewEvent({ type: 'loading-stop', tabId });
         }
       });
     }
@@ -233,7 +233,7 @@
       if (data.title) {
         entry.tabEl.querySelector('.tab-title').textContent = data.title;
         if (tabId === activeTabId) {
-          document.title = `${data.title} — Tandem`;
+          document.title = `${data.title} — Zerant`;
         }
       }
 
@@ -247,8 +247,8 @@
         img.style.display = '';
       }
 
-      if (window.tandem) {
-        window.tandem.sendTabUpdate({ tabId, ...data });
+      if (window.zerant) {
+        window.zerant.sendTabUpdate({ tabId, ...data });
       }
     }
 
@@ -310,7 +310,7 @@
       }
     }
 
-    window.__tandemTabs = {
+    window.__zerantTabs = {
       createTab(tabId, url, partition) {
         const entry = createRendererTab(tabId, url, partition || 'persist:tandem');
         const TAB_INIT_TIMEOUT_MS = 15000;
@@ -372,7 +372,7 @@
       },
     };
 
-    window.__tandemRenderer = {
+    window.__zerantRenderer = {
       escapeHtml,
       overlay,
       urlBar,
@@ -438,7 +438,7 @@
     });
 
     btnNewTab.addEventListener('click', () => {
-      if (window.tandem) window.tandem.newTab();
+      if (window.zerant) window.zerant.newTab();
     });
 
     (async () => {
@@ -449,13 +449,13 @@
 
       entry.webview.addEventListener('dom-ready', () => {
         const wcId = entry.webview.getWebContentsId();
-        if (window.tandem) {
-          window.tandem.registerTab(wcId, initialUrl);
+        if (window.zerant) {
+          window.zerant.registerTab(wcId, initialUrl);
         }
       }, { once: true });
 
-      if (window.tandem) {
-        window.tandem.onTabRegistered((data) => {
+      if (window.zerant) {
+        window.zerant.onTabRegistered((data) => {
           const initialEntry = tabs.get('__initial');
           if (!initialEntry) return;
 
@@ -471,9 +471,9 @@
         });
       }
 
-    if (window.tandem && window.tandem.onTabEmojiChanged) {
-      window.tandem.onTabEmojiChanged((data) => {
-        window.__tandemTabs.setEmoji(data.tabId, data.emoji, data.flash);
+    if (window.zerant && window.zerant.onTabEmojiChanged) {
+      window.zerant.onTabEmojiChanged((data) => {
+        window.__zerantTabs.setEmoji(data.tabId, data.emoji, data.flash);
       });
     }
     })();

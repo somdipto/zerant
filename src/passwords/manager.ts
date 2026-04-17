@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { PasswordCrypto } from '../security/crypto';
 import { createLogger } from '../utils/logger';
 
@@ -23,7 +23,7 @@ export interface VaultItem {
 /**
  * PasswordManager — encrypted credential vault backed by SQLite.
  *
- * Persistence: ~/.tandem/security/vault.db
+ * Persistence: ~/.zerant/security/vault.db
  */
 export class PasswordManager {
 
@@ -36,7 +36,7 @@ export class PasswordManager {
     // === 2. Constructor ===
 
     constructor() {
-        const dir = tandemDir('security');
+        const dir = zerantDir('security');
         fs.mkdirSync(dir, { recursive: true });
 
         this.db = new Database(path.join(dir, 'vault.db'));

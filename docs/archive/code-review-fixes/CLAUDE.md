@@ -39,7 +39,7 @@
 
 1. **Run `npx tsc --noEmit`** — must be 0 errors
    - Pre-existing errors in `src/gateway/server.chat.gateway-server-chat-b.e2e.test.ts`
-     lines 151 and 299 are safe to ignore (upstream issue, not Tandem)
+     lines 151 and 299 are safe to ignore (upstream issue, not Zerant)
 2. **Review your own changes** — run `git diff` and read through every change you made:
    - Check for logic errors, typos, missing error handling
    - Verify no accidental deletions or unintended side effects

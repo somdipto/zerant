@@ -5,7 +5,7 @@ It is based on the current code in `src/api/routes/` and related modules.
 
 ## Route Count
 
-Tandem currently exposes `301` HTTP routes across the API and security route
+Zerant currently exposes `301` HTTP routes across the API and security route
 modules.
 
 ## `POST /tabs/open`
@@ -22,7 +22,7 @@ Opens a new tab.
 
 ### `inheritSessionFrom`
 
-If `inheritSessionFrom` points at an existing source tab, Tandem will:
+If `inheritSessionFrom` points at an existing source tab, Zerant will:
 
 1. open the destination tab
 2. dump IndexedDB data from the source tab
@@ -32,7 +32,7 @@ If `inheritSessionFrom` points at an existing source tab, Tandem will:
 This is intended for sites that keep login state in IndexedDB instead of
 cookies or localStorage.
 
-If the source tab does not exist, Tandem still opens the tab and ignores the
+If the source tab does not exist, Zerant still opens the tab and ignores the
 inheritance request.
 
 ## `X-Tab-Id` Background Targeting
@@ -119,7 +119,7 @@ Temporarily bypasses prompt-injection blocking for one domain.
 
 ## `GET /config/openclaw-connect`
 
-Builds the signed OpenClaw gateway connect payload used by Tandem's in-app
+Builds the signed OpenClaw gateway connect payload used by Zerant's in-app
 Wingman chat.
 
 ### Query parameters

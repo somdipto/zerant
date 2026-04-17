@@ -13,7 +13,7 @@
     import { initPanel } from './panel.js';
     import { initChat } from './chat.js';
 
-    const renderer = window.__tandemRenderer;
+    const renderer = window.__zerantRenderer;
     if (!renderer) {
       console.error('[wingman] Missing renderer bridge');
       throw new Error('[wingman] Missing renderer bridge');
@@ -243,7 +243,7 @@
     wingmanBadge.style.cursor = 'pointer';
     wingmanBadge.title = 'Right-click for settings';
 
-    if (window.tandem) {
+    if (window.zerant) {
       async function activateHandoff(handoffId) {
         await fetch(`http://localhost:8765/handoffs/${handoffId}/activate`, { method: 'POST' });
       }
@@ -435,7 +435,7 @@
 
       void loadOpenHandoffs();
 
-      window.tandem.onActivityEvent((event) => {
+      window.zerant.onActivityEvent((event) => {
         if (!activityEl) return;
         const icons = { navigate: '🧭', click: '👆', scroll: '📜', input: '⌨️', 'tab-switch': '🔀', 'tab-open': '➕', 'tab-close': '✖️', handoff: '🤝' };
         const icon = icons[event.type] || '•';
@@ -459,14 +459,14 @@
         while (activityEl.children.length > 200) activityEl.removeChild(activityEl.firstChild);
       });
 
-      if (window.tandem.onHandoffUpdated) {
-        window.tandem.onHandoffUpdated((data) => {
+      if (window.zerant.onHandoffUpdated) {
+        window.zerant.onHandoffUpdated((data) => {
           void applyHandoffUpdate(data.handoff);
         });
       }
 
       // Tab source changes (🧀/👤 indicator) + AI tab visual border
-      window.tandem.onTabSourceChanged((data) => {
+      window.zerant.onTabSourceChanged((data) => {
         for (const [id, entry] of getTabs()) {
           if (id === data.tabId) {
             const sourceEl = entry.tabEl.querySelector('.tab-source');
@@ -509,24 +509,24 @@
         }
       };
       // Hook into existing tab click by patching focusTab handler
-      const _origFocusTab = window.__tandemTabs.focusTab;
-      window.__tandemTabs.focusTab = function (tabId) {
-        const shouldClaim = typeof window.__tandemTabs.consumeUserOwnershipClaim === 'function'
-          ? window.__tandemTabs.consumeUserOwnershipClaim()
+      const _origFocusTab = window.__zerantTabs.focusTab;
+      window.__zerantTabs.focusTab = function (tabId) {
+        const shouldClaim = typeof window.__zerantTabs.consumeUserOwnershipClaim === 'function'
+          ? window.__zerantTabs.consumeUserOwnershipClaim()
           : false;
         if (shouldClaim) {
           origTabClickHandler(tabId);
         }
-        return _origFocusTab.call(window.__tandemTabs, tabId);
+        return _origFocusTab.call(window.__zerantTabs, tabId);
       };
 
       // Open URL in new tab (from popup redirect)
-      window.tandem.onOpenUrlInNewTab((url) => {
-        if (url) window.tandem.newTab(url);
+      window.zerant.onOpenUrlInNewTab((url) => {
+        if (url) window.zerant.newTab(url);
       });
 
       // Wingman chat injection from context menu — fill input but let user review before sending
-      window.tandem.onWingmanChatInject((text) => {
+      window.zerant.onWingmanChatInject((text) => {
         // Switch to chat tab in panel
         const chatTab = document.querySelector('[data-panel-tab="chat"]');
         if (chatTab) chatTab.click();
@@ -540,14 +540,14 @@
       });
 
       // Bookmark status changed from context menu
-      window.tandem.onBookmarkStatusChanged(async (data) => {
+      window.zerant.onBookmarkStatusChanged(async (data) => {
         const bookmarkStar = document.getElementById('btn-bookmark');
         if (bookmarkStar) {
           bookmarkStar.classList.toggle('bookmarked', data.bookmarked);
           bookmarkStar.textContent = data.bookmarked ? '★' : '☆';
         }
       });
-      window.tandem.onScreenshotModeSelected((mode) => {
+      window.zerant.onScreenshotModeSelected((mode) => {
         void captureScreenshotMode(mode);
       });
 
@@ -571,8 +571,8 @@
         const now = Date.now();
         if (now - _noodremLast < 2000) return; // 2s debounce
         _noodremLast = now;
-        if (window.tandem && window.tandem.emergencyStop) {
-          window.tandem.emergencyStop();
+        if (window.zerant && window.zerant.emergencyStop) {
+          window.zerant.emergencyStop();
         } else {
           fetch('http://localhost:8765/emergency-stop', { method: 'POST' }).catch(() => { });
         }
@@ -592,8 +592,8 @@
       }, true);
 
       // Listen for approval requests from main process
-      if (window.tandem && window.tandem.onApprovalRequest) {
-        window.tandem.onApprovalRequest((data) => {
+      if (window.zerant && window.zerant.onApprovalRequest) {
+        window.zerant.onApprovalRequest((data) => {
           showApprovalCard(data);
         });
       }
@@ -649,8 +649,8 @@
       }
 
       // Emergency stop clears all approval cards
-      if (window.tandem) {
-        const origOnEmergency = window.tandem.onTabSourceChanged; // listen for emergency-stop event via IPC
+      if (window.zerant) {
+        const origOnEmergency = window.zerant.onTabSourceChanged; // listen for emergency-stop event via IPC
       }
       // Also poll for emergency stop events (backup)
       window.addEventListener('message', (e) => {

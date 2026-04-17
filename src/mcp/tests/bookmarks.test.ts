@@ -21,9 +21,9 @@ describe('MCP bookmark tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_bookmarks_list ─────────────────────────────────────────
-  describe('tandem_bookmarks_list', () => {
-    const handler = getHandler(tools, 'tandem_bookmarks_list');
+  // ── zerant_bookmarks_list ─────────────────────────────────────────
+  describe('zerant_bookmarks_list', () => {
+    const handler = getHandler(tools, 'zerant_bookmarks_list');
 
     it('returns the full bookmark tree', async () => {
       const tree = { children: [{ name: 'GitHub', url: 'https://github.com' }] };
@@ -36,9 +36,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_bookmark_add ───────────────────────────────────────────
-  describe('tandem_bookmark_add', () => {
-    const handler = getHandler(tools, 'tandem_bookmark_add');
+  // ── zerant_bookmark_add ───────────────────────────────────────────
+  describe('zerant_bookmark_add', () => {
+    const handler = getHandler(tools, 'zerant_bookmark_add');
 
     it('adds a bookmark with title', async () => {
       mockApiCall.mockResolvedValueOnce({ bookmark: { name: 'My Site' } });
@@ -72,9 +72,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_bookmark_delete ────────────────────────────────────────
-  describe('tandem_bookmark_delete', () => {
-    const handler = getHandler(tools, 'tandem_bookmark_delete');
+  // ── zerant_bookmark_delete ────────────────────────────────────────
+  describe('zerant_bookmark_delete', () => {
+    const handler = getHandler(tools, 'zerant_bookmark_delete');
 
     it('deletes a bookmark', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -93,9 +93,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_bookmark_update ────────────────────────────────────────
-  describe('tandem_bookmark_update', () => {
-    const handler = getHandler(tools, 'tandem_bookmark_update');
+  // ── zerant_bookmark_update ────────────────────────────────────────
+  describe('zerant_bookmark_update', () => {
+    const handler = getHandler(tools, 'zerant_bookmark_update');
 
     it('updates a bookmark', async () => {
       mockApiCall.mockResolvedValueOnce({ bookmark: { name: 'Updated' } });
@@ -109,9 +109,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_bookmark_folder_add ────────────────────────────────────
-  describe('tandem_bookmark_folder_add', () => {
-    const handler = getHandler(tools, 'tandem_bookmark_folder_add');
+  // ── zerant_bookmark_folder_add ────────────────────────────────────
+  describe('zerant_bookmark_folder_add', () => {
+    const handler = getHandler(tools, 'zerant_bookmark_folder_add');
 
     it('creates a folder', async () => {
       mockApiCall.mockResolvedValueOnce({ folder: { name: 'Work' } });
@@ -122,9 +122,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_bookmark_move ──────────────────────────────────────────
-  describe('tandem_bookmark_move', () => {
-    const handler = getHandler(tools, 'tandem_bookmark_move');
+  // ── zerant_bookmark_move ──────────────────────────────────────────
+  describe('zerant_bookmark_move', () => {
+    const handler = getHandler(tools, 'zerant_bookmark_move');
 
     it('moves a bookmark to a folder', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -143,9 +143,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_bookmark_check ─────────────────────────────────────────
-  describe('tandem_bookmark_check', () => {
-    const handler = getHandler(tools, 'tandem_bookmark_check');
+  // ── zerant_bookmark_check ─────────────────────────────────────────
+  describe('zerant_bookmark_check', () => {
+    const handler = getHandler(tools, 'zerant_bookmark_check');
 
     it('reports bookmarked URL', async () => {
       mockApiCall.mockResolvedValueOnce({ bookmarked: true, bookmark: { name: 'GH' } });
@@ -162,9 +162,9 @@ describe('MCP bookmark tools', () => {
     });
   });
 
-  // ── tandem_search_bookmarks ───────────────────────────────────────
-  describe('tandem_search_bookmarks', () => {
-    const handler = getHandler(tools, 'tandem_search_bookmarks');
+  // ── zerant_search_bookmarks ───────────────────────────────────────
+  describe('zerant_search_bookmarks', () => {
+    const handler = getHandler(tools, 'zerant_search_bookmarks');
 
     it('returns search results', async () => {
       mockApiCall.mockResolvedValueOnce({

@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerChatTools(server: McpServer): void {
   server.tool(
-    'tandem_send_message',
+    'zerant_send_message',
     'Send a message that appears in the Wingman chat panel (visible to the human)',
     {
       text: z.string().describe('Message text to display'),
@@ -17,7 +17,7 @@ export function registerChatTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_get_chat_history',
+    'zerant_get_chat_history',
     'Get recent chat messages from the Wingman panel',
     coerceShape({
       limit: z.number().optional().default(20).describe('Number of messages to return (default: 20)'),
@@ -37,7 +37,7 @@ export function registerChatTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_get_context',
+    'zerant_get_context',
     'Get a comprehensive overview of the current browser state: active tab, open tabs, recent chat, and voice status',
     async () => {
       const [status, tabsData, chatData] = await Promise.all([
@@ -76,7 +76,7 @@ export function registerChatTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_wingman_alert',
+    'zerant_wingman_alert',
     'Legacy compatibility alert: show a native Wingman alert and create an open needs_human handoff for the user',
     {
       message: z.string().describe('Alert message to display'),

@@ -10,7 +10,7 @@ Without event stream must AI steeds questions "wat zie you nu?". With event stre
 
 ## Existing Event Infrastructure
 
-Tandem stuurt already events intern via IPC:
+Zerant stuurt already events intern via IPC:
 
 ```typescript
 // shell/index.html → main.ts (via preload)

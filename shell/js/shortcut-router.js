@@ -1,11 +1,11 @@
 (() => {
-    const renderer = window.__tandemRenderer;
+    const renderer = window.__zerantRenderer;
     if (!renderer) {
       console.error('[shortcut-router] Missing renderer bridge');
       return;
     }
 
-    if (!window.tandem) {
+    if (!window.zerant) {
       return;
     }
 
@@ -13,14 +13,14 @@
       return renderer.getActiveTabId();
     }
 
-    window.tandem.onShortcut((action) => {
+    window.zerant.onShortcut((action) => {
       if (action === 'new-tab') {
-        window.tandem.newTab();
+        window.zerant.newTab();
       } else if (action === 'close-tab') {
         const activeTabId = getActiveTabId();
-        if (activeTabId) window.tandem.closeTab(activeTabId);
+        if (activeTabId) window.zerant.closeTab(activeTabId);
       } else if (action === 'quick-screenshot') {
-        window.tandem.quickScreenshot();
+        window.zerant.quickScreenshot();
       } else if (action === 'open-settings') {
         window.openSettings?.();
       } else if (action === 'bookmark-page') {
@@ -45,7 +45,7 @@
         window.changeZoom?.('reset');
       } else if (action.startsWith('focus-tab-')) {
         const index = parseInt(action.replace('focus-tab-', ''), 10);
-        window.tandem.focusTabByIndex(index);
+        window.zerant.focusTabByIndex(index);
       } else if (action === 'claronote-record') {
         document.querySelectorAll('.panel-tab').forEach((button) => button.classList.remove('active'));
         document.querySelector('[data-panel-tab="claronote"]').classList.add('active');
@@ -71,7 +71,7 @@
           });
         }
       } else if (action === 'voice-input') {
-        window.tandem.toggleVoice();
+        window.zerant.toggleVoice();
       } else if (action === 'show-onboarding') {
         showOnboarding();
       }

@@ -5,7 +5,7 @@ import type http from 'http';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { API_PORT } from '../utils/constants';
 import type { BrowserWindow } from 'electron';
 import type { ManagerRegistry } from '../registry';
@@ -40,7 +40,7 @@ import { createLogger } from '../utils/logger';
 import { createRateLimitMiddleware } from './rate-limit';
 import { McpHttpTransportManager } from '../mcp/http-transport';
 
-const log = createLogger('TandemAPI');
+const log = createLogger('ZerantAPI');
 const PUBLIC_ROUTE_PATHS = new Set<string>([
   '/status',
   '/google-photos/oauth/callback',
@@ -77,9 +77,9 @@ interface ApiCallerInfo {
   extensionAccess?: ExtensionRouteAccessDecision | null;
 }
 
-/** Generate or load API auth token from ~/.tandem/api-token */
+/** Generate or load API auth token from ~/.zerant/api-token */
 function getOrCreateAuthToken(): string {
-  const baseDir = tandemDir();
+  const baseDir = zerantDir();
   if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
 
   const tokenPath = path.join(baseDir, 'api-token');
@@ -94,18 +94,18 @@ function getOrCreateAuthToken(): string {
 
   const token = crypto.randomBytes(32).toString('hex');
   fs.writeFileSync(tokenPath, token, { mode: 0o600 });
-  log.info('🔑 New API token generated → ~/.tandem/api-token');
+  log.info('🔑 New API token generated → ~/.zerant/api-token');
   return token;
 }
 
-/** Options object for TandemAPI constructor */
-export interface TandemAPIOptions {
+/** Options object for ZerantAPI constructor */
+export interface ZerantAPIOptions {
   win: BrowserWindow;
   port?: number;
   registry: ManagerRegistry;
 }
 
-export class TandemAPI {
+export class ZerantAPI {
   private app: express.Application;
   private server: http.Server | null = null;
   private watchLiveWebSocket: WatchLiveWebSocket | null = null;
@@ -115,7 +115,7 @@ export class TandemAPI {
   private port: number;
   private registry: ManagerRegistry;
 
-  constructor(opts: TandemAPIOptions) {
+  constructor(opts: ZerantAPIOptions) {
     this.win = opts.win;
     this.port = opts.port ?? API_PORT;
     this.registry = opts.registry;
@@ -135,7 +135,7 @@ export class TandemAPI {
         // Block everything else
         callback(new Error('CORS not allowed'));
       },
-      allowedHeaders: ['Authorization', 'Content-Type', 'X-Session', 'X-Tab-Id', 'X-Tandem-Extension-Id', 'Mcp-Session-Id'],
+      allowedHeaders: ['Authorization', 'Content-Type', 'X-Session', 'X-Tab-Id', 'X-Zerant-Extension-Id', 'Mcp-Session-Id'],
       exposedHeaders: ['Mcp-Session-Id'],
     }));
     this.app.use(express.json({ limit: '50mb' }));
@@ -223,7 +223,7 @@ export class TandemAPI {
       }
     }
 
-    const headerToken = req.headers['x-tandem-token'];
+    const headerToken = req.headers['x-zerant-token'];
     if (typeof headerToken === 'string' && headerToken.trim()) {
       return headerToken.trim();
     }
@@ -335,17 +335,17 @@ export class TandemAPI {
       return {
         allowed: false,
         caller,
-        reason: 'Unauthorized — query-string token auth was removed. Use Authorization: Bearer <token>. Token is in ~/.tandem/api-token',
+        reason: 'Unauthorized — query-string token auth was removed. Use Authorization: Bearer <token>. Token is in ~/.zerant/api-token',
         status: 401,
         extensionAccess: null,
       };
     }
 
     const reason = caller.kind === 'shell-internal'
-      ? 'Unauthorized — shell/file callers are no longer auto-trusted. Use Authorization: Bearer <token>. Token is in ~/.tandem/api-token'
+      ? 'Unauthorized — shell/file callers are no longer auto-trusted. Use Authorization: Bearer <token>. Token is in ~/.zerant/api-token'
       : TRUSTED_EXTENSION_HTTP_PATHS.has(req.path)
         ? 'Unauthorized — this route is reserved for installed extension callers or bearer-token clients'
-        : 'Unauthorized — provide Authorization: Bearer <token>. Token is in ~/.tandem/api-token';
+        : 'Unauthorized — provide Authorization: Bearer <token>. Token is in ~/.zerant/api-token';
 
     return {
       allowed: false,
@@ -438,7 +438,7 @@ export class TandemAPI {
   }
 
   private extractClaimedExtensionId(req: Request): string | null {
-    const headerValue = req.headers['x-tandem-extension-id'];
+    const headerValue = req.headers['x-zerant-extension-id'];
     if (Array.isArray(headerValue)) {
       return headerValue[0]?.trim() || null;
     }
@@ -519,7 +519,7 @@ export class TandemAPI {
     registerPairingRoutes(router, ctx);
 
     // Native messaging proxy: route extension connectNative/sendNativeMessage
-    // through Tandem's API since Electron 40 doesn't support them natively.
+    // through Zerant's API since Electron 40 doesn't support them natively.
     nmProxy.registerRoutes(router);
   }
 

@@ -10,7 +10,7 @@
 ## Goal Or This Phase
 
 This phase removes the assumption that `NetworkShield` must parse every local
-blocklist synchronously during startup. Tandem should become usable quickly with
+blocklist synchronously during startup. Zerant should become usable quickly with
 a cached last-known-good snapshot, then hydrate additional in-memory coverage in
 the background and atomically replace the active sets when ready.
 

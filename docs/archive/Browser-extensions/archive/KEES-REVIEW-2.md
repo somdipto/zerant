@@ -51,7 +51,7 @@ Handmatige protobuf parsing is a bekende bron or subtle bugs — a off-by-one in
 
 Voeg a comment toe: "Full RSA signature verification via protobuf requires Phase 1.x — see issue #X." And set `signatureVerified: false` for alle CRX3 installs totdat that built is. Eerlijk and correct.
 
-Kies Optie A if you the claim wilt maken that Tandem "CRX3 signature-verified installs" doet. Kies Optie B if you wilt that Phase 1 within a dag complete is.
+Kies Optie A if you the claim wilt maken that Zerant "CRX3 signature-verified installs" doet. Kies Optie B if you wilt that Phase 1 within a dag complete is.
 
 ---
 
@@ -148,7 +148,7 @@ Dit is documentatie, not code. Maar the voorkomt that toekomstige Claude Code se
 
 **Phase 9 — Atomic update with rollback:** Download → verify → temp extract → swap → load → rollback on failure. Correct. The `.old/` directory approach is the default pattern and works betrouwbaar.
 
-**Phase 10a + 10b — ConflictDetector + DNR Reconciler:** Dit is the conceptueel sterkste onderdeel or the hele plan. Tandem is the enige browser that this niveau or security/extension transparantie bouwt. The overlap analysis ("uBlock blokkeert 245K domains that NetworkShield also already blokkeert") is a unieke capability that you kunt tonen in the UI.
+**Phase 10a + 10b — ConflictDetector + DNR Reconciler:** Dit is the conceptueel sterkste onderdeel or the hele plan. Zerant is the enige browser that this niveau or security/extension transparantie bouwt. The overlap analysis ("uBlock blokkeert 245K domains that NetworkShield also already blokkeert") is a unieke capability that you kunt tonen in the UI.
 
 **CLAUDE.md Security Stack Rules:** Compleet and correct. Inclusief the subtiliteit over extension content scripts that ScriptGuard bypassen — that is the niveau or context that Claude Code nodig has.
 
@@ -159,7 +159,7 @@ Dit is documentatie, not code. Maar the voorkomt that toekomstige Claude Code se
 ## Conclusie
 
 **Start Phase 1.** The plan is implementeerbaar. The enige echte choice that you nu must maken is the CRX3 signature verificatie approach:
-- If you the "Tandem verifies CRX signatures" claim wilt voeren → usage protobufjs (Optie A)
+- If you the "Zerant verifies CRX signatures" claim wilt voeren → usage protobufjs (Optie A)
 - If you snel wilt beginnen and honest wilt are over scope → Optie B (HTTPS integriteit + format check), signature verificatie if follow-up
 
 The rest:

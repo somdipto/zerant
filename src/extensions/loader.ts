@@ -1,7 +1,7 @@
 import type { Session } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { assertChromeExtensionId, assertPathWithinRoot, resolvePathWithinRoot } from '../utils/security';
 
@@ -17,7 +17,7 @@ interface LoadedExtension {
   loadedAt: number;
 }
 
-interface TandemExtensionMeta {
+interface ZerantExtensionMeta {
   runtimeId?: string;
   lastLoadedAt?: string;
   [key: string]: unknown;
@@ -28,7 +28,7 @@ interface TandemExtensionMeta {
 /**
  * ExtensionLoader — Loads unpacked Chrome extensions into the browser session.
  *
- * Extensions are stored in ~/.tandem/extensions/
+ * Extensions are stored in ~/.zerant/extensions/
  * Each subfolder is an unpacked extension with a manifest.json.
  *
  * Uses Electron's session.extensions.loadExtension() API.
@@ -44,13 +44,13 @@ export class ExtensionLoader {
   // === 2. Constructor ===
 
   constructor() {
-    this.extensionsDir = ensureDir(tandemDir('extensions'));
+    this.extensionsDir = ensureDir(zerantDir('extensions'));
   }
 
   // === 4. Public methods ===
 
   /**
-   * Load all extensions from ~/.tandem/extensions/ into the given session.
+   * Load all extensions from ~/.zerant/extensions/ into the given session.
    */
   async loadAllExtensions(ses: Session): Promise<LoadedExtension[]> {
     const results: LoadedExtension[] = [];
@@ -115,7 +115,7 @@ export class ExtensionLoader {
       return existing;
     }
 
-    // Patch manifest CSP to allow connections to Tandem API (http+ws on port 8765).
+    // Patch manifest CSP to allow connections to Zerant API (http+ws on port 8765).
     // This is required for the native messaging proxy polyfill (chrome.runtime.connectNative
     // / sendNativeMessage) to reach http://127.0.0.1:8765 from the extension service worker.
     try {
@@ -145,7 +145,7 @@ export class ExtensionLoader {
     return [...this.loaded];
   }
 
-  /** List available extensions in ~/.tandem/extensions/ (loaded or not) */
+  /** List available extensions in ~/.zerant/extensions/ (loaded or not) */
   listAvailable(): Array<{ name: string; path: string; hasManifest: boolean; loaded: boolean }> {
     const results: Array<{ name: string; path: string; hasManifest: boolean; loaded: boolean }> = [];
 
@@ -181,18 +181,18 @@ export class ExtensionLoader {
   // === 7. Private helpers ===
 
   private getMetaPath(extPath: string): string {
-    return resolvePathWithinRoot(extPath, '.tandem-meta.json');
+    return resolvePathWithinRoot(extPath, '.zerant-meta.json');
   }
 
   private writeRuntimeMetadata(extPath: string, runtimeId: string): void {
     const metaPath = this.getMetaPath(extPath);
-    let meta: TandemExtensionMeta = {};
+    let meta: ZerantExtensionMeta = {};
 
     if (fs.existsSync(metaPath)) {
       try {
         const parsed = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-          meta = parsed as TandemExtensionMeta;
+          meta = parsed as ZerantExtensionMeta;
         }
       } catch {
         meta = {};

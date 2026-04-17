@@ -1,11 +1,11 @@
 # Wingman Vision — Real-Time Activity Stream to OpenClaw
 
 ## Goal
-Give Kees (AI wingman on OpenClaw) real-time awareness or what Robin does in Tandem. Currently Kees is blind unless he actively polls. After this: Tandem pushes activity events via webhook so Kees sees everything as it happens.
+Give Kees (AI wingman on OpenClaw) real-time awareness or what Robin does in Zerant. Currently Kees is blind unless he actively polls. After this: Zerant pushes activity events via webhook so Kees sees everything as it happens.
 
 ## Architecture
 Same pattern as the existing chat bridge webhook in `PanelManager.fireWebhook()`:
-- Tandem fires HTTP POST to `http://127.0.0.1:18789/api/sessions/main/events`
+- Zerant fires HTTP POST to `http://127.0.0.1:18789/api/sessions/main/events`
 - Events are lightweight JSON, debounced where needed
 - Non-blocking, silent fail if OpenClaw is not running
 
@@ -86,7 +86,7 @@ export class WingmanStream {
             eventType: event.type,
             tabId: event.tabId,
             timestamp: event.timestamp,
-            source: 'tandem-browser',
+            source: 'zerant-browser',
             ...event.data,
           },
         }),
@@ -111,23 +111,23 @@ export class WingmanStream {
   private formatEventText(event: WingmanEvent): string {
     switch (event.type) {
       case 'tab-switched':
-        return `[Tandem] Robin switched to tab: ${event.data.title} (${event.data.url})`;
+        return `[Zerant] Robin switched to tab: ${event.data.title} (${event.data.url})`;
       case 'navigated':
-        return `[Tandem] Robin navigated to: ${event.data.url} (${event.data.title})`;
+        return `[Zerant] Robin navigated to: ${event.data.url} (${event.data.title})`;
       case 'page-loaded':
-        return `[Tandem] Page loaded: ${event.data.title} (${event.data.url}) in ${event.data.loadTimeMs}ms`;
+        return `[Zerant] Page loaded: ${event.data.title} (${event.data.url}) in ${event.data.loadTimeMs}ms`;
       case 'tab-opened':
-        return `[Tandem] Robin opened new tab: ${event.data.url}`;
+        return `[Zerant] Robin opened new tab: ${event.data.url}`;
       case 'tab-closed':
-        return `[Tandem] Robin closed tab: ${event.data.title} (${event.data.url})`;
+        return `[Zerant] Robin closed tab: ${event.data.title} (${event.data.url})`;
       case 'text-selected':
-        return `[Tandem] Robin selected text on ${event.data.url}: "${event.data.text}"`;
+        return `[Zerant] Robin selected text on ${event.data.url}: "${event.data.text}"`;
       case 'scroll-position':
-        return `[Tandem] Robin scrolled to ${event.data.scrollPercent}% on ${event.data.url}`;
+        return `[Zerant] Robin scrolled to ${event.data.scrollPercent}% on ${event.data.url}`;
       case 'form-interaction':
-        return `[Tandem] Robin interacting with ${event.data.fieldType} field "${event.data.fieldName}" on ${event.data.url}`;
+        return `[Zerant] Robin interacting with ${event.data.fieldType} field "${event.data.fieldName}" on ${event.data.url}`;
       default:
-        return `[Tandem] Activity: ${event.type}`;
+        return `[Zerant] Activity: ${event.type}`;
     }
   }
 
@@ -148,7 +148,7 @@ export class WingmanStream {
 
 ### Step 2: Add config option
 
-In `src/config/manager.ts`, add to the `webhook` section or `TandemConfig`:
+In `src/config/manager.ts`, add to the `webhook` section or `ZerantConfig`:
 
 ```typescript
 webhook: {
@@ -418,7 +418,7 @@ this.app.get('/wingman-stream/status', (req: Request, res: Response) => {
 ```
 
 ## Testing
-1. Start Tandem with `npm start`
+1. Start Zerant with `npm start`
 2. Check OpenClaw is running on 18789
 3. Browse normally — switch tabs, navigate, select text, scroll
 4. Kees should receive events as system events in the main session

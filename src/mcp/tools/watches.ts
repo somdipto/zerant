@@ -7,7 +7,7 @@ const watchDiffModeSchema = z.enum(['content', 'title', 'title-or-content', 'tex
 
 export function registerWatchTools(server: McpServer): void {
   server.tool(
-    'tandem_watch_list',
+    'zerant_watch_list',
     'List all website watches (site monitoring)',
     async () => {
       const data = await apiCall('GET', '/watch/list');
@@ -17,7 +17,7 @@ export function registerWatchTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_watch_add',
+    'zerant_watch_add',
     'Add a website to the watch list for monitoring changes',
     coerceShape({
       url: z.string().describe('URL to monitor'),
@@ -32,7 +32,7 @@ export function registerWatchTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_watch_remove',
+    'zerant_watch_remove',
     'Remove a website from the watch list',
     {
       url: z.string().optional().describe('URL of the watch to remove'),
@@ -51,7 +51,7 @@ export function registerWatchTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_watch_check',
+    'zerant_watch_check',
     'Force an immediate check of a watched website for changes',
     {
       url: z.string().optional().describe('URL of the watch to check'),

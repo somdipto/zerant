@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerDeviceTools(server: McpServer): void {
   server.tool(
-    'tandem_device_profiles',
+    'zerant_device_profiles',
     'List all available device emulation profiles (e.g. iPhone, iPad, Pixel).',
     async () => {
       const data = await apiCall('GET', '/device/profiles');
@@ -15,7 +15,7 @@ export function registerDeviceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_device_status',
+    'zerant_device_status',
     'Get the current device emulation status for the active tab.',
     async () => {
       const data = await apiCall('GET', '/device/status');
@@ -25,10 +25,10 @@ export function registerDeviceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_device_emulate',
+    'zerant_device_emulate',
     'Emulate a device in the active tab. Provide a profile name OR custom dimensions (width + height).',
     coerceShape({
-      device: z.string().optional().describe('Device profile name (e.g. "iPhone 15 Pro"). Use tandem_device_profiles to list available profiles.'),
+      device: z.string().optional().describe('Device profile name (e.g. "iPhone 15 Pro"). Use zerant_device_profiles to list available profiles.'),
       width: z.number().optional().describe('Custom viewport width in pixels'),
       height: z.number().optional().describe('Custom viewport height in pixels'),
       deviceScaleFactor: z.number().optional().describe('Device scale factor (e.g. 2 for retina)'),
@@ -50,7 +50,7 @@ export function registerDeviceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_device_reset',
+    'zerant_device_reset',
     'Reset device emulation on the active tab back to normal desktop mode.',
     async () => {
       const data = await apiCall('POST', '/device/reset');

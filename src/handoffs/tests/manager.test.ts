@@ -19,7 +19,7 @@ vi.mock('fs', () => {
 
 vi.mock('../../utils/paths', () => ({
   ensureDir: vi.fn(),
-  tandemDir: vi.fn((...parts: string[]) => `/tmp/tandem/${parts.join('/')}`),
+  zerantDir: vi.fn((...parts: string[]) => `/tmp/zerant/${parts.join('/')}`),
 }));
 
 import fs from 'fs';
@@ -143,7 +143,7 @@ describe('HandoffManager', () => {
       open: false,
     }));
     expect(vi.mocked(fs.writeFileSync)).toHaveBeenCalledWith(
-      '/tmp/tandem/handoffs.json',
+      '/tmp/zerant/handoffs.json',
       expect.stringContaining('"status": "resolved"'),
     );
   });
@@ -222,6 +222,6 @@ describe('HandoffManager', () => {
     const manager = new HandoffManager();
 
     expect(manager.list()).toEqual([]);
-    expect(vi.mocked(fs.readFileSync)).toHaveBeenCalledWith('/tmp/tandem/handoffs.json', 'utf-8');
+    expect(vi.mocked(fs.readFileSync)).toHaveBeenCalledWith('/tmp/zerant/handoffs.json', 'utf-8');
   });
 });

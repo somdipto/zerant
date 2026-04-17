@@ -104,6 +104,6 @@ Types: `refactor` for Phase 0, `feat` for Phase 1-5.
 - **Banking/login domains** auto-elevated to strict
 - **Trust scores:** 0-100, new domains start at 30 ("unknown"), up slowly (+1), down fast (-10/-15), never above 90 without user action
 - **WebSocket** for real-time AI agent communication (Phase 4)
-- **All code in TypeScript**, matching Tandem's existing style
+- **All code in TypeScript**, matching Zerant's existing style
 - **RequestDispatcher** for all webRequest hooks (Phase 0 — Electron limitation)
 - **DevToolsManager subscribers** for all CDP access (Phase 3 — singleton debugger)

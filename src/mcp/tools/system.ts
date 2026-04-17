@@ -4,7 +4,7 @@ import { apiCall } from '../api-client.js';
 
 export function registerSystemTools(server: McpServer): void {
   server.tool(
-    'tandem_pick_folder',
+    'zerant_pick_folder',
     'Open a native folder picker dialog. Returns the selected folder path or indicates cancellation.',
     async () => {
       const data = await apiCall('POST', '/dialog/pick-folder');
@@ -13,8 +13,8 @@ export function registerSystemTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_injection_override',
-    'Temporarily override content script injection security for a domain. Use when a site blocks Tandem scripts.',
+    'zerant_injection_override',
+    'Temporarily override content script injection security for a domain. Use when a site blocks Zerant scripts.',
     {
       domain: z.string().describe('Domain to allow injection override for (e.g. "example.com")'),
     },
@@ -25,7 +25,7 @@ export function registerSystemTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_google_photos_status',
+    'zerant_google_photos_status',
     'Get the current Google Photos integration status and configuration.',
     async () => {
       const data = await apiCall('GET', '/integrations/google-photos/status');
@@ -34,7 +34,7 @@ export function registerSystemTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_google_photos_connect',
+    'zerant_google_photos_connect',
     'Initiate Google Photos OAuth connection. Returns an auth URL to complete the flow.',
     {
       clientId: z.string().optional().describe('Optional Google OAuth client ID'),
@@ -48,7 +48,7 @@ export function registerSystemTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_google_photos_disconnect',
+    'zerant_google_photos_disconnect',
     'Disconnect the Google Photos integration.',
     async () => {
       const data = await apiCall('POST', '/integrations/google-photos/disconnect');
@@ -57,7 +57,7 @@ export function registerSystemTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_google_photos_config',
+    'zerant_google_photos_config',
     'Update Google Photos integration configuration.',
     {
       clientId: z.string().optional().describe('Google OAuth client ID to configure'),

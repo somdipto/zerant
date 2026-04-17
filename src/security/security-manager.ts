@@ -517,7 +517,7 @@ export class SecurityManager {
     // Script analysis alone (high entropy, rule matches on minified JS) produces too many false
     // positives on legitimate news sites and SPAs. Log the anomaly for visibility but do NOT
     // activate containment — that requires confirmed behavioral evidence (behavior-critical).
-    // Containment on script-analysis alone makes Tandem unusable on the modern web.
+    // Containment on script-analysis alone makes Zerant unusable on the modern web.
     this.gatekeeperWs?.sendAnomaly({
       domain: detection.domain,
       metric: 'script_threat_score',
@@ -541,7 +541,7 @@ export class SecurityManager {
       trigger: 'behavior-critical',
       reason: 'Crypto-miner style runtime behavior detected',
       actionSummary: 'JavaScript execution was terminated for the tab, future network requests are quarantined, and the site was forced into strict mode.',
-      reviewMessage: 'Tandem detected sustained CPU usage with WebAssembly activity and stopped page execution. Review the tab before interacting with it again.',
+      reviewMessage: 'Zerant detected sustained CPU usage with WebAssembly activity and stopped page execution. Review the tab before interacting with it again.',
       detection: {
         reason: detection.reason,
         cpuUsage: Math.round(detection.metrics.cpuUsage * 100),

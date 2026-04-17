@@ -73,8 +73,8 @@ export class ContextMenuBuilder {
     this.addSeparator(menu);
     this.addToolItems(menu, params, wc);
 
-    // Phase 5: Tandem-specific items (Wingman AI, Bookmark, Screenshot)
-    this.addTandemItems(menu, params, wc);
+    // Phase 5: Zerant-specific items (Wingman AI, Bookmark, Screenshot)
+    this.addZerantItems(menu, params, wc);
 
     // Phase 7: Pinboard items
     this.addPinboardItems(menu, params, wc);
@@ -375,10 +375,10 @@ export class ContextMenuBuilder {
     }
   }
 
-  // ═══ Phase 5: Tandem-specific Items ═══
+  // ═══ Phase 5: Zerant-specific Items ═══
 
   /** Wingman AI integration, Quick Bookmark, Screenshot */
-  private addTandemItems(menu: Menu, params: ContextMenuParams, wc: WebContents): void {
+  private addZerantItems(menu: Menu, params: ContextMenuParams, wc: WebContents): void {
     this.addSeparator(menu);
 
     // Wingman AI items
@@ -532,7 +532,7 @@ export class ContextMenuBuilder {
             }
             if (!wc.isDestroyed()) {
               void wc.executeJavaScript(`
-                window.dispatchEvent(new CustomEvent('tandem-quick-links-changed'));
+                window.dispatchEvent(new CustomEvent('zerant-quick-links-changed'));
               `).catch(() => {});
             }
           },

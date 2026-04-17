@@ -159,7 +159,7 @@ describe('Extension ID Extraction', () => {
 });
 
 describe('Extension path validation', () => {
-  it('rejects loading extensions outside the Tandem extensions directory', async () => {
+  it('rejects loading extensions outside the Zerant extensions directory', async () => {
     const loader = new ExtensionLoader();
     const sessionMock = {
       extensions: {
@@ -170,7 +170,7 @@ describe('Extension path validation', () => {
     await expect(loader.loadExtension(sessionMock, '/tmp/not-allowed')).rejects.toThrow('Path escapes root directory');
   });
 
-  it('refuses to patch manifest CSP outside the Tandem extensions directory', () => {
+  it('refuses to patch manifest CSP outside the Zerant extensions directory', () => {
     expect(nmProxy.patchManifestCSP('/tmp/manifest.json')).toBe(false);
   });
 });
@@ -253,7 +253,7 @@ describe('CRX Extraction', () => {
       .extractCrx(buffer, extensionId, format);
 
   beforeEach(() => {
-    tempDir = path.join(os.homedir(), '.tandem', 'extensions');
+    tempDir = path.join(os.homedir(), '.zerant', 'extensions');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
     }
@@ -459,12 +459,12 @@ describe('Chrome Importer', () => {
 
 // ─── Integration Tests (require network) ──────────────────────────────────────
 
-const RUN_NETWORK_TESTS = process.env.TANDEM_NETWORK_TESTS === 'true';
+const RUN_NETWORK_TESTS = process.env.ZERANT_NETWORK_TESTS === 'true';
 
 describe.skipIf(!RUN_NETWORK_TESTS)('Extension Install Flow (network)', () => {
   const downloader = new CrxDownloader();
   const testExtId = 'gpmodmeblccallcadopbcoeoejepgpnb'; // JSON Formatter (small, fast)
-  const installPath = path.join(os.homedir(), '.tandem', 'extensions', testExtId);
+  const installPath = path.join(os.homedir(), '.zerant', 'extensions', testExtId);
 
   afterAll(() => {
     // Clean up test download

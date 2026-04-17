@@ -57,7 +57,7 @@ try {
     const os = require('os');
     const swCacheDir = path.join(
         os.homedir(),
-        'Library', 'Application Support', 'tandem-browser',
+        'Library', 'Application Support', 'zerant-browser',
         'Partitions', 'tandem', 'Service Worker', 'ScriptCache'
     );
     const extDir = path.join(os.homedir(), '.tandem', 'extensions');
@@ -93,7 +93,7 @@ try {
     // Non-fatal — cache will just be used as-is
 }
 
-console.log('[run-electron] Starting Tandem Browser...');
+console.log('[run-electron] Starting Zerant Browser...');
 
 const child = spawn(electronPath, ['.'], {
     stdio: 'inherit',

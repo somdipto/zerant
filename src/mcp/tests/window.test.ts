@@ -30,8 +30,8 @@ describe('MCP window tools', () => {
     vi.useRealTimers();
   });
 
-  describe('tandem_research', () => {
-    const handler = getHandler(tools, 'tandem_research');
+  describe('zerant_research', () => {
+    const handler = getHandler(tools, 'zerant_research');
 
     /** Helper: run handler and advance all fake timers while the promise is pending. */
     async function runHandler(args: Record<string, unknown>) {

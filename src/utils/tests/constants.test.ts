@@ -30,8 +30,8 @@ describe('WEBHOOK_PORT', () => {
 });
 
 describe('DEFAULT_PARTITION', () => {
-  it('is persist:tandem', () => {
-    expect(DEFAULT_PARTITION).toBe('persist:tandem');
+  it('is persist:zerant', () => {
+    expect(DEFAULT_PARTITION).toBe('persist:zerant');
   });
 
   it('starts with persist: prefix', () => {

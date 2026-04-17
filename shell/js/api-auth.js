@@ -3,7 +3,7 @@
     return;
   }
 
-  let cachedToken = window.__TANDEM_TOKEN__ || '';
+  let cachedToken = window.__ZERANT_TOKEN__ || '';
   let tokenPromise = null;
 
   async function sleep(ms) {
@@ -17,10 +17,10 @@
 
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
-        const token = await window.tandem?.getApiToken?.();
+        const token = await window.zerant?.getApiToken?.();
         if (typeof token === 'string' && token.trim()) {
           cachedToken = token.trim();
-          window.__TANDEM_TOKEN__ = cachedToken;
+          window.__ZERANT_TOKEN__ = cachedToken;
           return cachedToken;
         }
       } catch {
@@ -47,7 +47,7 @@
     return tokenPromise;
   }
 
-  function isLocalTandemApiUrl(input) {
+  function isLocalZerantApiUrl(input) {
     const rawUrl = typeof input === 'string'
       ? input
       : input instanceof URL
@@ -68,7 +68,7 @@
 
   const originalFetch = window.fetch.bind(window);
   window.fetch = async (input, init) => {
-    if (!isLocalTandemApiUrl(input)) {
+    if (!isLocalZerantApiUrl(input)) {
       return originalFetch(input, init);
     }
 

@@ -1,6 +1,6 @@
 # Chrome Extension Support Project
 
-> Add full Chrome Web Store extension support to Tandem: download, verify, install, manage, and browse a curated gallery — all without leaving the browser.
+> Add full Chrome Web Store extension support to Zerant: download, verify, install, manage, and browse a curated gallery — all without leaving the browser.
 
 **Start:** TBD
 **Status:** Not started
@@ -15,7 +15,7 @@
 
 **The gap:** Users can't install extensions. They'd have to manually download, unzip, and place them in `~/.tandem/extensions/`. Nobody will do that.
 
-**The solution:** Build the full installation pipeline with CRX signature verification, a toolbar UI for extension popups, auto-updates via Google's Update Protocol, and conflict detection with Tandem's security stack.
+**The solution:** Build the full installation pipeline with CRX signature verification, a toolbar UI for extension popups, auto-updates via Google's Update Protocol, and conflict detection with Zerant's security stack.
 
 ## How It Works
 
@@ -69,7 +69,7 @@ Based on security review and architectural analysis:
 3. **Google Update Protocol** (Phase 9) — checks versions without downloading full CRX (saves bandwidth)
 4. **DNR reconciliation** (Phase 10b) — actively measures security telemetry gaps from ad-blocker extensions
 5. **Chrome import auto-update registration** (Phase 3/9) — imported extensions don't become permanently stale
-6. **Keyboard shortcut conflict detection** (Phase 10a) — prevents extension shortcuts overriding Tandem
+6. **Keyboard shortcut conflict detection** (Phase 10a) — prevents extension shortcuts overriding Zerant
 7. **Electron API compatibility matrix** (TOP30) — documents which APIs work per extension, not just "loads OK"
 
 ## Compatibility Summary

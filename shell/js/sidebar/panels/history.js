@@ -86,7 +86,7 @@ function attachHistoryClickHandlers(listEl) {
   listEl.querySelectorAll('.bm-item.url').forEach(el => {
     el.addEventListener('click', () => {
       const url = el.dataset.url;
-      if (url && window.tandem) window.tandem.newTab(url);
+      if (url && window.zerant) window.zerant.newTab(url);
     });
   });
 }
@@ -121,7 +121,7 @@ async function loadSyncDevices() {
     list.querySelectorAll('.sync-tab-item').forEach(el => {
       el.addEventListener('click', () => {
         const url = el.dataset.url;
-        if (url && window.tandem) window.tandem.newTab(url);
+        if (url && window.zerant) window.zerant.newTab(url);
       });
     });
   } catch {

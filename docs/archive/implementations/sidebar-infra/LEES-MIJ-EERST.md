@@ -9,7 +9,7 @@
 
 ## Why This Project?
 
-Tandem does not have a left sidebar yet. All planned features (Workspaces, Messengers, Personal News, Pinboards, Bookmarks, History, Downloads) need to live in one uniform, configurable sidebar, not as separate ad hoc icon strips. This builds the foundation.
+Zerant does not have a left sidebar yet. All planned features (Workspaces, Messengers, Personal News, Pinboards, Bookmarks, History, Downloads) need to live in one uniform, configurable sidebar, not as separate ad hoc icon strips. This builds the foundation.
 
 ---
 

@@ -25,7 +25,7 @@ vi.mock('fs', () => ({
 }));
 
 vi.mock('../../utils/paths', () => ({
-  tandemDir: () => '/tmp/tandem-test',
+  zerantDir: () => '/tmp/zerant-test',
 }));
 
 import { registerPreviewRoutes } from '../../routes/previews';

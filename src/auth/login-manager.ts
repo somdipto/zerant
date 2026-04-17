@@ -1,7 +1,7 @@
 import type { BrowserWindow } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('LoginManager');
@@ -47,7 +47,7 @@ export class LoginManager {
 
   // === 2. Constructor ===
   constructor() {
-    const authDir = tandemDir('auth');
+    const authDir = zerantDir('auth');
     if (!fs.existsSync(authDir)) {
       fs.mkdirSync(authDir, { recursive: true });
     }

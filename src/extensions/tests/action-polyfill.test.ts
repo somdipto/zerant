@@ -10,7 +10,7 @@ describe('ActionPolyfill', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tandem-action-polyfill-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zerant-action-polyfill-test-'));
   });
 
   afterEach(() => {
@@ -20,7 +20,7 @@ describe('ActionPolyfill', () => {
   describe('injectPolyfills()', () => {
     it('returns empty array when extensions dir does not exist', () => {
       const polyfill = new ActionPolyfill();
-      // Default tandemDir points to ~/.tandem/extensions — may or may not exist.
+      // Default zerantDir points to ~/.zerant/extensions — may or may not exist.
       // We verify the call does not throw.
       expect(() => polyfill.injectPolyfills()).not.toThrow();
     });
@@ -44,7 +44,7 @@ describe('ActionPolyfill', () => {
 
       // Verify the polyfill logic by simulating what injectPolyfills does
       const swPath = path.join(extPath, 'background.js');
-      const marker = '/* Tandem chrome.action polyfill v5';
+      const marker = '/* Zerant chrome.action polyfill v5';
 
       // Simulate what injectPolyfills does
       const polyfillCode = `\n${marker} — injected at load time */\n(function() { if(chrome.action) return; chrome.action = {}; })();\n`;
@@ -63,7 +63,7 @@ describe('ActionPolyfill', () => {
       const extPath = path.join(extDir, extId);
       fs.mkdirSync(extPath);
 
-      const marker = '/* Tandem chrome.action polyfill v5';
+      const marker = '/* Zerant chrome.action polyfill v5';
       const alreadyPatched = `${marker} — injected at load time */\n(function(){})()\nconsole.log("sw");`;
 
       fs.writeFileSync(path.join(extPath, 'manifest.json'), JSON.stringify({
@@ -78,7 +78,7 @@ describe('ActionPolyfill', () => {
       const content = fs.readFileSync(path.join(extPath, 'background.js'), 'utf-8');
       expect(content).toContain(marker);
       // Count occurrences — should be exactly 1
-      const occurrences = (content.match(/\/\* Tandem chrome\.action polyfill/g) || []).length;
+      const occurrences = (content.match(/\/\* Zerant chrome\.action polyfill/g) || []).length;
       expect(occurrences).toBe(1);
     });
 
@@ -102,7 +102,7 @@ describe('ActionPolyfill', () => {
       // MV2 extensions should not be patched
       const content = fs.readFileSync(path.join(extPath, 'background.js'), 'utf-8');
       expect(content).toBe(originalContent);
-      expect(content).not.toContain('Tandem chrome.action polyfill');
+      expect(content).not.toContain('Zerant chrome.action polyfill');
     });
 
     it('skips extensions without service workers', () => {
@@ -143,7 +143,7 @@ describe('ActionPolyfill', () => {
       expect(src).toContain('setBadgeBackgroundColor');
       expect(src).toContain('enable');
       expect(src).toContain('disable');
-      expect(src).toContain('function __tandemExtensionHeaders(extraHeaders)');
+      expect(src).toContain('function __zerantExtensionHeaders(extraHeaders)');
     });
 
     it('polyfill script has idempotency guard', () => {
@@ -171,7 +171,7 @@ describe('ActionPolyfill', () => {
       expect(src).toContain('isOnToolbar: true');
     });
 
-    it('uses Tandem API port from constructor for badge/icon endpoints', () => {
+    it('uses Zerant API port from constructor for badge/icon endpoints', () => {
       const src = fs.readFileSync(
         path.join(__dirname, '../action-polyfill.ts'),
         'utf-8'
@@ -185,9 +185,9 @@ describe('ActionPolyfill', () => {
         path.join(__dirname, '../action-polyfill.ts'),
         'utf-8'
       );
-      const markerVersion = src.match(/const marker = '\/\* Tandem chrome\.action polyfill v(\d+)'/);
+      const markerVersion = src.match(/const marker = '\/\* Zerant chrome\.action polyfill v(\d+)'/);
       expect(markerVersion).not.toBeNull();
-      expect(src).toContain(`/* Tandem chrome.action polyfill v${markerVersion![1]}`);
+      expect(src).toContain(`/* Zerant chrome.action polyfill v${markerVersion![1]}`);
     });
 
     it('rewrites direct 1Password patches to use inline extension headers', () => {
@@ -207,8 +207,8 @@ describe('ActionPolyfill', () => {
         'utf-8'
       );
       expect(src).toContain('function stripInjectedPolyfillArtifacts(source: string)');
-      expect(src).toContain('var TANDEM_PORT; TANDEM_PORT = \\d+; \\/\\/ used by P\\$\\(\\) patch below');
-      expect(src).toContain('/* Tandem:polyfill:end */');
+      expect(src).toContain('var ZERANT_PORT; ZERANT_PORT = \\d+; \\/\\/ used by P\\$\\(\\) patch below');
+      expect(src).toContain('/* Zerant:polyfill:end */');
     });
   });
 

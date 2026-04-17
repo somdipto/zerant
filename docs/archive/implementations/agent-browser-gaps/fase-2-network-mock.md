@@ -1,6 +1,6 @@
 # Phase 2 — /network/mock: Request Interceptie & Mocking
 
-> **Goal:** Tandem API shows toe to network requests te intercepten, blokkeren or mocken.
+> **Goal:** Zerant API shows toe to network requests te intercepten, blokkeren or mocken.
 > **Sessions:** 1 (alles in a session)
 > **Requires:** Phase 1 compleet (CDP pattern already bekend)
 
@@ -152,10 +152,10 @@ await this.devtools.sendCommand('Fetch.fulfillRequest', {
 
 ## Manager Wiring (verplicht)
 
-### 1. `src/api/server.ts` — TandemAPIOptions interface (regel ~64)
+### 1. `src/api/server.ts` — ZerantAPIOptions interface (regel ~64)
 
 ```typescript
-export interface TandemAPIOptions {
+export interface ZerantAPIOptions {
   // ... existing velden ...
   networkMocker: NetworkMocker;
 }
@@ -169,7 +169,7 @@ Plus private field + constructor toewijzing.
 // NA devToolsManager aanmaken:
 const networkMocker = new NetworkMocker(devToolsManager!);
 
-// In new TandemAPI({...}):
+// In new ZerantAPI({...}):
 networkMocker: networkMocker!,
 ```
 
@@ -257,7 +257,7 @@ POST /network/unroute → same if POST /network/unmock
 
 1. Maak `src/network/types.ts`
 2. Maak `src/network/mocker.ts` — class skelet
-3. **Manager Wiring:** TandemAPIOptions, startAPI(), will-quit
+3. **Manager Wiring:** ZerantAPIOptions, startAPI(), will-quit
 4. Implementeer `enableFetch()` — `this.devtools.sendCommand('Fetch.enable', {patterns:[{urlPattern:"*",requestStage:"Request"}]})`
 5. Implementeer CDP subscriber for `Fetch.requestPaused` events (via `devtools.subscribe()`)
 6. Implementeer `matchRule()` + `globMatch()`
@@ -340,4 +340,4 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:8765/network/log \
 **Wiring:**
 
 - ❌ Only endpoint add about server.ts and vergeten the manager te registreren
-- ✅ Altijd 3 plekken: TandemAPIOptions, startAPI(), will-quit
+- ✅ Altijd 3 plekken: ZerantAPIOptions, startAPI(), will-quit

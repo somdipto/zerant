@@ -31,7 +31,7 @@ tracker blocker.
 
 ### 1. Add curated feeds
 
-**What:** Add structured feeds that fit Tandem's core security scope, such as
+**What:** Add structured feeds that fit Zerant's core security scope, such as
 OpenPhish, ThreatFox, and a proper PhishTank-compatible source if still
 valuable.
 

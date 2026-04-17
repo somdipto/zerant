@@ -23,9 +23,9 @@ describe('MCP snapshot tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_snapshot ───────────────────────────────────────────────
-  describe('tandem_snapshot', () => {
-    const handler = getHandler(tools, 'tandem_snapshot');
+  // ── zerant_snapshot ───────────────────────────────────────────────
+  describe('zerant_snapshot', () => {
+    const handler = getHandler(tools, 'zerant_snapshot');
 
     it('returns the accessibility tree', async () => {
       mockApiCall.mockResolvedValueOnce({ snapshot: '<tree>...</tree>', count: 42 });
@@ -68,9 +68,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_snapshot_click ─────────────────────────────────────────
-  describe('tandem_snapshot_click', () => {
-    const handler = getHandler(tools, 'tandem_snapshot_click');
+  // ── zerant_snapshot_click ─────────────────────────────────────────
+  describe('zerant_snapshot_click', () => {
+    const handler = getHandler(tools, 'zerant_snapshot_click');
 
     it('clicks an element by ref', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-1' }, completion: { mode: 'confirmed' } });
@@ -98,9 +98,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_snapshot_fill ──────────────────────────────────────────
-  describe('tandem_snapshot_fill', () => {
-    const handler = getHandler(tools, 'tandem_snapshot_fill');
+  // ── zerant_snapshot_fill ──────────────────────────────────────────
+  describe('zerant_snapshot_fill', () => {
+    const handler = getHandler(tools, 'zerant_snapshot_fill');
 
     it('fills an input by ref', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-1' }, completion: { mode: 'confirmed' } });
@@ -120,9 +120,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_snapshot_text ──────────────────────────────────────────
-  describe('tandem_snapshot_text', () => {
-    const handler = getHandler(tools, 'tandem_snapshot_text');
+  // ── zerant_snapshot_text ──────────────────────────────────────────
+  describe('zerant_snapshot_text', () => {
+    const handler = getHandler(tools, 'zerant_snapshot_text');
 
     it('returns text content of element', async () => {
       mockApiCall.mockResolvedValueOnce({ text: 'Hello World' });
@@ -150,9 +150,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_find ───────────────────────────────────────────────────
-  describe('tandem_find', () => {
-    const handler = getHandler(tools, 'tandem_find');
+  // ── zerant_find ───────────────────────────────────────────────────
+  describe('zerant_find', () => {
+    const handler = getHandler(tools, 'zerant_find');
 
     it('finds elements by semantic locator', async () => {
       mockApiCall.mockResolvedValueOnce({ ref: '@e5', tag: 'button' });
@@ -164,9 +164,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_find_click ─────────────────────────────────────────────
-  describe('tandem_find_click', () => {
-    const handler = getHandler(tools, 'tandem_find_click');
+  // ── zerant_find_click ─────────────────────────────────────────────
+  describe('zerant_find_click', () => {
+    const handler = getHandler(tools, 'zerant_find_click');
 
     it('finds and clicks an element', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-7' }, completion: { mode: 'confirmed' } });
@@ -177,9 +177,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_find_fill ──────────────────────────────────────────────
-  describe('tandem_find_fill', () => {
-    const handler = getHandler(tools, 'tandem_find_fill');
+  // ── zerant_find_fill ──────────────────────────────────────────────
+  describe('zerant_find_fill', () => {
+    const handler = getHandler(tools, 'zerant_find_fill');
 
     it('finds and fills an input', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-8' }, completion: { mode: 'confirmed' } });
@@ -195,9 +195,9 @@ describe('MCP snapshot tools', () => {
     });
   });
 
-  // ── tandem_find_all ───────────────────────────────────────────────
-  describe('tandem_find_all', () => {
-    const handler = getHandler(tools, 'tandem_find_all');
+  // ── zerant_find_all ───────────────────────────────────────────────
+  describe('zerant_find_all', () => {
+    const handler = getHandler(tools, 'zerant_find_all');
 
     it('finds all matching elements', async () => {
       mockApiCall.mockResolvedValueOnce({ matches: [{ ref: '@e1' }, { ref: '@e2' }] });

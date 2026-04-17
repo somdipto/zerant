@@ -31,7 +31,7 @@ function readPackageVersion(): string {
 }
 
 const server = new McpServer({
-  name: 'tandem-browser',
+  name: 'zerant-browser',
   version: readPackageVersion(),
 });
 
@@ -49,7 +49,7 @@ registerAllResources(server);
 function startEventListener(): void {
   const token = (() => {
     try {
-      const tokenPath = require('path').join(require('os').homedir(), '.tandem', 'api-token');
+      const tokenPath = require('path').join(require('os').homedir(), '.zerant', 'api-token');
       return require('fs').readFileSync(tokenPath, 'utf-8').trim();
     } catch { return ''; }
   })();
@@ -87,14 +87,14 @@ function startEventListener(): void {
               const event = JSON.parse(line.slice(6));
               // Send MCP notifications for meaningful events
               if (['navigation', 'page-loaded', 'tab-focused', 'handoff-created', 'handoff-updated'].includes(event.type)) {
-                server.server.sendResourceUpdated({ uri: 'tandem://page/current' }).catch(e => log.warn('sendResourceUpdated page/current failed:', e instanceof Error ? e.message : e));
-                server.server.sendResourceUpdated({ uri: 'tandem://context' }).catch(e => log.warn('sendResourceUpdated context failed:', e instanceof Error ? e.message : e));
+                server.server.sendResourceUpdated({ uri: 'zerant://page/current' }).catch(e => log.warn('sendResourceUpdated page/current failed:', e instanceof Error ? e.message : e));
+                server.server.sendResourceUpdated({ uri: 'zerant://context' }).catch(e => log.warn('sendResourceUpdated context failed:', e instanceof Error ? e.message : e));
               }
               if (['tab-opened', 'tab-closed', 'tab-focused'].includes(event.type)) {
-                server.server.sendResourceUpdated({ uri: 'tandem://tabs/list' }).catch(e => log.warn('sendResourceUpdated tabs/list failed:', e instanceof Error ? e.message : e));
+                server.server.sendResourceUpdated({ uri: 'zerant://tabs/list' }).catch(e => log.warn('sendResourceUpdated tabs/list failed:', e instanceof Error ? e.message : e));
               }
               if (['handoff-created', 'handoff-updated'].includes(event.type)) {
-                server.server.sendResourceUpdated({ uri: 'tandem://handoffs/open' }).catch(e => log.warn('sendResourceUpdated handoffs/open failed:', e instanceof Error ? e.message : e));
+                server.server.sendResourceUpdated({ uri: 'zerant://handoffs/open' }).catch(e => log.warn('sendResourceUpdated handoffs/open failed:', e instanceof Error ? e.message : e));
               }
             } catch {
               // Ignore parse errors (comments, heartbeats)
@@ -110,12 +110,12 @@ function startEventListener(): void {
 
       void read();
     }).catch(() => {
-      // Tandem not running yet, retry
+      // Zerant not running yet, retry
       setTimeout(connect, 5000);
     });
   };
 
-  // Start with a delay to let Tandem boot up
+  // Start with a delay to let Zerant boot up
   setTimeout(connect, 2000);
 }
 
@@ -126,7 +126,7 @@ function startEventListener(): void {
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  log.info('Tandem MCP server started (stdio transport)');
+  log.info('Zerant MCP server started (stdio transport)');
 
   // Start SSE listener for live notifications
   startEventListener();

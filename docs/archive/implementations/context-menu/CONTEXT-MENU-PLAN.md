@@ -1,4 +1,4 @@
-# Context Menu Implementatie Plan — Tandem Browser
+# Context Menu Implementatie Plan — Zerant Browser
 
 > **Status:** COMPLETE
 > **Last update:** 2026-02-18
@@ -15,7 +15,7 @@
 | 2 | Link, Image & Selectie Menu | ✅ DONE | 2026-02-18 |
 | 3 | Input/Tekstveld Context Menu | ✅ DONE | 2026-02-18 |
 | 4 | Tab Context Menu | ✅ DONE | 2026-02-18 |
-| 5 | Tandem-specific Items (Kees AI) | ✅ DONE | 2026-02-18 |
+| 5 | Zerant-specific Items (Kees AI) | ✅ DONE | 2026-02-18 |
 | 6 | Polish, Edge Cases & Integratie Tests | ✅ DONE | 2026-02-18 |
 
 ---
@@ -102,7 +102,7 @@ export interface ContextMenuParams {
     canDelete: boolean;
     canSelectAll: boolean;
   };
-  // Tandem-specifiek
+  // Zerant-specifiek
   tabId?: string;
   tabSource?: 'robin' | 'kees';
 }
@@ -135,7 +135,7 @@ export class ContextMenuBuilder {
     // Phase 1: Basis items (back, forward, reload, etc.)
     // Phase 2: Link items, Image items, Selection items
     // Phase 3: Input/editable items
-    // Phase 5: Tandem-specific items
+    // Phase 5: Zerant-specific items
 
     return menu;
   }
@@ -821,10 +821,10 @@ npm run compile && npm start
 
 ---
 
-## Phase 5: Tandem-specific Items (Kees AI Integratie)
+## Phase 5: Zerant-specific Items (Kees AI Integratie)
 
 ### Goal
-Unieke context menu items that Tandem onderscheiden or Chrome: AI-integratie with Kees.
+Unieke context menu items that Zerant onderscheiden or Chrome: AI-integratie with Kees.
 
 ### Vereiste: Phase 4 must DONE are
 
@@ -843,7 +843,7 @@ Unieke context menu items that Tandem onderscheiden or Chrome: AI-integratie wit
 ### Implementatie
 
 ```typescript
-private addTandemItems(menu: Menu, params: ContextMenuParams, wc: WebContents): void {
+private addZerantItems(menu: Menu, params: ContextMenuParams, wc: WebContents): void {
   this.addSeparator(menu);
 
   // AI items — only if panel/chat beschikbaar is
@@ -1055,7 +1055,7 @@ Maak `scripts/test-context-menu.md` — a handmatig testprotocol:
 # Context Menu Test Protocol
 
 ## Setup
-1. Start Tandem: `npm start`
+1. Start Zerant: `npm start`
 2. Open a testpagina with links, images, input velden
    Aanbevolen: https://www.w3schools.com/html/html_links.asp
 
@@ -1103,7 +1103,7 @@ Maak `scripts/test-context-menu.md` — a handmatig testprotocol:
 - [ ] Close Other Tabs works
 - [ ] Reopen Closed Tab works
 
-### TC7: Tandem/Kees
+### TC7: Zerant/Kees
 - [ ] Ask Kees items visible
 - [ ] Panel opens bij click
 - [ ] Chat bericht is verzonden

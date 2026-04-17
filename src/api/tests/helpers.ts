@@ -58,7 +58,7 @@ export function createMockContext(): RouteContext {
         title: '',
         active: true,
         source: 'user',
-        partition: 'persist:tandem',
+        partition: 'persist:zerant',
       }),
       closeTab: vi.fn().mockResolvedValue(true),
       listTabs: vi.fn().mockReturnValue([
@@ -69,7 +69,7 @@ export function createMockContext(): RouteContext {
           title: 'Example',
           active: true,
           source: 'user',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         },
       ]),
       listGroups: vi.fn().mockReturnValue([]),
@@ -86,7 +86,7 @@ export function createMockContext(): RouteContext {
         title: 'Example',
         active: true,
         source: 'user',
-        partition: 'persist:tandem',
+        partition: 'persist:zerant',
       }),
       getTab: vi.fn().mockImplementation((tabId: string) => {
         if (tabId === 'tab-1') {
@@ -97,7 +97,7 @@ export function createMockContext(): RouteContext {
             title: 'Example',
             active: true,
             source: 'user',
-            partition: 'persist:tandem',
+            partition: 'persist:zerant',
           };
         }
         return null;
@@ -241,7 +241,7 @@ export function createMockContext(): RouteContext {
       getLog: vi.fn().mockReturnValue([]),
       getApis: vi.fn().mockReturnValue([]),
       getDomains: vi.fn().mockReturnValue([]),
-      toHar: vi.fn().mockReturnValue({ log: { version: '1.2', creator: { name: 'Tandem Browser', version: '0.0.0' }, pages: [], entries: [] } }),
+      toHar: vi.fn().mockReturnValue({ log: { version: '1.2', creator: { name: 'Zerant Browser', version: '0.0.0' }, pages: [], entries: [] } }),
       clear: vi.fn(),
     } as any,
 

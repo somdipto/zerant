@@ -1,5 +1,5 @@
 # Top 30 Most Popular Chrome Extensions
-## Compatibility Assessment for Tandem (Electron 40 / Chromium 130)
+## Compatibility Assessment for Zerant (Electron 40 / Chromium 130)
 
 > **Legend**
 > - ✅ **Works** — loads and functions without any changes
@@ -89,7 +89,7 @@
 | **CWS URL** | https://chromewebstore.google.com/detail/bitwarden/nngceckbapebfimnlniiiahkandclblb |
 | **Compatibility** | ✅ Works |
 | **Mechanism** | Content scripts + background service worker + WebCrypto |
-| **Notes** | Best password manager for Tandem. Self-contained — vault lives in extension storage + remote sync. No native binary needed. Uses WebCrypto which Electron fully supports. **Include in curated gallery.** |
+| **Notes** | Best password manager for Zerant. Self-contained — vault lives in extension storage + remote sync. No native binary needed. Uses WebCrypto which Electron fully supports. **Include in curated gallery.** |
 
 ---
 
@@ -203,7 +203,7 @@
 | **CWS URL** | https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne |
 | **Compatibility** | ✅ Works |
 | **Mechanism** | Content scripts + CSS injection |
-| **Notes** | Apply custom CSS to any site. Community stylesheet library via userstyles.world. Pure JS/CSS, no native deps. Great companion for Tandem's power users. |
+| **Notes** | Apply custom CSS to any site. Community stylesheet library via userstyles.world. Pure JS/CSS, no native deps. Great companion for Zerant's power users. |
 
 ---
 
@@ -343,7 +343,7 @@
 | **CWS URL** | https://chromewebstore.google.com/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb |
 | **Compatibility** | ⚠️ Partial |
 | **Mechanism** | Content scripts + Google Translate API |
-| **Notes** | Page translation works via Google's API. The "translate this page" button in the Omnibox is missing (no Omnibox in Tandem's current UI). Translation triggered via right-click context menu should work. |
+| **Notes** | Page translation works via Google's API. The "translate this page" button in the Omnibox is missing (no Omnibox in Zerant's current UI). Translation triggered via right-click context menu should work. |
 
 ---
 
@@ -438,7 +438,7 @@ Before shipping the curated gallery, verify these IDs resolve correctly on the C
 | `chrome.storage.sync` | ⚠️ Partial | Works as local storage (no sync without Google account) |
 | `chrome.storage.session` | ✅ Full | Session-scoped storage, available since Chromium 102 |
 | `chrome.runtime.*` | ✅ Full | Messaging, lifecycle events — fully supported |
-| `chrome.tabs.*` | ⚠️ Partial | `query`, `create`, `update` work. `group`, `ungroup` not supported (Tandem has own groups). `captureVisibleTab` works. |
+| `chrome.tabs.*` | ⚠️ Partial | `query`, `create`, `update` work. `group`, `ungroup` not supported (Zerant has own groups). `captureVisibleTab` works. |
 | `chrome.windows.*` | ⚠️ Partial | Basic operations work. `create` with type `popup` may not match Chrome behavior exactly. |
 | `chrome.webRequest.*` | ✅ Full | Both blocking and non-blocking. Extensions see the same events as RequestDispatcher. |
 | `chrome.declarativeNetRequest` | ✅ Full | Static and dynamic rules. **Conflicts with NetworkShield** — see Phase 10. |
@@ -455,9 +455,9 @@ Before shipping the curated gallery, verify these IDs resolve correctly on the C
 | `chrome.notifications.*` | ⚠️ Partial | Basic notifications work, but appearance differs from Chrome |
 | `chrome.offscreen` | ❌ Not supported | MV3 offscreen documents — not available in Electron 40 |
 | `chrome.sidePanel` | ❌ Not supported | Chrome 114+ side panel API — not in Electron |
-| `chrome.tabGroups` | ❌ Not supported | Tandem has its own tab group implementation |
-| `chrome.omnibox` | ❌ Not supported | Tandem has custom URL bar, no omnibox extension API |
-| `chrome.commands` | ⚠️ Partial | Extension keyboard shortcuts registered but may conflict with Tandem shortcuts |
+| `chrome.tabGroups` | ❌ Not supported | Zerant has its own tab group implementation |
+| `chrome.omnibox` | ❌ Not supported | Zerant has custom URL bar, no omnibox extension API |
+| `chrome.commands` | ⚠️ Partial | Extension keyboard shortcuts registered but may conflict with Zerant shortcuts |
 | `chrome_url_overrides.newtab` | ✅ Full | New tab page replacement works |
 | `content_scripts` | ✅ Full | Static content script injection works perfectly |
 | Service Workers (MV3) | ✅ Full | MV3 background service workers supported since Electron 28 |
@@ -518,12 +518,12 @@ Before shipping the curated gallery, verify these IDs resolve correctly on the C
 
 ## Curated Gallery Recommendation (Phase 3)
 
-Based on this analysis, the 10 best extensions to include in Tandem's curated gallery (fully compatible + highest user value):
+Based on this analysis, the 10 best extensions to include in Zerant's curated gallery (fully compatible + highest user value):
 
 1. **uBlock Origin** — non-negotiable, everyone needs it
 2. **Bitwarden** — best password manager that works fully
 3. **Dark Reader** — huge user demand, zero issues
-4. **React DevTools** — developer audience that uses Tandem heavily
+4. **React DevTools** — developer audience that uses Zerant heavily
 5. **Video Speed Controller** — works perfectly, high demand
 6. **MetaMask** — Web3 users, works fully
 7. **Wappalyzer** — developer tool, perfect compatibility

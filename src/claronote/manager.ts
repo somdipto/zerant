@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ export interface CreateNoteResponse {
 /**
  * ClaroNoteManager — integration with the ClaroNote transcription API.
  *
- * Persistence: ~/.tandem/claronote-auth.json
+ * Persistence: ~/.zerant/claronote-auth.json
  */
 export class ClaroNoteManager {
 
@@ -50,7 +50,7 @@ export class ClaroNoteManager {
   // === 2. Constructor ===
 
   constructor() {
-    const baseDir = tandemDir();
+    const baseDir = zerantDir();
     if (!fs.existsSync(baseDir)) {
       fs.mkdirSync(baseDir, { recursive: true });
     }
@@ -260,7 +260,7 @@ export class ClaroNoteManager {
     const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'Tandem Browser/1.0'
+      'User-Agent': 'Zerant Browser/1.0'
     };
 
     if (token) {

@@ -1,5 +1,5 @@
 (() => {
-    const renderer = window.__tandemRenderer;
+    const renderer = window.__zerantRenderer;
     if (!renderer) {
       console.error('[draw] Missing renderer bridge');
       return;
@@ -300,11 +300,11 @@
     });
 
     document.getElementById('btn-snap-wingman').addEventListener('click', () => {
-      if (window.tandem) window.tandem.snapForWingman();
+      if (window.zerant) window.zerant.snapForWingman();
     });
 
-    if (window.tandem) {
-      window.tandem.onDrawMode((data) => {
+    if (window.zerant) {
+      window.zerant.onDrawMode((data) => {
         drawEnabled = data.enabled;
         if (drawEnabled) {
           drawCanvasTabId = getActiveTabId();
@@ -325,7 +325,7 @@
         syncDrawSurfaceForTab(getActiveTabId());
       });
 
-      window.tandem.onDrawClear(() => {
+      window.zerant.onDrawClear(() => {
         if (drawCanvasTabId) {
           tabShapes.set(drawCanvasTabId, []);
         }
@@ -336,7 +336,7 @@
     renderer.onActiveTabChanged(syncDrawSurfaceForTab);
     syncDrawSurfaceForTab(getActiveTabId());
 
-    window.__tandemDraw = {
+    window.__zerantDraw = {
       compositeScreenshot(webviewBase64) {
         return new Promise((resolve) => {
           const img = new Image();

@@ -9,10 +9,10 @@
 
 ## Problem / Motivation
 
-Tandem has NetworkShield that blocks 811K+ malicious URLs (phishing, malware), but it does not block advertisements. Ads are not only annoying — they slow down pages, waste bandwidth, and pose a tracking/privacy risk. Every serious browser offers ad blocking. This is table stakes.
+Zerant has NetworkShield that blocks 811K+ malicious URLs (phishing, malware), but it does not block advertisements. Ads are not only annoying — they slow down pages, waste bandwidth, and pose a tracking/privacy risk. Every serious browser offers ad blocking. This is table stakes.
 
 **Opera has:** A built-in ad blocker at the network-request level (blocks before render). Uses EasyList filter lists + NoCoin mining protection. Badge in the URL bar with a blocked-count indicator. Per-site exceptions. YouTube ad blocking.
-**Tandem currently has:** NetworkShield with custom blocklist (malicious URLs). No EasyList/adblock filter support. No consumer ad blocking.
+**Zerant currently has:** NetworkShield with custom blocklist (malicious URLs). No EasyList/adblock filter support. No consumer ad blocking.
 **Gap:** Large — no ad blocking, only malware blocking.
 
 ---
@@ -110,7 +110,7 @@ We build a lightweight filter engine ourselves. No `@nicedoc/adblocker` or `@nic
 - **Filter list parsing performance:** EasyList has ~90,000 rules. Naive string matching is too slow. We use a hash table for domain-based rules and a compact trie/set for URL-pattern rules. First parse can take ~2-3 seconds — do this async at startup.
 - **False positives:** Some EasyList rules block too aggressively. Per-site whitelist is essential as an escape hatch.
 - **YouTube ads:** YouTube serves ads via the same domains as video content. Full YouTube ad blocking requires more advanced logic (request pattern matching). V1 blocks default display ads; YouTube-specific rules are a V2 item.
-- **RequestDispatcher integration:** The existing `RequestDispatcher` in Tandem routes all `session.webRequest` hooks. AdBlockManager must register with the correct priority (after stealth patches, but before NetworkShield).
+- **RequestDispatcher integration:** The existing `RequestDispatcher` in Zerant routes all `session.webRequest` hooks. AdBlockManager must register with the correct priority (after stealth patches, but before NetworkShield).
 - **Memory:** 90K rules in memory is ~10-15MB. Acceptable for a desktop app.
 
 ---

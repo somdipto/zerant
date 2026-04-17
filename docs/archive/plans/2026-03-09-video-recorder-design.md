@@ -6,7 +6,7 @@
 
 ## Summary
 
-Built-in screen recorder for Tandem, mirroring the screenshot feature with Application and Region capture modes. Records video + optional audio (tab audio and microphone toggle). Outputs MP4 files suitable for editing. Replaces the existing `AudioCaptureManager`.
+Built-in screen recorder for Zerant, mirroring the screenshot feature with Application and Region capture modes. Records video + optional audio (tab audio and microphone toggle). Outputs MP4 files suitable for editing. Replaces the existing `AudioCaptureManager`.
 
 ## Requirements
 
@@ -15,7 +15,7 @@ Built-in screen recorder for Tandem, mirroring the screenshot feature with Appli
 - **Audio:** Tab audio captured by default, microphone toggle during recording
 - **Quality:** 30fps, native display resolution
 - **UX:** Floating overlay bar with timer, mic toggle, and stop button; Esc to stop
-- **Storage:** `~/Movies/Tandem/` + `~/.tandem/recordings/`
+- **Storage:** `~/Movies/Zerant/` + `~/.tandem/recordings/`
 - **Dependency:** `ffmpeg-static` bundled (~70MB)
 
 ## Architecture
@@ -96,7 +96,7 @@ User clicks Record App/Region
 ## Storage
 
 - Temp WebM: `~/.tandem/recordings/tmp/`
-- Final MP4: `~/Movies/Tandem/tandem-recording-{timestamp}.mp4`
+- Final MP4: `~/Movies/Zerant/tandem-recording-{timestamp}.mp4`
 - App data: `~/.tandem/recordings/tandem-recording-{timestamp}.mp4`
 - Index: `~/.tandem/recordings/index.json`
 

@@ -1,7 +1,7 @@
-# Tandem × Agent-Browser Gaps — START HERE
+# Zerant × Agent-Browser Gaps — START HERE
 
 > **Last update:** February 20, 2026
-> **Goal:** Give Tandem the 4 features that make agent-browser so popular,
+> **Goal:** Give Zerant the 4 features that make agent-browser so popular,
 > without breaking the stealth/symbiosis core.
 > **Order:** Phase 1 → 2 → 3 → 4 (each phase is independent but builds on the previous one)
 
@@ -12,8 +12,8 @@
 agent-browser (Vercel Labs) has 14.7k stars because it does one thing well:
 give AI agents a simple, structured way to control the web.
 
-Tandem does the same thing but better: a real browser, real sessions, and a real human as copilot.
-But Tandem lacks the developer-friendly layer that makes agent-browser so popular.
+Zerant does the same thing but better: a real browser, real sessions, and a real human as copilot.
+But Zerant lacks the developer-friendly layer that makes agent-browser so popular.
 
 **These 4 features close that gap:**
 
@@ -32,7 +32,7 @@ But Tandem lacks the developer-friendly layer that makes agent-browser so popula
 Claude Code / other AI
         │
         ▼
-  Tandem API :8765
+  Zerant API :8765
   (Express + Bearer auth)
         │
    ┌────┴────────────────────┐
@@ -48,7 +48,7 @@ manager.ts             mocker.ts
 src/sessions/  cli/
 manager.ts     index.ts
 (Electron      (npm package
- partitions)    @hydro13/tandem-cli)
+ partitions)    @zerant/zerant-cli)
 ```
 
 ### Anti-Detect CRITICAL
@@ -75,7 +75,7 @@ manager.ts     index.ts
 ## Quick Status Check (always run this first)
 
 ```bash
-# Is the Tandem API running?
+# Is the Zerant API running?
 curl http://localhost:8765/status
 
 # TypeScript clean?
@@ -152,10 +152,10 @@ cli/                        # Phase 4 (outside `src/`, own package.json + tsconf
 
 Each new manager (`SnapshotManager`, `NetworkMocker`, `SessionManager`) must be wired into **3 places**:
 
-### 1. `src/api/server.ts` — `TandemAPIOptions` interface (around line 64)
+### 1. `src/api/server.ts` — `ZerantAPIOptions` interface (around line 64)
 
 ```typescript
-export interface TandemAPIOptions {
+export interface ZerantAPIOptions {
   // ... existing managers ...
   snapshotManager: SnapshotManager;  // ← add
 }
@@ -169,14 +169,14 @@ this.snapshotManager = opts.snapshotManager;
 
 ### 2. `src/main.ts` — `startAPI()` function (around line 250)
 
-Instantiate the manager and pass it into `TandemAPI`:
+Instantiate the manager and pass it into `ZerantAPI`:
 
 ```typescript
 // In `startAPI()`, AFTER creating `devToolsManager`:
 const snapshotManager = new SnapshotManager(devToolsManager!);
 
-// In new TandemAPI({...}):
-api = new TandemAPI({
+// In new ZerantAPI({...}):
+api = new ZerantAPI({
   // ... existing managers ...
   snapshotManager: snapshotManager!,
 });

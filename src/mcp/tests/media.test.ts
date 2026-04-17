@@ -21,90 +21,90 @@ describe('MCP media tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_voice_start', () => {
+  describe('zerant_voice_start', () => {
     it('starts voice recognition', async () => {
       mockApiCall.mockResolvedValueOnce({ listening: true });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_voice_start')({});
+      await getHandler(tools, 'zerant_voice_start')({});
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/voice/start');
     });
   });
 
-  describe('tandem_voice_stop', () => {
+  describe('zerant_voice_stop', () => {
     it('stops voice recognition', async () => {
       mockApiCall.mockResolvedValueOnce({ listening: false });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_voice_stop')({});
+      await getHandler(tools, 'zerant_voice_stop')({});
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/voice/stop');
     });
   });
 
-  describe('tandem_voice_status', () => {
+  describe('zerant_voice_status', () => {
     it('returns voice status', async () => {
       mockApiCall.mockResolvedValueOnce({ active: false });
-      await getHandler(tools, 'tandem_voice_status')({});
+      await getHandler(tools, 'zerant_voice_status')({});
       expect(mockApiCall).toHaveBeenCalledWith('GET', '/voice/status');
     });
   });
 
-  describe('tandem_audio_start', () => {
+  describe('zerant_audio_start', () => {
     it('starts audio recording', async () => {
       mockApiCall.mockResolvedValueOnce({ recording: true });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_audio_start')({});
+      await getHandler(tools, 'zerant_audio_start')({});
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/audio/start');
     });
   });
 
-  describe('tandem_audio_stop', () => {
+  describe('zerant_audio_stop', () => {
     it('stops audio recording', async () => {
       mockApiCall.mockResolvedValueOnce({ recording: false });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_audio_stop')({});
+      await getHandler(tools, 'zerant_audio_stop')({});
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/audio/stop');
     });
   });
 
-  describe('tandem_audio_recordings', () => {
+  describe('zerant_audio_recordings', () => {
     it('lists recordings', async () => {
       mockApiCall.mockResolvedValueOnce({ recordings: [] });
-      await getHandler(tools, 'tandem_audio_recordings')({});
+      await getHandler(tools, 'zerant_audio_recordings')({});
       expect(mockApiCall).toHaveBeenCalledWith('GET', '/audio/recordings');
     });
   });
 
-  describe('tandem_screenshot_annotated', () => {
+  describe('zerant_screenshot_annotated', () => {
     it('returns annotated screenshot as image', async () => {
       mockApiCall.mockResolvedValueOnce('base64png');
       mockLogActivity.mockResolvedValueOnce(undefined);
-      const result = await getHandler(tools, 'tandem_screenshot_annotated')({});
+      const result = await getHandler(tools, 'zerant_screenshot_annotated')({});
       expectImageContent(result);
     });
   });
 
-  describe('tandem_screenshot_capture_annotated', () => {
+  describe('zerant_screenshot_capture_annotated', () => {
     it('captures annotated screenshot', async () => {
       mockApiCall.mockResolvedValueOnce({ path: '/tmp/ss.png' });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_screenshot_capture_annotated')({});
+      await getHandler(tools, 'zerant_screenshot_capture_annotated')({});
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/screenshot/annotated');
     });
   });
 
-  describe('tandem_screenshot_capture_application', () => {
+  describe('zerant_screenshot_capture_application', () => {
     it('captures a full application screenshot', async () => {
       mockApiCall.mockResolvedValueOnce({ path: '/tmp/application.png' });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_screenshot_capture_application')({});
+      await getHandler(tools, 'zerant_screenshot_capture_application')({});
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/screenshot/application');
     });
   });
 
-  describe('tandem_screenshot_capture_region', () => {
+  describe('zerant_screenshot_capture_region', () => {
     it('captures a region screenshot', async () => {
       mockApiCall.mockResolvedValueOnce({ path: '/tmp/region.png' });
       mockLogActivity.mockResolvedValueOnce(undefined);
-      await getHandler(tools, 'tandem_screenshot_capture_region')({
+      await getHandler(tools, 'zerant_screenshot_capture_region')({
         x: 12,
         y: 34,
         width: 320,
@@ -119,33 +119,33 @@ describe('MCP media tools', () => {
     });
   });
 
-  describe('tandem_screenshots_list', () => {
+  describe('zerant_screenshots_list', () => {
     it('lists screenshots', async () => {
       mockApiCall.mockResolvedValueOnce({ screenshots: [] });
-      await getHandler(tools, 'tandem_screenshots_list')({});
+      await getHandler(tools, 'zerant_screenshots_list')({});
       expect(mockApiCall).toHaveBeenCalledWith('GET', '/screenshots');
     });
 
     it('applies limit', async () => {
       mockApiCall.mockResolvedValueOnce({ screenshots: [] });
-      await getHandler(tools, 'tandem_screenshots_list')({ limit: 5 });
+      await getHandler(tools, 'zerant_screenshots_list')({ limit: 5 });
       const endpoint = mockApiCall.mock.calls[0][1] as string;
       expect(endpoint).toContain('limit=5');
     });
   });
 
-  describe('tandem_draw_toggle', () => {
+  describe('zerant_draw_toggle', () => {
     it('toggles draw mode', async () => {
       mockApiCall.mockResolvedValueOnce({ enabled: true });
-      await getHandler(tools, 'tandem_draw_toggle')({ enabled: true });
+      await getHandler(tools, 'zerant_draw_toggle')({ enabled: true });
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/draw/toggle', { enabled: true });
     });
   });
 
-  describe('tandem_wingman_stream_toggle', () => {
+  describe('zerant_wingman_stream_toggle', () => {
     it('toggles wingman stream', async () => {
       mockApiCall.mockResolvedValueOnce({ enabled: true });
-      await getHandler(tools, 'tandem_wingman_stream_toggle')({ enabled: true });
+      await getHandler(tools, 'zerant_wingman_stream_toggle')({ enabled: true });
       expect(mockApiCall).toHaveBeenCalledWith('POST', '/wingman-stream/toggle', { enabled: true });
     });
   });

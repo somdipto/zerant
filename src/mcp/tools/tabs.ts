@@ -24,7 +24,7 @@ function formatTabLine(tab: ContextTab): string {
 
 export function registerTabTools(server: McpServer): void {
   server.tool(
-    'tandem_list_tabs',
+    'zerant_list_tabs',
     'List all open browser tabs with their titles, URLs, IDs, and workspace/source context when known.',
     async () => {
       const data = await apiCall('GET', '/active-tab/context');
@@ -40,7 +40,7 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_open_tab',
+    'zerant_open_tab',
     'Open a new browser tab, optionally with a URL and workspace assignment',
     {
       url: z.string().optional().describe('URL to open (default: new tab page)'),
@@ -60,7 +60,7 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_close_tab',
+    'zerant_close_tab',
     'Close a browser tab by its ID',
     {
       tabId: z.string().describe('The tab ID to close'),
@@ -73,7 +73,7 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_focus_tab',
+    'zerant_focus_tab',
     'Switch to a specific browser tab by its ID',
     {
       tabId: z.string().describe('The tab ID to focus'),
@@ -86,7 +86,7 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_emoji_set',
+    'zerant_tab_emoji_set',
     'Set an emoji badge on a browser tab for visual identification',
     {
       tabId: z.string().describe('The tab ID to set the emoji on'),
@@ -100,7 +100,7 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_emoji_remove',
+    'zerant_tab_emoji_remove',
     'Remove the emoji badge from a browser tab',
     {
       tabId: z.string().describe('The tab ID to remove the emoji from'),
@@ -113,7 +113,7 @@ export function registerTabTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_emoji_flash',
+    'zerant_tab_emoji_flash',
     'Flash a pulsing emoji on a tab to attract the user\'s attention (e.g. signal that a page is ready for review)',
     {
       tabId: z.string().describe('The tab ID to flash the emoji on'),

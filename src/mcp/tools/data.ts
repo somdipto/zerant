@@ -6,7 +6,7 @@ export function registerDataTools(server: McpServer): void {
   // ── Chrome Import ──
 
   server.tool(
-    'tandem_chrome_import_status',
+    'zerant_chrome_import_status',
     'Get Chrome import status (whether Chrome is detected, last import info).',
     async () => {
       const data = await apiCall('GET', '/import/chrome/status');
@@ -16,7 +16,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_import_profiles',
+    'zerant_chrome_import_profiles',
     'List available Chrome profiles for import.',
     async () => {
       const data = await apiCall('GET', '/import/chrome/profiles');
@@ -26,8 +26,8 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_import_bookmarks',
-    'Import bookmarks from Chrome into Tandem.',
+    'zerant_chrome_import_bookmarks',
+    'Import bookmarks from Chrome into Zerant.',
     async () => {
       const data = await apiCall('POST', '/import/chrome/bookmarks');
       await logActivity('chrome_import_bookmarks');
@@ -36,8 +36,8 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_import_history',
-    'Import browsing history from Chrome into Tandem.',
+    'zerant_chrome_import_history',
+    'Import browsing history from Chrome into Zerant.',
     async () => {
       const data = await apiCall('POST', '/import/chrome/history');
       await logActivity('chrome_import_history');
@@ -46,8 +46,8 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_import_cookies',
-    'Import cookies from Chrome into Tandem.',
+    'zerant_chrome_import_cookies',
+    'Import cookies from Chrome into Zerant.',
     async () => {
       const data = await apiCall('POST', '/import/chrome/cookies');
       await logActivity('chrome_import_cookies');
@@ -56,7 +56,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_sync_start',
+    'zerant_chrome_sync_start',
     'Start continuous Chrome sync. Optionally specify a Chrome profile.',
     {
       profile: z.string().optional().describe('Chrome profile name to sync from'),
@@ -71,7 +71,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_sync_stop',
+    'zerant_chrome_sync_stop',
     'Stop continuous Chrome sync.',
     async () => {
       const data = await apiCall('POST', '/import/chrome/sync/stop');
@@ -81,7 +81,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_chrome_sync_status',
+    'zerant_chrome_sync_status',
     'Check whether Chrome sync is currently active.',
     async () => {
       const data = await apiCall('GET', '/import/chrome/sync/status');
@@ -93,7 +93,7 @@ export function registerDataTools(server: McpServer): void {
   // ── Existing tools ──
 
   server.tool(
-    'tandem_data_export',
+    'zerant_data_export',
     'Export all user data (config, chat history, behavior stats) as JSON.',
     async () => {
       const data = await apiCall('GET', '/data/export');
@@ -103,7 +103,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_data_import',
+    'zerant_data_import',
     'Import user data from a previously exported JSON blob. This overwrites existing data.',
     {
       data: z.object({}).passthrough().describe('The data object from a previous export'),
@@ -120,7 +120,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_data_wipe',
+    'zerant_data_wipe',
     'Wipe all user data. This is irreversible — all bookmarks, history, config, and other data will be deleted.',
     {},
     {
@@ -135,7 +135,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_downloads_list',
+    'zerant_downloads_list',
     'List all downloads (completed, failed, and cancelled).',
     async () => {
       const data = await apiCall('GET', '/downloads');
@@ -145,7 +145,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_downloads_active',
+    'zerant_downloads_active',
     'List currently active (in-progress) downloads.',
     async () => {
       const data = await apiCall('GET', '/downloads/active');
@@ -155,8 +155,8 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_config_get',
-    'Get the current Tandem browser configuration.',
+    'zerant_config_get',
+    'Get the current Zerant browser configuration.',
     async () => {
       const data = await apiCall('GET', '/config');
       await logActivity('config_get');
@@ -165,8 +165,8 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_config_update',
-    'Update Tandem browser configuration settings. Pass an object with the settings to change.',
+    'zerant_config_update',
+    'Update Zerant browser configuration settings. Pass an object with the settings to change.',
     {
       settings: z.object({}).passthrough().describe('Configuration settings to update'),
     },
@@ -178,7 +178,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_get_cookies',
+    'zerant_get_cookies',
     'Get browser cookies, optionally filtered by URL.',
     {
       url: z.string().optional().describe('URL to filter cookies for'),
@@ -194,7 +194,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_clear_cookies',
+    'zerant_clear_cookies',
     'Clear browser cookies, optionally filtered by domain.',
     {
       domain: z.string().optional().describe('Domain to clear cookies for (clears all if omitted)'),
@@ -209,7 +209,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_browser_status',
+    'zerant_browser_status',
     'Get the overall browser status including ready state, active tab info, viewport dimensions, and version.',
     async () => {
       const data = await apiCall('GET', '/status');
@@ -218,7 +218,7 @@ export function registerDataTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_active_tab_context',
+    'zerant_active_tab_context',
     'Get rich context about the active tab including URL, title, loading state, viewport, page text excerpt, and list of all open tabs.',
     async () => {
       const data = await apiCall('GET', '/active-tab/context');

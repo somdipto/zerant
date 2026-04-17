@@ -22,9 +22,9 @@ describe('MCP network tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_network_log ────────────────────────────────────────────
-  describe('tandem_network_log', () => {
-    const handler = getHandler(tools, 'tandem_network_log');
+  // ── zerant_network_log ────────────────────────────────────────────
+  describe('zerant_network_log', () => {
+    const handler = getHandler(tools, 'zerant_network_log');
 
     it('returns network log as JSON', async () => {
       const data = { entries: [{ url: 'https://api.com/data' }] };
@@ -54,9 +54,9 @@ describe('MCP network tools', () => {
     });
   });
 
-  // ── tandem_network_apis ───────────────────────────────────────────
-  describe('tandem_network_apis', () => {
-    const handler = getHandler(tools, 'tandem_network_apis');
+  // ── zerant_network_apis ───────────────────────────────────────────
+  describe('zerant_network_apis', () => {
+    const handler = getHandler(tools, 'zerant_network_apis');
 
     it('returns API summary', async () => {
       mockApiCall.mockResolvedValueOnce({ apis: ['/v1/users'] });
@@ -67,9 +67,9 @@ describe('MCP network tools', () => {
     });
   });
 
-  // ── tandem_network_domains ────────────────────────────────────────
-  describe('tandem_network_domains', () => {
-    const handler = getHandler(tools, 'tandem_network_domains');
+  // ── zerant_network_domains ────────────────────────────────────────
+  describe('zerant_network_domains', () => {
+    const handler = getHandler(tools, 'zerant_network_domains');
 
     it('returns domain list', async () => {
       mockApiCall.mockResolvedValueOnce({ domains: { 'api.com': 15 } });
@@ -79,9 +79,9 @@ describe('MCP network tools', () => {
     });
   });
 
-  // ── tandem_network_mock ───────────────────────────────────────────
-  describe('tandem_network_mock', () => {
-    const handler = getHandler(tools, 'tandem_network_mock');
+  // ── zerant_network_mock ───────────────────────────────────────────
+  describe('zerant_network_mock', () => {
+    const handler = getHandler(tools, 'zerant_network_mock');
 
     it('creates a mock rule', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -111,9 +111,9 @@ describe('MCP network tools', () => {
     });
   });
 
-  // ── tandem_network_unmock ─────────────────────────────────────────
-  describe('tandem_network_unmock', () => {
-    const handler = getHandler(tools, 'tandem_network_unmock');
+  // ── zerant_network_unmock ─────────────────────────────────────────
+  describe('zerant_network_unmock', () => {
+    const handler = getHandler(tools, 'zerant_network_unmock');
 
     it('removes a mock rule', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -123,9 +123,9 @@ describe('MCP network tools', () => {
     });
   });
 
-  // ── tandem_network_clear ──────────────────────────────────────────
-  describe('tandem_network_clear', () => {
-    const handler = getHandler(tools, 'tandem_network_clear');
+  // ── zerant_network_clear ──────────────────────────────────────────
+  describe('zerant_network_clear', () => {
+    const handler = getHandler(tools, 'zerant_network_clear');
 
     it('clears the network log', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -136,9 +136,9 @@ describe('MCP network tools', () => {
     });
   });
 
-  // ── tandem_network_mock_clear ─────────────────────────────────────
-  describe('tandem_network_mock_clear', () => {
-    const handler = getHandler(tools, 'tandem_network_mock_clear');
+  // ── zerant_network_mock_clear ─────────────────────────────────────
+  describe('zerant_network_mock_clear', () => {
+    const handler = getHandler(tools, 'zerant_network_mock_clear');
 
     it('clears all mock rules', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -153,7 +153,7 @@ describe('MCP network tools', () => {
   describe('error propagation', () => {
     it('propagates errors from apiCall', async () => {
       mockApiCall.mockRejectedValueOnce(new Error('server error'));
-      const handler = getHandler(tools, 'tandem_network_har');
+      const handler = getHandler(tools, 'zerant_network_har');
       await expect(handler({})).rejects.toThrow('server error');
     });
   });
@@ -165,10 +165,10 @@ describe('MCP network tools', () => {
       mockApiCall.mockResolvedValueOnce({});
       mockApiCall.mockResolvedValueOnce({});
 
-      await getHandler(tools, 'tandem_network_apis')({ tabId: 'tab-9' });
-      await getHandler(tools, 'tandem_network_domains')({ tabId: 'tab-9' });
-      await getHandler(tools, 'tandem_network_har')({ tabId: 'tab-9' });
-      await getHandler(tools, 'tandem_network_clear')({ tabId: 'tab-9' });
+      await getHandler(tools, 'zerant_network_apis')({ tabId: 'tab-9' });
+      await getHandler(tools, 'zerant_network_domains')({ tabId: 'tab-9' });
+      await getHandler(tools, 'zerant_network_har')({ tabId: 'tab-9' });
+      await getHandler(tools, 'zerant_network_clear')({ tabId: 'tab-9' });
 
       expect(vi.mocked(tabHeaders)).toHaveBeenCalledWith('tab-9');
       expect(mockApiCall).toHaveBeenNthCalledWith(1, 'GET', '/network/apis', undefined, { 'X-Tab-Id': 'tab-9' });

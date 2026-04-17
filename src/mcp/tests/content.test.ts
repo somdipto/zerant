@@ -23,8 +23,8 @@ describe('MCP content tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_read_page', () => {
-    const handler = getHandler(tools, 'tandem_read_page');
+  describe('zerant_read_page', () => {
+    const handler = getHandler(tools, 'zerant_read_page');
 
     it('returns markdown-formatted page content', async () => {
       mockApiCall.mockResolvedValueOnce({ title: 'Test', url: 'https://test.com', description: 'A test page', text: 'Body text' });
@@ -44,8 +44,8 @@ describe('MCP content tools', () => {
     });
   });
 
-  describe('tandem_screenshot', () => {
-    const handler = getHandler(tools, 'tandem_screenshot');
+  describe('zerant_screenshot', () => {
+    const handler = getHandler(tools, 'zerant_screenshot');
 
     it('returns image content', async () => {
       mockApiCall.mockResolvedValueOnce('base64data');
@@ -55,8 +55,8 @@ describe('MCP content tools', () => {
     });
   });
 
-  describe('tandem_get_page_html', () => {
-    const handler = getHandler(tools, 'tandem_get_page_html');
+  describe('zerant_get_page_html', () => {
+    const handler = getHandler(tools, 'zerant_get_page_html');
 
     it('returns raw HTML string', async () => {
       mockApiCall.mockResolvedValueOnce('<html>hi</html>');
@@ -71,8 +71,8 @@ describe('MCP content tools', () => {
     });
   });
 
-  describe('tandem_extract_content', () => {
-    const handler = getHandler(tools, 'tandem_extract_content');
+  describe('zerant_extract_content', () => {
+    const handler = getHandler(tools, 'zerant_extract_content');
 
     it('returns extracted content as JSON', async () => {
       mockApiCall.mockResolvedValueOnce({ title: 'T', body: 'B' });
@@ -81,8 +81,8 @@ describe('MCP content tools', () => {
     });
   });
 
-  describe('tandem_extract_url', () => {
-    const handler = getHandler(tools, 'tandem_extract_url');
+  describe('zerant_extract_url', () => {
+    const handler = getHandler(tools, 'zerant_extract_url');
 
     it('extracts from URL', async () => {
       mockApiCall.mockResolvedValueOnce({ content: 'extracted' });
@@ -92,8 +92,8 @@ describe('MCP content tools', () => {
     });
   });
 
-  describe('tandem_get_links', () => {
-    const handler = getHandler(tools, 'tandem_get_links');
+  describe('zerant_get_links', () => {
+    const handler = getHandler(tools, 'zerant_get_links');
 
     it('formats link list', async () => {
       mockApiCall.mockResolvedValueOnce({ links: [{ text: 'GH', href: 'https://gh.com', visible: true }] });
@@ -110,8 +110,8 @@ describe('MCP content tools', () => {
     });
   });
 
-  describe('tandem_execute_js', () => {
-    const handler = getHandler(tools, 'tandem_execute_js');
+  describe('zerant_execute_js', () => {
+    const handler = getHandler(tools, 'zerant_execute_js');
 
     it('executes code and returns result', async () => {
       mockApiCall.mockResolvedValueOnce({ result: 42 });

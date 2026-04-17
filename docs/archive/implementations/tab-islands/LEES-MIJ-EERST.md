@@ -45,7 +45,7 @@ Robin opens regelmatig multiple tabs vanuit the same page (zoekresultaten, Reddi
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registratie, window events | `createWindow()`, `startAPI()` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 
 ### Additional reading per phase
 
@@ -70,7 +70,7 @@ Tab Islands breiden the existing `TabManager` out — er is **no new manager** n
 
 ### Existing wiring hergebruiken:
 
-1. `src/api/server.ts` → `TandemAPIOptions` contains already `registry: ManagerRegistry` with `tabManager`
+1. `src/api/server.ts` → `ZerantAPIOptions` contains already `registry: ManagerRegistry` with `tabManager`
 2. `src/api/routes/tabs.ts` → `function registerTabRoutes()` gets new island-endpoints
 3. `src/main.ts` → `createWindow()` gets the `did-create-window` listener
 

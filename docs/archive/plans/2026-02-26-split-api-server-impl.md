@@ -29,7 +29,7 @@ If this fails, fix existing errors first.
 
 **Step 1: Create the context module**
 
-This file defines the shared dependency object and helper functions currently living as private methods on TandemAPI (lines 265-303 or server.ts).
+This file defines the shared dependency object and helper functions currently living as private methods on ZerantAPI (lines 265-303 or server.ts).
 
 ```typescript
 // src/api/context.ts
@@ -236,7 +236,7 @@ Wait — this gets repetitive if done per-task. Better approach:
 
 **Interim pattern (used for all tasks 2-13):**
 
-Add a private method `buildContext()` to TandemAPI that returns a RouteContext:
+Add a private method `buildContext()` to ZerantAPI that returns a RouteContext:
 
 ```typescript
 private buildContext(): RouteContext {
@@ -743,12 +743,12 @@ At this point, `setupRoutes()` should contain only the `ctx = this.buildContext(
 1. **Remove `setupRoutes()` method entirely** — move the register calls into the constructor
 2. **Remove unused imports** — any imports that are now only used in route files should be removed from server.ts. Keep only what's needed for: Express setup, CORS, auth middleware, and building the RouteContext.
 3. **Remove the private helper methods** (`getActiveWC`, `execInActiveTab`, `getSessionPartition`, `getSessionWC`, `execInSessionTab`) — they now live in `context.ts`
-4. **Keep**: `TandemAPIOptions` interface, `TandemAPI` class, `getOrCreateAuthToken()`, constructor with middleware setup, `buildContext()`, `start()`, `getHttpServer()`, `stop()`
+4. **Keep**: `ZerantAPIOptions` interface, `ZerantAPI` class, `getOrCreateAuthToken()`, constructor with middleware setup, `buildContext()`, `start()`, `getHttpServer()`, `stop()`
 
 The final constructor should look like:
 
 ```typescript
-constructor(opts: TandemAPIOptions) {
+constructor(opts: ZerantAPIOptions) {
   // ... assign all fields from opts (unchanged) ...
 
   this.contentExtractor = new ContentExtractor();
@@ -846,10 +846,10 @@ git commit -m "docs: mark split api/server.ts as done"
 
 1. **All URL paths remain identical** — zero breaking changes
 2. **Auth middleware stays in server.ts**
-3. **`TandemAPIOptions` interface stays** — that's Improvement #8
+3. **`ZerantAPIOptions` interface stays** — that's Improvement #8
 4. **`wingmanAlert` circular dep stays** — that's Improvement #4
 5. **Security routes stay in SecurityManager**
-6. **`start()`, `stop()`, `getHttpServer()` stay on TandemAPI class**
+6. **`start()`, `stop()`, `getHttpServer()` stay on ZerantAPI class**
 
 ## Known Issues Fixed During Implementation
 

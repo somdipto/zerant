@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerPasswordTools(server: McpServer): void {
   server.tool(
-    'tandem_password_status',
+    'zerant_password_status',
     'Check the password manager vault status (locked/unlocked, new vault)',
     async () => {
       const data = await apiCall('GET', '/passwords/status');
@@ -14,7 +14,7 @@ export function registerPasswordTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_password_unlock',
+    'zerant_password_unlock',
     'Unlock the password vault with the master password',
     {
       masterPassword: z.string().describe('The master password to unlock the vault'),
@@ -30,7 +30,7 @@ export function registerPasswordTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_password_lock',
+    'zerant_password_lock',
     'Lock the password vault',
     async () => {
       const data = await apiCall('POST', '/passwords/lock');
@@ -39,7 +39,7 @@ export function registerPasswordTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_password_generate',
+    'zerant_password_generate',
     'Generate a random secure password string. Returns a JSON object with a "password" field containing the generated password.',
     coerceShape({
       length: z.number().optional().describe('Password length (default: 24)'),
@@ -52,7 +52,7 @@ export function registerPasswordTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_password_suggest',
+    'zerant_password_suggest',
     'Suggest saved password identities for a given URL/domain',
     {
       url: z.string().describe('The URL or domain to look up saved passwords for'),
@@ -64,7 +64,7 @@ export function registerPasswordTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_password_save',
+    'zerant_password_save',
     'Save a new password entry to the vault',
     {
       url: z.string().describe('The URL or domain to associate with this password'),

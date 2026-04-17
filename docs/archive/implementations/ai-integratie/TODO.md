@@ -7,7 +7,7 @@
 
 ## Pre-requisites
 
-- [ ] Tandem draait op `:8765` (`curl http://localhost:8765/status`)
+- [ ] Zerant draait op `:8765` (`curl http://localhost:8765/status`)
 - [ ] OpenClaw draait op `:18789`
 - [ ] `npx tsc` — zero errors
 - [ ] Git is clean (`git status`)
@@ -18,7 +18,7 @@
 
 ### Sessie 1.1: Basis MCP Server + Read/Navigatie Tools ✅ (13 feb 2026)
 - [x] `npm install @modelcontextprotocol/sdk@^1.26.0`
-- [x] `src/mcp/api-client.ts` — HTTP wrapper for Tandem API
+- [x] `src/mcp/api-client.ts` — HTTP wrapper for Zerant API
 - [x] `src/mcp/server.ts` — MCP server with stdio transport
 - [x] Tool: `tandem_navigate` (POST /navigate)
 - [x] Tool: `tandem_go_back` / `tandem_go_forward` / `tandem_reload`
@@ -27,10 +27,10 @@
 - [x] Tool: `tandem_get_links` (links op huidige page)
 - [x] Tool: `tandem_wait_for_load` (polling op page status)
 - [x] Activity logging: elke tool call → POST /chat with from: "claude"
-- [x] Error handling: duidelijke message if Tandem not draait
+- [x] Error handling: duidelijke message if Zerant not draait
 - [x] `npx tsc` — zero errors
 - [x] Test: Cowork can `tandem_read_page()` aanroepen
-- [x] Test: navigatie works, page verandert in Tandem
+- [x] Test: navigatie works, page verandert in Zerant
 - [x] Test: screenshot geeft zichtbare image
 
 ### Sessie 1.2: Interactie + Tabs + Chat + Extra Tools ✅ (13 feb 2026, code added)

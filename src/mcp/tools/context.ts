@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerContextTools(server: McpServer): void {
   server.tool(
-    'tandem_context_recent',
+    'zerant_context_recent',
     'Get recently visited pages from the context bridge',
     coerceShape({
       limit: z.number().optional().describe('Maximum number of pages to return (default: 50)'),
@@ -19,7 +19,7 @@ export function registerContextTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_context_search',
+    'zerant_context_search',
     'Search the context bridge for pages matching a query',
     {
       query: z.string().describe('Search query string'),
@@ -32,7 +32,7 @@ export function registerContextTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_context_page',
+    'zerant_context_page',
     'Get context bridge data for a specific page by URL',
     {
       url: z.string().describe('URL of the page to retrieve'),
@@ -45,7 +45,7 @@ export function registerContextTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_context_summary',
+    'zerant_context_summary',
     'Get a summary of the context bridge state',
     async () => {
       const data = await apiCall('GET', '/context/summary');
@@ -55,7 +55,7 @@ export function registerContextTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_context_note',
+    'zerant_context_note',
     'Add a note to a page in the context bridge',
     {
       url: z.string().describe('URL of the page to annotate'),

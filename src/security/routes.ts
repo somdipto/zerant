@@ -420,7 +420,7 @@ export function registerSecurityRoutes(
         res.status(503).json({ error: 'Gatekeeper not initialized' });
         return;
       }
-      res.json({ secret: gatekeeperWs.getSecret(), path: '~/.tandem/security/gatekeeper.secret' });
+      res.json({ secret: gatekeeperWs.getSecret(), path: '~/.zerant/security/gatekeeper.secret' });
     } catch (e) {
       res.status(500).json({ error: e instanceof Error ? e.message : String(e) });
     }

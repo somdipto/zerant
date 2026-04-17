@@ -1,10 +1,10 @@
-# Tandem Browser - Linux Portatie Roadmap
+# Zerant Browser - Linux Portatie Roadmap
 
 ## Phase 1: App Opstarten (10 min)
 
-**Goal:** Tandem Browser start op Linux without crashes.
+**Goal:** Zerant Browser start op Linux without crashes.
 
-1. Clone repo: `git clone https://github.com/hydro13/tandem-browser.git`
+1. Clone repo: `git clone https://github.com/hydro13/zerant-browser.git`
 2. `npm install`
 3. Fix `package.json` — delete `xattr -cr` out start script
 4. Fix `scripts/run-electron.js` — delete absoluut pad or `lsof`
@@ -61,7 +61,7 @@
 **Goal:** Settings page is correct for Linux.
 
 1. Verberg "Apple Photos" toggle op Linux
-2. Test screenshot functionaliteit (slaat op in ~/Pictures/Tandem)
+2. Test screenshot functionaliteit (slaat op in ~/Pictures/Zerant)
 3. Test voice input (Ctrl+Shift+M)
 4. Test draw mode (Ctrl+Shift+D)
 

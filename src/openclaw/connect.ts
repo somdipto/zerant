@@ -3,13 +3,13 @@ import fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { ensureDir, tandemDir } from '../utils/paths';
+import { ensureDir, zerantDir } from '../utils/paths';
 
 const OPENCLAW_CONFIG_PATH = path.join(os.homedir(), '.openclaw', 'openclaw.json');
 
 // ═══ Config Integrity Monitor ═══
 // Watch openclaw.json for unexpected modifications (prompt injection defense).
-// Tandem NEVER writes to this file — any change is either the user or a compromised agent.
+// Zerant NEVER writes to this file — any change is either the user or a compromised agent.
 let configWatcher: fs.FSWatcher | null = null;
 let lastKnownConfigHash: string | null = null;
 
@@ -63,7 +63,7 @@ export function stopConfigIntegrityMonitor(): void {
   configWatcher?.close();
   configWatcher = null;
 }
-const OPENCLAW_IDENTITY_PATH = tandemDir('openclaw', 'identity', 'device.json');
+const OPENCLAW_IDENTITY_PATH = zerantDir('openclaw', 'identity', 'device.json');
 const ED25519_SPKI_PREFIX = Buffer.from('302a300506032b6570032100', 'hex');
 const OPENCLAW_SCOPES = ['operator.read', 'operator.write'] as const;
 

@@ -22,7 +22,7 @@ Volledige pipeline: Robin spreekt → text → to AI backend → antwoord in cha
 
 ## Web Speech API
 
-Tandem uses the Web Speech API (built-in in Chromium/Electron):
+Zerant uses the Web Speech API (built-in in Chromium/Electron):
 
 ```javascript
 const recognition = new webkitSpeechRecognition();

@@ -41,7 +41,7 @@ Expected examples:
 
 ### 2. Scope Sensitive Routes
 
-Do not allow every extension-origin request to reach every Tandem capability.
+Do not allow every extension-origin request to reach every Zerant capability.
 
 ### 3. Improve Auditing
 

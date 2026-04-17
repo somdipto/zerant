@@ -10,7 +10,7 @@
 
 Structurally this is good work. The phasing is logical, CLAUDE.md is an excellent session instruction, the checklists are thorough, and the STATUS.md + ROADMAP.md approach for Claude Code sessions is exactly how you should orchestrate this kind or work. Claude Code will be able to work with this effectively.
 
-**But there are 3 serious gaps that make this plan unsafe for Tandem specifically.** The rest are improvement points. Read especially the red points carefully.
+**But there are 3 serious gaps that make this plan unsafe for Zerant specifically.** The rest are improvement points. Read especially the red points carefully.
 
 ---
 
@@ -27,7 +27,7 @@ You have 811,000 blocklist entries. If uBlock Origin also blocks 300,000 or thos
 
 **What needs to be done:**
 - Define an "extension trust policy" for the security stack: do extension requests go through all security layers or not?
-- Consider: actively exclude ad-blocker extensions from the gallery (Tandem already has NetworkShield — uBlock is redundant and destructive to your telemetry), or at least strongly mark them as "conflicts with Tandem Security"
+- Consider: actively exclude ad-blocker extensions from the gallery (Zerant already has NetworkShield — uBlock is redundant and destructive to your telemetry), or at least strongly mark them as "conflicts with Zerant Security"
 - Extension service worker `fetch()` requests DO go through your webRequest hooks (Electron's webRequest catches everything in the session) — but `declarativeNetRequest` blocks earlier. This must be documented and tested.
 
 **Also required:** Verify that OutboundGuard's POST body scanning also catches extension-initiated POSTs. A malicious script via an extension that exfiltrates data should be caught by OutboundGuard, not bypass it.
@@ -59,7 +59,7 @@ The plan creates a `new BrowserWindow()` for the OAuth flow. That window has:
 - No OutboundGuard
 - No ContentAnalyzer
 
-An attacker who compiles an extension with a malicious OAuth URL can open a completely unprotected browser window in Tandem. That is a direct bypass or your entire security stack.
+An attacker who compiles an extension with a malicious OAuth URL can open a completely unprotected browser window in Zerant. That is a direct bypass or your entire security stack.
 
 **Fix:** The BrowserWindow for OAuth MUST use the same session as the main browser, so the RequestDispatcher also covers it. Add to Phase 7:
 ```typescript
@@ -96,7 +96,7 @@ Phase 2 says uninstall "may require a restart (Electron limitation)". That is no
 
 ### 6. Session isolation — extensions don't work in isolated sessions
 
-Tandem's SessionManager creates isolated sessions (`session.fromPartition('persist:session-xxx')`). Extensions are loaded in `persist:tandem` — the main session. They are NOT available in isolated sessions.
+Zerant's SessionManager creates isolated sessions (`session.fromPartition('persist:session-xxx')`). Extensions are loaded in `persist:tandem` — the main session. They are NOT available in isolated sessions.
 
 This is not a blocker now, but as soon as users start using extensions and then also use `POST /sessions/create` for isolated browsing, they expect their ad blocker to work there too. It doesn't.
 
@@ -110,7 +110,7 @@ This is not a blocker now, but as soon as users start using extensions and then 
 prodversion=130.0.0.0
 ```
 
-This is hardcoded in the plan. Electron 40 runs Chromium 130, so it's correct now — but when Electron updates to 41 (Chromium 132), Tandem may download the wrong CRX version (MV3 format-wise).
+This is hardcoded in the plan. Electron 40 runs Chromium 130, so it's correct now — but when Electron updates to 41 (Chromium 132), Zerant may download the wrong CRX version (MV3 format-wise).
 
 **Fix:** `process.versions.chrome` returns the Chromium version in Electron. Use that:
 ```typescript
@@ -122,7 +122,7 @@ const crxUrl = `...&prodversion=${chromiumVersion}&...`;
 
 ### 8. No update mechanism — security risk
 
-Installed extensions don't auto-update. Chrome does this itself via the CRX server. When an extension receives a security fix (and this happens regularly — uBlock Origin and Grammarly update constantly), Tandem's installation falls behind.
+Installed extensions don't auto-update. Chrome does this itself via the CRX server. When an extension receives a security fix (and this happens regularly — uBlock Origin and Grammarly update constantly), Zerant's installation falls behind.
 
 This is not a Phase 1 problem but must be in the roadmap. Add to ROADMAP.md:
 
@@ -145,11 +145,11 @@ The gallery in `gallery.ts` is a hardcoded array in TypeScript code. Adding ever
 
 - **CLAUDE.md is excellent** — the "one session per phase" rule, STATUS.md as entry point, the scope limitations per phase, the "do NOT do" list — this is exactly how you should use Claude Code for a large project
 - **CRX header parsing** — CRX2 and CRX3 are both correctly described (version 2 vs 3, header byte layout)
-- **npm is correct** — Tandem has package-lock.json, so `npm install adm-zip` is right (not pnpm)
+- **npm is correct** — Zerant has package-lock.json, so `npm install adm-zip` is right (not pnpm)
 - **`npm start` rule** — the warning about `ELECTRON_RUN_AS_NODE` is gold, Claude Code gets this wrong if you don't explicitly state it
 - **Platform-aware Chrome paths** — macOS/Windows/Linux all three correct
 - **Version subfolder logic** in Chrome importer — sorted + reversed for latest version is correct
-- **`fs.cpSync`** — correct, available from Node 16.7+, Tandem runs Node 25
+- **`fs.cpSync`** — correct, available from Node 16.7+, Zerant runs Node 25
 - **Graceful degradation** for native messaging — correct approach
 - **Pre-existing TypeScript errors** in tests mentioned — this is a real pitfall that Claude Code otherwise sees as a blocker
 - **Phase scope limitations** — each phase has an explicit "do NOT do" list, this prevents scope creep between sessions
@@ -163,7 +163,7 @@ The gallery in `gallery.ts` is a hardcoded array in TypeScript code. Adding ever
 ```markdown
 ## Security Stack Rules
 
-Tandem has a 6-layer security stack (NetworkShield, OutboundGuard, ContentAnalyzer,
+Zerant has a 6-layer security stack (NetworkShield, OutboundGuard, ContentAnalyzer,
 ScriptGuard, BehaviorMonitor, GatekeeperWebSocket) wired into the RequestDispatcher
 in main.ts. Extensions MUST NOT break this.
 
@@ -219,6 +219,6 @@ Replace the `session.setPreloads()` approach with:
 
 **The extension/security-stack conflicts** are the biggest long-term risk. Don't solve everything now, but document it and ensure the gallery marks ad-blocker extensions as conflicting with NetworkShield.
 
-The plan is 85% ready. The missing 15% are exactly the things that make Tandem different from a regular browser — the security stack and the agent-browser architecture. That's also why Claude Code missed them: it didn't fully read the Tandem-specific context.
+The plan is 85% ready. The missing 15% are exactly the things that make Zerant different from a regular browser — the security stack and the agent-browser architecture. That's also why Claude Code missed them: it didn't fully read the Zerant-specific context.
 
 — Kees

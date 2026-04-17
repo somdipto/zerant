@@ -306,7 +306,7 @@ Overall: much safer than `executeJavaScript` polling. The only page-visible arti
 
 ## Testing
 
-1. Start Tandem with `npm start`
+1. Start Zerant with `npm start`
 2. Verify CDP attaches automatically when browsing (check console for CDP attach logs)
 3. Browse to any site, scroll around → Kees should receive scroll events
 4. Select text on a page → Kees should receive selection events

@@ -15,7 +15,7 @@ Build the WebSocket bridge between Guardian and an AI agent that makes real-time
 Guardian (Phase 1) handles 95% or decisions with rules. The remaining 5% — the ambiguous, novel, or context-dependent threats — go to the Gatekeeper Agent via WebSocket. The agent uses AI to understand context and decide.
 
 ```
-Guardian (Tandem, real-time rules)
+Guardian (Zerant, real-time rules)
     ↕ WebSocket
 Gatekeeper Agent (OpenClaw, AI-powered decisions)
 ```
@@ -265,7 +265,7 @@ private checkRequest(details): { cancel: boolean } | null {
 The agent runs as an OpenClaw session. Provide the agent prompt as documentation:
 
 ```
-Agent: Tandem Gatekeeper
+Agent: Zerant Gatekeeper
 Model: Sonnet (fast + smart enough for real-time)
 Type: Long-running session with WebSocket connection
 
@@ -280,7 +280,7 @@ Responsibilities:
    - Decide: block / allow / investigate
    - Send decision back via WebSocket
 3. For anomalies:
-   - Investigate using Tandem API endpoints
+   - Investigate using Zerant API endpoints
    - Deep dive: GET /security/page/analysis, GET /devtools/network
    - Determine if real threat or false positive
 4. For critical threats:

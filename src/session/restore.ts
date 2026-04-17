@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import type { SyncManager } from '../sync/manager';
 
@@ -42,7 +42,7 @@ export class SessionRestoreManager {
   private syncManager: SyncManager | null;
 
   constructor(syncManager?: SyncManager | null) {
-    this.sessionPath = tandemDir('session.json');
+    this.sessionPath = zerantDir('session.json');
     this.syncManager = syncManager ?? null;
   }
 
@@ -57,7 +57,7 @@ export class SessionRestoreManager {
       tabs: filteredTabs,
     };
 
-    ensureDir(tandemDir());
+    ensureDir(zerantDir());
 
     const tmpPath = this.sessionPath + '.tmp';
     try {

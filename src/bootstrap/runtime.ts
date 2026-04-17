@@ -1,6 +1,6 @@
 import { dialog, session, type BrowserWindow, type WebContents } from 'electron';
 import { IpcChannels } from '../shared/ipc-channels';
-import type { TandemAPI } from '../api/server';
+import type { ZerantAPI } from '../api/server';
 import { ActivityTracker } from '../activity/tracker';
 import { WingmanStream } from '../activity/wingman-stream';
 import { TaskManager } from '../agents/task-manager';
@@ -69,7 +69,7 @@ interface InitializeRuntimeOptions {
 }
 
 interface DestroyRuntimeOptions {
-  api: TandemAPI | null;
+  api: ZerantAPI | null;
   runtime: RuntimeManagers | null;
   mainWindow: BrowserWindow | null;
   canUseWindow: (win: BrowserWindow | null) => win is BrowserWindow;
@@ -142,7 +142,7 @@ async function configureNativeMessagingHostDirectories(log: Logger): Promise<voi
     const os = await import('os');
     const path = await import('path');
     const nativeMsgDirs = [
-      path.join(os.homedir(), 'Library', 'Application Support', 'Tandem Browser', 'NativeMessagingHosts'),
+      path.join(os.homedir(), 'Library', 'Application Support', 'Zerant Browser', 'NativeMessagingHosts'),
       path.join(os.homedir(), 'Library', 'Application Support', 'Google', 'Chrome', 'NativeMessagingHosts'),
       '/Library/Google/Chrome/NativeMessagingHosts',
     ].filter(d => { try { return require('fs').existsSync(d); } catch { return false; } });
@@ -320,7 +320,7 @@ export async function initializeRuntimeManagers(opts: InitializeRuntimeOptions):
       buttons: ['OK'],
       defaultId: 0,
       title: 'Security containment activated',
-      message: `Tandem contained ${domainLabel}.`,
+      message: `Zerant contained ${domainLabel}.`,
       detail: `${incident.actionSummary}\n\nWhy it happened: ${incident.reason}\n\nNext step: ${incident.reviewMessage}`,
     }).catch((e) => {
       log.warn('containment dialog failed:', e instanceof Error ? e.message : String(e));

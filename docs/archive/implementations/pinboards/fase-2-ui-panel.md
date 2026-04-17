@@ -21,7 +21,7 @@ Bouw the gebruikersinterface for Pinboards: a sidebar-icon that a panel opens wi
 |---------|--------------------------|--------|
 | `src/pinboards/manager.ts` | `class PinboardManager` | Phase 1 output — the manager that we aanroepen |
 | `src/context-menu/types.ts` | `interface ContextMenuDeps` | Hier `pinboardManager` about add |
-| `src/context-menu/menu-builder.ts` | `class ContextMenuBuilder`, `build()`, `addTandemItems()` | Hier "Save to Pinboard" items add |
+| `src/context-menu/menu-builder.ts` | `class ContextMenuBuilder`, `build()`, `addZerantItems()` | Hier "Save to Pinboard" items add |
 | `src/context-menu/manager.ts` | `class ContextMenuManager` | Begrijpen hoe deps be doorgegeven |
 | `shell/index.html` | Sidebar section, `ocChat` IIFE | UI pattern for panels |
 | `src/main.ts` | `new ContextMenuManager(...)` | Hier `pinboardManager` meegeven in deps |
@@ -140,7 +140,7 @@ private addPinboardItems(menu: Menu, params: ContextMenuParams, wc: WebContents)
 }
 ```
 
-**Aanroepen vanuit `build()`:** Voeg `this.addPinboardItems(menu, params, wc)` toe na `this.addTandemItems()` (about the einde or the `build()` methode).
+**Aanroepen vanuit `build()`:** Voeg `this.addPinboardItems(menu, params, wc)` toe na `this.addZerantItems()` (about the einde or the `build()` methode).
 
 ### Step 3: Sidebar Pinboard Icon
 

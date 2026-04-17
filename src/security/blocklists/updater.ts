@@ -1,7 +1,7 @@
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
-import { tandemDir } from '../../utils/paths';
+import { zerantDir } from '../../utils/paths';
 import type { SecurityDB } from '../security-db';
 import type { NetworkShield } from '../network-shield';
 import type {
@@ -153,7 +153,7 @@ export function parseBlocklistFile(
  * shared parser layer, syncs to DB, and triggers NetworkShield.reload() to
  * refresh the in-memory Set.
  *
- * Data is stored in ~/.tandem/security/blocklists/ (NOT in src/).
+ * Data is stored in ~/.zerant/security/blocklists/ (NOT in src/).
  */
 export class BlocklistUpdater {
   private db: SecurityDB;
@@ -163,7 +163,7 @@ export class BlocklistUpdater {
   constructor(db: SecurityDB, shield: NetworkShield) {
     this.db = db;
     this.shield = shield;
-    this.dataDir = tandemDir('security', 'blocklists');
+    this.dataDir = zerantDir('security', 'blocklists');
     fs.mkdirSync(this.dataDir, { recursive: true });
   }
 

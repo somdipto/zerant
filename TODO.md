@@ -1,4 +1,4 @@
-# Tandem Browser TODO
+# Zerant Browser TODO
 
 > Internal development backlog for active and upcoming work.
 > Historical release summaries belong in `CHANGELOG.md`.
@@ -25,7 +25,7 @@ Last updated: April 16, 2026
 
 ### Product Features
 
-- [x] Update `skill/SKILL.md` so MCP-first clients, direct-HTTP clients, and the new durable handoff model are all documented with the current Tandem behavior
+- [x] Update `skill/SKILL.md` so MCP-first clients, direct-HTTP clients, and the new durable handoff model are all documented with the current Zerant behavior
 - [ ] Remove the remaining legacy OpenClaw compatibility IPC and unused webhook chat code after the signed gateway-chat path has shipped for a release or two
 - [x] `WebSocket /watch/live` for live watch updates
 - [x] Expose `captureApplicationScreenshot` and `captureRegionScreenshot` as HTTP API endpoints (e.g. `POST /screenshot/application`, `POST /screenshot/region`) so OpenClaw agents can trigger full-window and region captures programmatically without requiring IPC or human interaction
@@ -49,7 +49,7 @@ Last updated: April 16, 2026
 
 ### Codebase Hygiene
 
-- [x] Make Wingman `openclaw` mode gateway-first for sends, sign a real OpenClaw device identity for the WebSocket handshake, and persist gateway replies into Tandem chat history so stock Tandem no longer depends on a local OpenClaw tandem-chat skill
+- [x] Make Wingman `openclaw` mode gateway-first for sends, sign a real OpenClaw device identity for the WebSocket handshake, and persist gateway replies into Zerant chat history so stock Zerant no longer depends on a local OpenClaw tandem-chat skill
 - [x] Split `src/main.ts` bootstrap and teardown wiring into dedicated `src/bootstrap/` modules so manager composition stops growing in one file
 - [x] Extract the largest shell surfaces out of `shell/index.html` and `shell/css/main.css` so sidebar logic, modal helpers, and stylesheet sections stop living in single inline or monolithic files
 - [x] Split the Wingman and ClaroNote renderer surfaces out of `shell/js/main.js` into dedicated shell modules with explicit shared state instead of file-scope coupling

@@ -21,9 +21,9 @@ describe('MCP workspace tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_workspace_list ─────────────────────────────────────────
-  describe('tandem_workspace_list', () => {
-    const handler = getHandler(tools, 'tandem_workspace_list');
+  // ── zerant_workspace_list ─────────────────────────────────────────
+  describe('zerant_workspace_list', () => {
+    const handler = getHandler(tools, 'zerant_workspace_list');
 
     it('returns workspace data as JSON', async () => {
       const data = { workspaces: [{ id: 'w1', name: 'Default' }], active: 'w1' };
@@ -37,9 +37,9 @@ describe('MCP workspace tools', () => {
     });
   });
 
-  // ── tandem_workspace_create ───────────────────────────────────────
-  describe('tandem_workspace_create', () => {
-    const handler = getHandler(tools, 'tandem_workspace_create');
+  // ── zerant_workspace_create ───────────────────────────────────────
+  describe('zerant_workspace_create', () => {
+    const handler = getHandler(tools, 'zerant_workspace_create');
 
     it('creates a workspace with name only', async () => {
       mockApiCall.mockResolvedValueOnce({ workspace: { id: 'w2', name: 'Dev' } });
@@ -61,9 +61,9 @@ describe('MCP workspace tools', () => {
     });
   });
 
-  // ── tandem_workspace_activate ─────────────────────────────────────
-  describe('tandem_workspace_activate', () => {
-    const handler = getHandler(tools, 'tandem_workspace_activate');
+  // ── zerant_workspace_activate ─────────────────────────────────────
+  describe('zerant_workspace_activate', () => {
+    const handler = getHandler(tools, 'zerant_workspace_activate');
 
     it('activates a workspace', async () => {
       mockApiCall.mockResolvedValueOnce({ workspace: { id: 'w1', name: 'Dev' } });
@@ -75,9 +75,9 @@ describe('MCP workspace tools', () => {
     });
   });
 
-  // ── tandem_workspace_delete ───────────────────────────────────────
-  describe('tandem_workspace_delete', () => {
-    const handler = getHandler(tools, 'tandem_workspace_delete');
+  // ── zerant_workspace_delete ───────────────────────────────────────
+  describe('zerant_workspace_delete', () => {
+    const handler = getHandler(tools, 'zerant_workspace_delete');
 
     it('deletes a workspace', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -94,9 +94,9 @@ describe('MCP workspace tools', () => {
     });
   });
 
-  // ── tandem_workspace_update ───────────────────────────────────────
-  describe('tandem_workspace_update', () => {
-    const handler = getHandler(tools, 'tandem_workspace_update');
+  // ── zerant_workspace_update ───────────────────────────────────────
+  describe('zerant_workspace_update', () => {
+    const handler = getHandler(tools, 'zerant_workspace_update');
 
     it('updates workspace properties', async () => {
       mockApiCall.mockResolvedValueOnce({ workspace: { id: 'w1', name: 'New' } });
@@ -107,9 +107,9 @@ describe('MCP workspace tools', () => {
     });
   });
 
-  // ── tandem_workspace_move_tab ─────────────────────────────────────
-  describe('tandem_workspace_move_tab', () => {
-    const handler = getHandler(tools, 'tandem_workspace_move_tab');
+  // ── zerant_workspace_move_tab ─────────────────────────────────────
+  describe('zerant_workspace_move_tab', () => {
+    const handler = getHandler(tools, 'zerant_workspace_move_tab');
 
     it('moves a tab to a workspace', async () => {
       mockApiCall.mockResolvedValueOnce({});

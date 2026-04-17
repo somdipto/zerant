@@ -664,8 +664,8 @@ export class ScriptGuard {
 
     const monitorScript = `(function() {
       // Guard against double-injection
-      if (window.__tandemSecurityMonitorsActive) return;
-      window.__tandemSecurityMonitorsActive = true;
+      if (window.__zerantSecurityMonitorsActive) return;
+      window.__zerantSecurityMonitorsActive = true;
 
       // === Keylogger detection ===
       var origAddEventListener = EventTarget.prototype.addEventListener;
@@ -674,8 +674,8 @@ export class ScriptGuard {
             (this instanceof HTMLInputElement || this instanceof HTMLTextAreaElement)) {
           try {
             var stack = new Error().stack || '';
-            if (typeof __tandemSecurityAlert === 'function') {
-              __tandemSecurityAlert(JSON.stringify({
+            if (typeof __zerantSecurityAlert === 'function') {
+              __zerantSecurityAlert(JSON.stringify({
                 type: 'keylogger_suspect',
                 eventType: type,
                 elementTag: this.tagName,
@@ -693,8 +693,8 @@ export class ScriptGuard {
         var origWasmInstantiate = WebAssembly.instantiate;
         WebAssembly.instantiate = function() {
           try {
-            if (typeof __tandemSecurityAlert === 'function') {
-              __tandemSecurityAlert(JSON.stringify({
+            if (typeof __zerantSecurityAlert === 'function') {
+              __zerantSecurityAlert(JSON.stringify({
                 type: 'wasm_instantiate',
                 timestamp: Date.now(),
               }));
@@ -709,8 +709,8 @@ export class ScriptGuard {
         var origClipboardRead = navigator.clipboard.readText.bind(navigator.clipboard);
         navigator.clipboard.readText = function() {
           try {
-            if (typeof __tandemSecurityAlert === 'function') {
-              __tandemSecurityAlert(JSON.stringify({
+            if (typeof __zerantSecurityAlert === 'function') {
+              __zerantSecurityAlert(JSON.stringify({
                 type: 'clipboard_read',
                 timestamp: Date.now(),
               }));
@@ -728,8 +728,8 @@ export class ScriptGuard {
           get: formActionDescriptor.get,
           set: function(value) {
             try {
-              if (typeof __tandemSecurityAlert === 'function') {
-                __tandemSecurityAlert(JSON.stringify({
+              if (typeof __zerantSecurityAlert === 'function') {
+                __zerantSecurityAlert(JSON.stringify({
                   type: 'form_action_change',
                   newAction: String(value).substring(0, 200),
                   formId: this.id || 'unknown',
@@ -747,7 +747,7 @@ export class ScriptGuard {
     try {
       // Register the binding FIRST (invisible CDP-level binding)
       await this.devToolsManager.sendCommandToTab(resolvedWcId, 'Runtime.addBinding', {
-        name: '__tandemSecurityAlert',
+        name: '__zerantSecurityAlert',
       });
 
       // Subscribe to binding calls
@@ -755,7 +755,7 @@ export class ScriptGuard {
         name: 'ScriptGuard:Alerts',
         events: ['Runtime.bindingCalled'],
         handler: (_method, params) => {
-          if (params.name === '__tandemSecurityAlert') {
+          if (params.name === '__zerantSecurityAlert') {
             try {
               this.handleSecurityAlert(JSON.parse(params.payload as string));
             } catch { /* invalid JSON */ }

@@ -37,7 +37,7 @@ export class DrawOverlayManager {
     this.configManager = configManager ?? null;
     this.googlePhotosManager = googlePhotosManager ?? null;
     this.screenshotDir = path.join(app.getPath('userData'), 'screenshots');
-    this.picturesDir = path.join(os.homedir(), 'Pictures', 'Tandem');
+    this.picturesDir = path.join(os.homedir(), 'Pictures', 'Zerant');
     if (!fs.existsSync(this.screenshotDir)) {
       fs.mkdirSync(this.screenshotDir, { recursive: true });
     }
@@ -84,12 +84,12 @@ export class DrawOverlayManager {
 
       // Step 2: Ask renderer to composite (overlay canvas + webview screenshot)
       const compositeBase64: string = await this.win.webContents.executeJavaScript(`
-        window.__tandemDraw.compositeScreenshot(${JSON.stringify(webviewBase64)})
+        window.__zerantDraw.compositeScreenshot(${JSON.stringify(webviewBase64)})
       `);
 
       // Step 3: Save to file
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `tandem-${timestamp}.png`;
+      const filename = `zerant-${timestamp}.png`;
       const filePath = path.join(this.screenshotDir, filename);
       const buffer = Buffer.from(compositeBase64, 'base64');
       fs.writeFileSync(filePath, buffer);
@@ -122,7 +122,7 @@ export class DrawOverlayManager {
 
       // Step 2: Composite with canvas overlay in renderer
       const compositeBase64: string = await this.win.webContents.executeJavaScript(`
-        window.__tandemDraw.compositeScreenshot(${JSON.stringify(webviewBase64)})
+        window.__zerantDraw.compositeScreenshot(${JSON.stringify(webviewBase64)})
       `);
 
       // Step 3: Persist + clipboard + integrations
@@ -181,7 +181,7 @@ export class DrawOverlayManager {
       if (process.platform === 'darwin' && typeof this.win.getMediaSourceId === 'function') {
         const mediaId = this.win.getMediaSourceId(); // "window:<CGWindowID>:0"
         const cgWindowId = mediaId.split(':')[1];
-        const tmpPath = path.join(os.tmpdir(), `tandem-appcap-${Date.now()}.png`);
+        const tmpPath = path.join(os.tmpdir(), `zerant-appcap-${Date.now()}.png`);
         try {
           execFileSync('screencapture', ['-l' + cgWindowId, '-x', '-o', tmpPath]);
           const buffer = fs.readFileSync(tmpPath);
@@ -306,7 +306,7 @@ export class DrawOverlayManager {
 
     const slug = this.urlToSlug(currentUrl);
     const timestamp = Date.now();
-    const filename = `tandem-${slug}-${timestamp}.png`;
+    const filename = `zerant-${slug}-${timestamp}.png`;
     const picturesPath = path.join(this.picturesDir, filename);
     fs.writeFileSync(picturesPath, buffer);
 

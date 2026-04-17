@@ -43,10 +43,10 @@ vi.mock('fs', async (importOriginal) => {
   };
 });
 
-import { TandemAPI } from '../server';
+import { ZerantAPI } from '../server';
 import { createMockContext } from './helpers';
 
-describe('TandemAPI extension auth', () => {
+describe('ZerantAPI extension auth', () => {
   const runtimeId = 'abcdefghijklmnopabcdefghijklmnop';
 
   beforeEach(() => {
@@ -59,7 +59,7 @@ describe('TandemAPI extension auth', () => {
       loaded: [{ id: runtimeId, name: 'Helper', path: '/tmp/extensions/helper-ext' }],
       available: [{ name: 'Helper', path: '/tmp/extensions/helper-ext', hasManifest: true, loaded: true }],
     } as any);
-    const api = new TandemAPI({
+    const api = new ZerantAPI({
       win: ctx.win as any,
       registry: ctx as any,
     });

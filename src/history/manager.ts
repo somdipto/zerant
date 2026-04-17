@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import type { SyncManager } from '../sync/manager';
 
@@ -33,7 +33,7 @@ const MAX_ENTRIES = 10000;
 /**
  * HistoryManager — Auto-tracks page visits and provides search.
  *
- * Storage: ~/.tandem/history.json (max 10000 entries, FIFO)
+ * Storage: ~/.zerant/history.json (max 10000 entries, FIFO)
  */
 export class HistoryManager {
 
@@ -47,7 +47,7 @@ export class HistoryManager {
   // === 2. Constructor ===
 
   constructor() {
-    const baseDir = tandemDir();
+    const baseDir = zerantDir();
     if (!fs.existsSync(baseDir)) {
       fs.mkdirSync(baseDir, { recursive: true });
     }

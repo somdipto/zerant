@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerPinboardTools(server: McpServer): void {
   server.tool(
-    'tandem_pinboard_list',
+    'zerant_pinboard_list',
     'List all pinboards (without items)',
     async () => {
       const data = await apiCall('GET', '/pinboards');
@@ -15,7 +15,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_create',
+    'zerant_pinboard_create',
     'Create a new pinboard',
     {
       name: z.string().describe('Name of the pinboard'),
@@ -29,7 +29,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_get',
+    'zerant_pinboard_get',
     'Get a pinboard by ID, including all its items',
     {
       id: z.string().describe('Pinboard ID'),
@@ -42,7 +42,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_update',
+    'zerant_pinboard_update',
     'Update a pinboard name or emoji',
     {
       id: z.string().describe('Pinboard ID'),
@@ -57,7 +57,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_delete',
+    'zerant_pinboard_delete',
     'Delete a pinboard and all its items',
     {
       id: z.string().describe('Pinboard ID to delete'),
@@ -75,7 +75,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_items',
+    'zerant_pinboard_items',
     'Get all items in a pinboard',
     {
       id: z.string().describe('Pinboard ID'),
@@ -88,7 +88,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_add_item',
+    'zerant_pinboard_add_item',
     'Add an item to a pinboard. Type must be link, image, text, or quote.',
     {
       id: z.string().describe('Pinboard ID'),
@@ -110,7 +110,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_remove_item',
+    'zerant_pinboard_remove_item',
     'Remove an item from a pinboard',
     {
       id: z.string().describe('Pinboard ID'),
@@ -129,7 +129,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_settings',
+    'zerant_pinboard_settings',
     'Update display settings for a pinboard (layout, background, etc.)',
     {
       id: z.string().describe('Pinboard ID'),
@@ -147,7 +147,7 @@ export function registerPinboardTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_pinboard_reorder_items',
+    'zerant_pinboard_reorder_items',
     'Reorder items within a pinboard by providing the desired item ID order.',
     coerceShape({
       id: z.string().describe('Pinboard ID'),

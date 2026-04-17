@@ -21,45 +21,45 @@ describe('MCP watch tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_watch_list lists watches', async () => {
+  it('zerant_watch_list lists watches', async () => {
     mockApiCall.mockResolvedValueOnce({ watches: [] });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    await getHandler(tools, 'tandem_watch_list')({});
+    await getHandler(tools, 'zerant_watch_list')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/watch/list');
   });
 
-  it('tandem_watch_add adds a watch', async () => {
+  it('zerant_watch_add adds a watch', async () => {
     mockApiCall.mockResolvedValueOnce({ id: 'w1' });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    await getHandler(tools, 'tandem_watch_add')({ url: 'https://news.com', intervalMinutes: 60 });
+    await getHandler(tools, 'zerant_watch_add')({ url: 'https://news.com', intervalMinutes: 60 });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/watch/add', { url: 'https://news.com', intervalMinutes: 60, diffMode: undefined });
   });
 
-  it('tandem_watch_add forwards diff mode', async () => {
+  it('zerant_watch_add forwards diff mode', async () => {
     mockApiCall.mockResolvedValueOnce({ id: 'w2' });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    await getHandler(tools, 'tandem_watch_add')({ url: 'https://news.com', intervalMinutes: 60, diffMode: 'title' });
+    await getHandler(tools, 'zerant_watch_add')({ url: 'https://news.com', intervalMinutes: 60, diffMode: 'title' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/watch/add', { url: 'https://news.com', intervalMinutes: 60, diffMode: 'title' });
   });
 
-  it('tandem_watch_remove removes a watch', async () => {
+  it('zerant_watch_remove removes a watch', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    const result = await getHandler(tools, 'tandem_watch_remove')({ url: 'https://news.com' });
+    const result = await getHandler(tools, 'zerant_watch_remove')({ url: 'https://news.com' });
     expectTextContent(result, 'Removed watch');
   });
 
-  it('tandem_watch_remove reports not found', async () => {
+  it('zerant_watch_remove reports not found', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: false });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    const result = await getHandler(tools, 'tandem_watch_remove')({ id: 'bad' });
+    const result = await getHandler(tools, 'zerant_watch_remove')({ id: 'bad' });
     expectTextContent(result, 'Watch not found');
   });
 
-  it('tandem_watch_check force-checks a watch', async () => {
+  it('zerant_watch_check force-checks a watch', async () => {
     mockApiCall.mockResolvedValueOnce({ changed: true });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    await getHandler(tools, 'tandem_watch_check')({ url: 'https://news.com' });
+    await getHandler(tools, 'zerant_watch_check')({ url: 'https://news.com' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/watch/check', { url: 'https://news.com' });
   });
 });

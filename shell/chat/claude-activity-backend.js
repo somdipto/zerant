@@ -25,7 +25,7 @@ class ClaudeActivityBackend {
   }
 
   async connect() {
-    // Check if Tandem API is reachable
+    // Check if Zerant API is reachable
     try {
       const res = await fetch(`${this._apiBase}/status`);
       if (res.ok) {

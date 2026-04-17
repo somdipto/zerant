@@ -4,7 +4,7 @@
 
 ---
 
-Tandem Browser — Extension Plan Aanpassingen
+Zerant Browser — Extension Plan Aanpassingen
 
 Read eerst:
 - docs/Browser-extensions/CLAUDE.md
@@ -174,7 +174,7 @@ Voeg about the BEGIN or section 10a.3 "Broad content script injection (warning)"
 ```
 **First: empirical test (before implementing any whitelist):**
 
-Install Dark Reader extension (content scripts only). Open Tandem's DevTools console
+Install Dark Reader extension (content scripts only). Open Zerant's DevTools console
 and enable CDP Debugger domain. Check whether ScriptGuard logs any scriptParsed events
 for Dark Reader's content scripts:
 

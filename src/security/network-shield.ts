@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import type { SecurityDB } from './security-db';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { BLOCKLIST_SOURCES, parseBlocklistFile } from './blocklists/updater';
 import { createLogger } from '../utils/logger';
 
@@ -73,7 +73,7 @@ export class NetworkShield {
 
   constructor(db: SecurityDB) {
     this.db = db;
-    this.blocklistDir = tandemDir('security', 'blocklists');
+    this.blocklistDir = zerantDir('security', 'blocklists');
     fs.mkdirSync(this.blocklistDir, { recursive: true });
     this.snapshotPath = path.join(this.blocklistDir, SNAPSHOT_FILE_NAME);
     this.loadStartupSnapshot();

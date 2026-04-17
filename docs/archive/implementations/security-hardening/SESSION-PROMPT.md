@@ -5,7 +5,7 @@ The session should determine the next phase automatically from
 `LEES-MIJ-EERST.md` instead or relying on chat history.
 
 ```text
-You are working in /Users/robinwaslander/Documents/dev/tandem-browser.
+You are working in /Users/robinwaslander/Documents/dev/zerant-browser.
 
 This session is for the Security Hardening implementation track.
 

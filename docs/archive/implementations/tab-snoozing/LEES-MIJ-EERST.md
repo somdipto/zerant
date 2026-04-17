@@ -9,7 +9,7 @@
 
 ## Why this feature?
 
-Elke open tab verbruikt 50-300MB geheugen. With 20+ tabs is Tandem traag. Opera snoozet inactieve tabs automatisch. Tab Snoozing navigeert inactieve tabs to `about:blank` (geheugen vrij) and herlaadt the oorspronkelijke URL bij click. Dit is the #9 prioriteit in the gap analyse (docs/research/gap-analysis.md).
+Elke open tab verbruikt 50-300MB geheugen. With 20+ tabs is Zerant traag. Opera snoozet inactieve tabs automatisch. Tab Snoozing navigeert inactieve tabs to `about:blank` (geheugen vrij) and herlaadt the oorspronkelijke URL bij click. Dit is the #9 prioriteit in the gap analyse (docs/research/gap-analysis.md).
 
 ---
 
@@ -49,7 +49,7 @@ Rechtermuisklik tab → "Snooze for 1h"
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registratie | `startAPI()`, `createWindow()` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 | `src/registry.ts` | ManagerRegistry interface | `interface ManagerRegistry` |
 | `src/tabs/manager.ts` | TabManager — tab lifecycle, getTab(), webContents access | `class TabManager` |
 

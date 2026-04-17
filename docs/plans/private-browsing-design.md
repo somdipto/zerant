@@ -9,11 +9,11 @@
 
 ## Problem / Motivation
 
-Tandem has session isolation via `/sessions` (with `persist:` partitions), but no true private window that automatically wipes everything on close. Robin currently has to create a session manually and then clear the data manually.
+Zerant has session isolation via `/sessions` (with `persist:` partitions), but no true private window that automatically wipes everything on close. Robin currently has to create a session manually and then clear the data manually.
 
 **Opera has:** Private Browsing — Cmd+Shift+N opens a new window that stores no history, keeps no cookies, and automatically clears everything on close. It is visually recognizable through a dark theme.
 
-**Tandem currently has:** `POST /sessions/create` and `POST /sessions/switch` via `function registerSessionRoutes()` in `src/api/routes/sessions.ts`. Sessions use `persist:[name]` partitions that do persist data on disk.
+**Zerant currently has:** `POST /sessions/create` and `POST /sessions/switch` via `function registerSessionRoutes()` in `src/api/routes/sessions.ts`. Sessions use `persist:[name]` partitions that do persist data on disk.
 
 **Gap:** No ephemeral (in-memory) session that cleans itself up automatically. No Cmd+Shift+N shortcut. No visual indicator for private mode.
 
@@ -23,7 +23,7 @@ Tandem has session isolation via `/sessions` (with `persist:` partitions), but n
 
 > Robin wants to look something up quickly without it ending up in his browsing history.
 >
-> He presses **Cmd+Shift+N**. A new Tandem window opens with a distinctive dark-purple title bar/header. The tab bar subtly shows "🔒 Private" as an indicator.
+> He presses **Cmd+Shift+N**. A new Zerant window opens with a distinctive dark-purple title bar/header. The tab bar subtly shows "🔒 Private" as an indicator.
 >
 > Robin browses normally in this window — everything works the same, but:
 > - No history is stored
@@ -33,7 +33,7 @@ Tandem has session isolation via `/sessions` (with `persist:` partitions), but n
 >
 > Robin closes the private window (Cmd+W or ✕). All session data (cookies, cache, localStorage) is automatically cleared. It is as if the window never existed.
 >
-> Tandem's main window is unchanged — his normal session, tabs, and history remain intact.
+> Zerant's main window is unchanged — his normal session, tabs, and history remain intact.
 
 ---
 
@@ -111,7 +111,7 @@ Electron's `session.fromPartition()` without a `persist:` prefix creates an ephe
 ## Anti-detect Considerations
 
 - ✅ Ephemeral partition is a default Electron feature — no detectable difference from the webview
-- ⚠️ **Note:** the User-Agent and fingerprint must be identical to the normal window. A different partition must not produce a different fingerprint profile. This is the default behavior in Electron (same Chromium instance), but verify that Tandem's stealth patches are also active in the new partition.
+- ⚠️ **Note:** the User-Agent and fingerprint must be identical to the normal window. A different partition must not produce a different fingerprint profile. This is the default behavior in Electron (same Chromium instance), but verify that Zerant's stealth patches are also active in the new partition.
 - ✅ Visual indicator (purple header) is shell-side, invisible to websites
 
 ---

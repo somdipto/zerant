@@ -3,7 +3,7 @@ import { webContents } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import type { RouteContext } from '../context';
-import { tandemDir } from '../../utils/paths';
+import { zerantDir } from '../../utils/paths';
 import { ChromeExtensionImporter } from '../../extensions/chrome-importer';
 import { GalleryLoader } from '../../extensions/gallery-loader';
 import { handleRouteError } from '../../utils/errors';
@@ -16,7 +16,7 @@ const log = createLogger('ExtensionRoutes');
 /**
  * Extension service workers need a small set of local helper routes to bridge
  * Electron gaps. These endpoints are reserved for installed extensions and are
- * authorized centrally by TandemAPI.
+ * authorized centrally by ZerantAPI.
  */
 export const TRUSTED_EXTENSION_ROUTE_PATHS = new Set<string>([
   '/extensions/log',
@@ -181,7 +181,7 @@ export function registerExtensionRoutes(router: Router, ctx: RouteContext): void
 
       // Remove from disk using CWS/disk ID (the folder name)
       if (diskId) {
-        const extPath = tandemDir('extensions', diskId);
+        const extPath = zerantDir('extensions', diskId);
         if (fs.existsSync(extPath)) {
           try {
             fs.rmSync(extPath, { recursive: true, force: true });
@@ -228,7 +228,7 @@ export function registerExtensionRoutes(router: Router, ctx: RouteContext): void
     }
   });
 
-  // POST /extensions/chrome/import — Import Chrome extension(s) into Tandem
+  // POST /extensions/chrome/import — Import Chrome extension(s) into Zerant
   router.post('/extensions/chrome/import', (req: Request, res: Response) => {
     try {
       const profile = typeof req.body.profile === 'string' ? req.body.profile : 'Default';
@@ -298,8 +298,8 @@ export function registerExtensionRoutes(router: Router, ctx: RouteContext): void
 
   // GET /extensions/active-tab — Active tab info for extension polyfill (tabs.query fallback).
   // Returns webContentsId as the Chrome tab id so that chrome.tabs.sendMessage() routes
-  // correctly to the content script running in the active Tandem webview.
-  // Trusted extension caller only — enforced in TandemAPI auth middleware.
+  // correctly to the content script running in the active Zerant webview.
+  // Trusted extension caller only — enforced in ZerantAPI auth middleware.
   router.get('/extensions/active-tab', (_req: Request, res: Response) => {
     try {
       const tab = ctx.tabManager.getActiveTab();
@@ -369,7 +369,7 @@ export function registerExtensionRoutes(router: Router, ctx: RouteContext): void
   });
 
   // POST /extensions/identity/auth — Handle chrome.identity.launchWebAuthFlow() from extensions
-  // Trusted extension caller only — enforced in TandemAPI auth middleware.
+  // Trusted extension caller only — enforced in ZerantAPI auth middleware.
   router.post('/extensions/identity/auth', createRateLimitMiddleware({
     bucket: 'extensions-identity-auth',
     windowMs: 60_000,

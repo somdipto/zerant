@@ -2,7 +2,7 @@
 
 ## Goal
 
-Tandem draait always in desktop Chromium formaat. Na this phase can Kees schakelen to
+Zerant draait always in desktop Chromium formaat. Na this phase can Kees schakelen to
 a mobiel apparaat — iPhone 15, Samsung Galaxy, iPad — with echte viewport, touch events,
 pixel density and user-agent. Emulatie overleeft navigatie (re-applied op did-finish-load)
 and is instelbaar via API or via preset device profielen.
@@ -228,7 +228,7 @@ if (data.type === 'did-finish-load') {
 
 ### 3. `src/api/server.ts` — Routes registreren
 
-Voeg `DeviceEmulator` toe about `TandemAPIOptions` and registreer:
+Voeg `DeviceEmulator` toe about `ZerantAPIOptions` and registreer:
 
 ```
 GET    /device/profiles              —                               → {profiles: [...]}
@@ -385,5 +385,5 @@ git push origin main
 
 - `src/device/emulator.ts` — new file
 - `src/main.ts` — DeviceEmulator init + did-finish-load hook (next to ScriptInjector)
-- `src/api/server.ts` — TandemAPIOptions + 4 routes
+- `src/api/server.ts` — ZerantAPIOptions + 4 routes
 - TypeScript check + verificatie + commit

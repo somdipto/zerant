@@ -633,7 +633,7 @@ describe('Media Routes', () => {
       expect(ctx.drawManager.captureApplicationScreenshot).toHaveBeenCalledWith('https://example.com');
     });
 
-    it('falls back to tandem window url when no active tab exists', async () => {
+    it('falls back to zerant window url when no active tab exists', async () => {
       vi.mocked(ctx.tabManager.getActiveTab).mockReturnValue(null as any);
       vi.mocked(ctx.drawManager.captureApplicationScreenshot).mockResolvedValue({
         ok: true,
@@ -643,7 +643,7 @@ describe('Media Routes', () => {
       const res = await request(app).post('/screenshot/application').send({});
 
       expect(res.status).toBe(200);
-      expect(ctx.drawManager.captureApplicationScreenshot).toHaveBeenCalledWith('tandem://window');
+      expect(ctx.drawManager.captureApplicationScreenshot).toHaveBeenCalledWith('zerant://window');
     });
 
     it('returns 500 when captureApplicationScreenshot reports failure', async () => {

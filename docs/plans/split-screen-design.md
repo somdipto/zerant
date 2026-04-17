@@ -12,14 +12,14 @@
 Power users want to view two websites side by side without having to switch between tabs. Think of: documentation on the left + code on the right, comparing products, or watching a video while taking notes.
 
 **Opera has:** Split Screen with 2-4 panes (vertical, horizontal, grid). Drag a tab to the bottom to split, or Shift+click two tabs → right-click → Split Screen. Each panel has its own navigation.
-**Tandem currently has:** One webview at a time in the main content area. No multi-pane support.
+**Zerant currently has:** One webview at a time in the main content area. No multi-pane support.
 **Gap:** Completely missing — no way to show two pages side by side.
 
 ---
 
 ## User Experience — How It Works
 
-> Robin opens Tandem and navigates to an API documentation page. He wants to simultaneously test his application.
+> Robin opens Zerant and navigates to an API documentation page. He wants to simultaneously test his application.
 > He opens a second tab with his app, selects both tabs (Shift+click), right-clicks → "Split Screen".
 > The window splits vertically: docs on the left, his app on the right. Between the two panels is a draggable divider.
 > Robin clicks on the left panel — the URL bar shows the docs URL. He navigates to a different docs page.

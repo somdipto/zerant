@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build the security database, blocklist engine, Guardian interceptor, and API routes. After this phase, Tandem can block known threats in real-time via the RequestDispatcher built in Phase 0.
+Build the security database, blocklist engine, Guardian interceptor, and API routes. After this phase, Zerant can block known threats in real-time via the RequestDispatcher built in Phase 0.
 
 ## Prerequisites
 
@@ -415,13 +415,13 @@ securityManager.registerWith(dispatcher);
 
 // dispatcher.attach() now includes Guardian consumers
 
-// Pass to TandemAPI for route registration:
-const api = new TandemAPI({
+// Pass to ZerantAPI for route registration:
+const api = new ZerantAPI({
   // ... existing options
   securityManager,
 });
 
-// In TandemAPI constructor or setupRoutes():
+// In ZerantAPI constructor or setupRoutes():
 securityManager.registerRoutes(this.app);
 
 // In app.on('will-quit'):

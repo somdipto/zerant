@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as crypto from 'crypto';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import type { BrowserWindow } from 'electron';
 import type { SyncManager } from '../sync/manager';
@@ -37,7 +37,7 @@ interface ReconcileOptions {
 
 // ─── Storage path ───────────────────────────────────────────────────
 
-const STORAGE_PATH = tandemDir('workspaces.json');
+const STORAGE_PATH = zerantDir('workspaces.json');
 
 const DEFAULT_COLORS = ['#4285f4', '#4ecca3', '#e94560', '#f0a500', '#9b59b6', '#1abc9c', '#e67e22', '#2ecc71'];
 
@@ -46,7 +46,7 @@ const DEFAULT_COLORS = ['#4285f4', '#4ecca3', '#e94560', '#f0a500', '#9b59b6', '
 /**
  * WorkspaceManager — workspace CRUD, tab assignment, and active workspace switching.
  *
- * Persistence: ~/.tandem/workspaces.json
+ * Persistence: ~/.zerant/workspaces.json
  * API routes:  src/api/routes/workspaces.ts
  * MCP tools:   src/mcp/tools/workspaces.ts
  */
@@ -450,7 +450,7 @@ export class WorkspaceManager {
 
   private saveToDisk(): void {
     try {
-      const dir = tandemDir();
+      const dir = zerantDir();
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       this.lastModified = new Date().toISOString();
       const data: WorkspacesFile = {

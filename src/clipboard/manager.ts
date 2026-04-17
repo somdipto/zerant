@@ -13,7 +13,7 @@ const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 // Save directory is fixed — no user-controlled paths to prevent path injection
 
-const DEFAULT_SAVE_DIR = path.join(os.homedir(), 'Pictures', 'Tandem', 'clipboard');
+const DEFAULT_SAVE_DIR = path.join(os.homedir(), 'Pictures', 'Zerant', 'clipboard');
 
 export interface ClipboardImageInfo {
   width: number;

@@ -4,7 +4,7 @@ import { apiCall, logActivity } from '../api-client.js';
 
 export function registerBookmarkTools(server: McpServer): void {
   server.tool(
-    'tandem_bookmarks_list',
+    'zerant_bookmarks_list',
     'List all bookmarks and folders as a full tree',
     {},
     async () => {
@@ -15,7 +15,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_bookmark_add',
+    'zerant_bookmark_add',
     'Add a new bookmark',
     {
       url: z.string().describe('URL to bookmark'),
@@ -34,7 +34,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_bookmark_delete',
+    'zerant_bookmark_delete',
     'Delete a bookmark or folder by its ID',
     {
       id: z.string().describe('Bookmark or folder ID to delete'),
@@ -52,7 +52,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_bookmark_update',
+    'zerant_bookmark_update',
     'Update the title or URL of an existing bookmark',
     {
       id: z.string().describe('Bookmark ID to update'),
@@ -71,7 +71,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_bookmark_folder_add',
+    'zerant_bookmark_folder_add',
     'Create a new bookmark folder',
     {
       name: z.string().describe('Folder name'),
@@ -85,7 +85,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_bookmark_move',
+    'zerant_bookmark_move',
     'Move a bookmark or folder into a different parent folder',
     {
       id: z.string().describe('Bookmark or folder ID to move'),
@@ -99,7 +99,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_bookmark_check',
+    'zerant_bookmark_check',
     'Check whether a URL is already bookmarked',
     {
       url: z.string().describe('URL to check'),
@@ -114,7 +114,7 @@ export function registerBookmarkTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_search_bookmarks',
+    'zerant_search_bookmarks',
     'Search through saved bookmarks by keyword',
     {
       query: z.string().describe('Search query'),

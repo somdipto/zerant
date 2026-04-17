@@ -1,14 +1,14 @@
 # DevTools API — Manual Test Protocol
 
 ## Setup
-1. Start Tandem: `npm start`
+1. Start Zerant: `npm start`
 2. Navigate to a content-rich page (e.g., https://news.ycombinator.com)
 3. Wait for page to fully load
 
 ## Test Scenarios
 
 ### T1: Console Capture Round-Trip
-1. Open Tandem, navigate to any page
+1. Open Zerant, navigate to any page
 2. `curl http://127.0.0.1:8765/devtools/console` — should return entries (may be empty)
 3. In the page, open browser console and type: `console.error("TEST_ERROR")`
    Or via API: `curl -X POST http://127.0.0.1:8765/devtools/evaluate -H 'Content-Type: application/json' -d '{"expression":"console.error(\"TEST_ERROR\")"}'`

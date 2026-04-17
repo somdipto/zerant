@@ -34,7 +34,7 @@
   - [x] `GET /execute-js` still works (no regression)
   - [x] `GET /snapshot` still works (no regression)
 - **Issues encountered:** None
-- **Notes for next phase:** ScriptInjector is available as `this.scriptInjector` in TandemAPI. The `reloadIntoTab(wc)` hook is in the `activity-webview-event` IPC handler in main.ts (did-finish-load block). Phase 2 can access the existing SnapshotManager for accessibility tree data.
+- **Notes for next phase:** ScriptInjector is available as `this.scriptInjector` in ZerantAPI. The `reloadIntoTab(wc)` hook is in the `activity-webview-event` IPC handler in main.ts (did-finish-load block). Phase 2 can access the existing SnapshotManager for accessibility tree data.
 
 ---
 
@@ -57,7 +57,7 @@
   - [x] `GET /snapshot` still works (no regression)
   - [x] `npx tsc --noEmit` — 0 errors
 - **Issues encountered:** None
-- **Notes for next phase:** LocatorFinder is available as `this.locatorFinder` in TandemAPI. It uses SnapshotManager's new `getAccessibilityTree()` method for role/text-based searches, and CDP DOM queries for placeholder/label/testid. The `registerBackendNodeId()` method on SnapshotManager allows DOM-found elements to get valid `@eN` refs that work with `clickRef()`/`fillRef()`. Phase 3 can use the existing DevToolsManager for device emulation CDP calls.
+- **Notes for next phase:** LocatorFinder is available as `this.locatorFinder` in ZerantAPI. It uses SnapshotManager's new `getAccessibilityTree()` method for role/text-based searches, and CDP DOM queries for placeholder/label/testid. The `registerBackendNodeId()` method on SnapshotManager allows DOM-found elements to get valid `@eN` refs that work with `clickRef()`/`fillRef()`. Phase 3 can use the existing DevToolsManager for device emulation CDP calls.
 
 ---
 
@@ -81,7 +81,7 @@
   - [x] `npx tsc --noEmit` — 0 errors
   - [x] All Phase 1 + 2 regressions pass
 - **Issues encountered:** None
-- **Notes for next phase:** DeviceEmulator is available as `this.deviceEmulator` in TandemAPI. Uses Electron native `enableDeviceEmulation()` / `disableDeviceEmulation()` API (not CDP). `screen.width`/`screen.height` reflect emulated dimensions; `window.innerWidth`/`innerHeight` reflects the actual webview element size (Electron limitation). The `reloadIntoTab(wc)` hook is in the `did-finish-load` block alongside ScriptInjector. User agent is set via `wc.setUserAgent()` and reset via `wc.session.getUserAgent()`.
+- **Notes for next phase:** DeviceEmulator is available as `this.deviceEmulator` in ZerantAPI. Uses Electron native `enableDeviceEmulation()` / `disableDeviceEmulation()` API (not CDP). `screen.width`/`screen.height` reflect emulated dimensions; `window.innerWidth`/`innerHeight` reflects the actual webview element size (Electron limitation). The `reloadIntoTab(wc)` hook is in the `did-finish-load` block alongside ScriptInjector. User agent is set via `wc.setUserAgent()` and reset via `wc.session.getUserAgent()`.
 
 ---
 
@@ -108,7 +108,7 @@
 - [x] `src/locators/finder.ts` — NEW (LocatorFinder class)
 - [x] `src/snapshot/manager.ts` — MODIFIED (added getAccessibilityTree() and registerBackendNodeId())
 - [x] `src/api/server.ts` — MODIFIED (register /find, /find/click, /find/fill, /find/all routes)
-- [x] `src/main.ts` — MODIFIED (instantiate LocatorFinder, pass to TandemAPI)
+- [x] `src/main.ts` — MODIFIED (instantiate LocatorFinder, pass to ZerantAPI)
 
 ### Phase 3
 - [x] `src/device/emulator.ts` — NEW (DeviceEmulator class + profiles)

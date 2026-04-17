@@ -56,9 +56,9 @@
         // Left click: open popup
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (ext.popupUrl && window.tandem) {
+          if (ext.popupUrl && window.zerant) {
             const rect = btn.getBoundingClientRect();
-            window.tandem.openExtensionPopup(ext.id, {
+            window.zerant.openExtensionPopup(ext.id, {
               x: Math.round(rect.left),
               y: Math.round(rect.bottom + 4)
             });
@@ -69,8 +69,8 @@
         btn.addEventListener('contextmenu', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (window.tandem) {
-            window.tandem.showExtensionContextMenu(ext.id);
+          if (window.zerant) {
+            window.zerant.showExtensionContextMenu(ext.id);
           }
         });
 
@@ -115,9 +115,9 @@
         item.addEventListener('click', (e) => {
           e.stopPropagation();
           dropdown.classList.remove('visible');
-          if (ext.popupUrl && window.tandem) {
+          if (ext.popupUrl && window.zerant) {
             const rect = item.getBoundingClientRect();
-            window.tandem.openExtensionPopup(ext.id, {
+            window.zerant.openExtensionPopup(ext.id, {
               x: Math.round(rect.left),
               y: Math.round(rect.bottom + 4)
             });
@@ -129,8 +129,8 @@
           e.preventDefault();
           e.stopPropagation();
           dropdown.classList.remove('visible');
-          if (window.tandem) {
-            window.tandem.showExtensionContextMenu(ext.id);
+          if (window.zerant) {
+            window.zerant.showExtensionContextMenu(ext.id);
           }
         });
 
@@ -155,14 +155,14 @@
     })();
 
     // Listen for toolbar updates from main process
-    if (window.tandem) {
-      window.tandem.onExtensionToolbarUpdate((extensions) => {
+    if (window.zerant) {
+      window.zerant.onExtensionToolbarUpdate((extensions) => {
         renderExtToolbar(extensions);
       });
 
       // Listen for extension remove requests (from context menu)
-      window.tandem.onExtensionRemoveRequest(async (data) => {
-        const confirmed = confirm(`Remove "${data.name}" from Tandem?`);
+      window.zerant.onExtensionRemoveRequest(async (data) => {
+        const confirmed = confirm(`Remove "${data.name}" from Zerant?`);
         if (!confirmed) return;
         try {
           const resp = await fetch(`http://localhost:8765/extensions/uninstall/${data.diskId || data.id}`, {
@@ -171,7 +171,7 @@
           });
           if (resp.ok) {
             // Refresh toolbar
-            const exts = await window.tandem.getToolbarExtensions();
+            const exts = await window.zerant.getToolbarExtensions();
             renderExtToolbar(exts);
           }
         } catch (err) {
@@ -180,9 +180,9 @@
       });
 
       // Listen for toolbar refresh (triggered by API install/uninstall)
-      window.tandem.onExtensionToolbarRefresh(async () => {
+      window.zerant.onExtensionToolbarRefresh(async () => {
         try {
-          const exts = await window.tandem.getToolbarExtensions();
+          const exts = await window.zerant.getToolbarExtensions();
           renderExtToolbar(exts);
         } catch (e) {
           console.warn('Extension toolbar refresh failed:', e);
@@ -190,7 +190,7 @@
       });
 
       // Load initial toolbar state
-      window.tandem.getToolbarExtensions().then(exts => {
+      window.zerant.getToolbarExtensions().then(exts => {
         renderExtToolbar(exts);
       }).catch(() => { });
     }
@@ -205,13 +205,13 @@ function renderAboutPanel() {
   const titleEl = document.getElementById('sidebar-panel-title');
   const content = document.getElementById('sidebar-panel-content');
   
-  titleEl.textContent = 'About Tandem';
+  titleEl.textContent = 'About Zerant';
   panel.classList.add('open');
   content.classList.remove('webview-mode');
   
   content.innerHTML = `
     <div class="about-panel-wrapper">
-      <img class="about-logo" src="tandem-bike.png" alt="Tandem">
+      <img class="about-logo" src="zerant-logo.png" alt="Zerant">
       <div class="about-title"><span class="about-t">T</span><span class="about-rest">andem</span></div>
       <div class="about-subtitle">First-Party OpenClaw Companion Browser</div>
       <div class="about-quote">Public developer preview for serious OpenClaw workflows</div>
@@ -221,7 +221,7 @@ function renderAboutPanel() {
         Maintained in the same ecosystem as OpenClaw, with local control and security built in.
       </div>
       <div class="about-link-wrapper">
-        <a href="https://github.com/hydro13" class="about-link" id="about-github-link">GitHub — hydro13</a>
+        <a href="https://github.com/somdipto/zerant" class="about-link" id="about-github-link">GitHub — hydro13</a>
       </div>
       <div class="about-copyright">© 2026 Robin Waslander</div>
       <div class="about-team">A first-party companion browser for OpenClaw</div>
@@ -230,14 +230,14 @@ function renderAboutPanel() {
   
   // Set version from injected global
   const aboutVersionEl = document.getElementById('about-version-text');
-  if (aboutVersionEl) aboutVersionEl.textContent = window.__TANDEM_VERSION__ ? 'v' + window.__TANDEM_VERSION__ : '';
+  if (aboutVersionEl) aboutVersionEl.textContent = window.__ZERANT_VERSION__ ? 'v' + window.__ZERANT_VERSION__ : '';
 
   // Bind GitHub link
   const githubLink = document.getElementById('about-github-link');
   if (githubLink) {
     githubLink.addEventListener('click', (e) => {
       e.preventDefault();
-      if (window.tandem) window.tandem.newTab('https://github.com/hydro13');
+      if (window.zerant) window.zerant.newTab('https://github.com/somdipto/zerant');
     });
   }
 }

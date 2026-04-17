@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerHistoryTools(server: McpServer): void {
   server.tool(
-    'tandem_history_list',
+    'zerant_history_list',
     'List recent browsing history with pagination',
     coerceShape({
       limit: z.number().optional().describe('Max entries to return (default 100)'),
@@ -31,7 +31,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_history_clear',
+    'zerant_history_clear',
     'Clear all browsing history. This is irreversible.',
     {},
     {
@@ -46,7 +46,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_search_history',
+    'zerant_search_history',
     'Search through browsing history by keyword',
     {
       query: z.string().describe('Search query'),
@@ -66,7 +66,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_activity_log',
+    'zerant_activity_log',
     'Get recent browser activity events (navigations, clicks, searches, etc.)',
     coerceShape({
       limit: z.number().optional().describe('Max entries to return (default 100)'),
@@ -89,7 +89,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_site_memory_list',
+    'zerant_site_memory_list',
     'List all sites the browser remembers context for',
     async () => {
       const data = await apiCall('GET', '/memory/sites');
@@ -106,7 +106,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_site_memory_get',
+    'zerant_site_memory_get',
     'Get stored context/memory for a specific domain',
     {
       domain: z.string().describe('Domain to look up (e.g. "github.com")'),
@@ -118,7 +118,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_site_memory_search',
+    'zerant_site_memory_search',
     'Search across all site memory/context by keyword',
     {
       query: z.string().describe('Search query'),
@@ -130,7 +130,7 @@ export function registerHistoryTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_site_memory_diff',
+    'zerant_site_memory_diff',
     'Get a diff of changes in site memory for a specific domain since the last visit.',
     {
       domain: z.string().describe('Domain to get memory diff for (e.g. "github.com")'),

@@ -15,7 +15,7 @@ export class SessionManager {
   // === 2. Constructor ===
 
   constructor() {
-    // Register default session (the user's persist:tandem)
+    // Register default session (the user's persist:zerant)
     this.sessions.set('default', {
       name: 'default',
       partition: DEFAULT_PARTITION,

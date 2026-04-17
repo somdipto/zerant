@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerWorkflowTools(server: McpServer): void {
   server.tool(
-    'tandem_workflow_list',
+    'zerant_workflow_list',
     'List all saved workflows.',
     async () => {
       const data = await apiCall('GET', '/workflows');
@@ -16,7 +16,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workflow_create',
+    'zerant_workflow_create',
     'Create a new automation workflow with named steps.',
     coerceShape({
       name: z.string().describe('Workflow name'),
@@ -39,7 +39,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workflow_delete',
+    'zerant_workflow_delete',
     'Delete a saved workflow by ID.',
     {
       id: z.string().describe('The workflow ID to delete'),
@@ -57,7 +57,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workflow_run',
+    'zerant_workflow_run',
     'Run a saved workflow by ID. Returns an execution ID for tracking.',
     {
       id: z.string().describe('The workflow ID to run'),
@@ -73,7 +73,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workflow_status',
+    'zerant_workflow_status',
     'Check the status of a running or completed workflow execution.',
     {
       executionId: z.string().describe('The execution ID returned from workflow run'),
@@ -85,7 +85,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workflow_stop',
+    'zerant_workflow_stop',
     'Stop a running workflow execution.',
     {
       executionId: z.string().describe('The execution ID to stop'),
@@ -103,7 +103,7 @@ export function registerWorkflowTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workflow_running',
+    'zerant_workflow_running',
     'List all currently running workflow executions.',
     async () => {
       const data = await apiCall('GET', '/workflow/running');

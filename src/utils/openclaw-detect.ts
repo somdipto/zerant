@@ -10,7 +10,7 @@ export interface OpenClawStatus {
 
 /**
  * Detects if OpenClaw is running on localhost and retrieves the hooks token.
- * Used during Tandem setup to auto-configure webhook.secret.
+ * Used during Zerant setup to auto-configure webhook.secret.
  */
 export async function detectOpenClaw(): Promise<OpenClawStatus> {
   try {

@@ -1,4 +1,4 @@
-# Tandem Browser — AI Implementatie TODO
+# Zerant Browser — AI Implementatie TODO
 
 > Master checklist for alle fases. Vink af per session.
 > Elke session begint with the read or this file + the relevante phase docs.
@@ -7,7 +7,7 @@
 
 ## Pre-Requisites (for alle fases)
 
-- [ ] Tandem Browser start without crashes (`npm start`)
+- [ ] Zerant Browser start without crashes (`npm start`)
 - [ ] API server draait op :8765 (`curl http://localhost:8765/status`)
 - [ ] API token exists (`cat ~/.tandem/api-token`)
 - [ ] Git repo is up-to-date (`git pull`)
@@ -20,7 +20,7 @@
 ### Sessie 1.1 — Basis MCP Server
 - [ ] `npm install @modelcontextprotocol/sdk`
 - [ ] `src/mcp/server.ts` — MCP server entry point
-- [ ] `src/mcp/api-client.ts` — HTTP client for Tandem API
+- [ ] `src/mcp/api-client.ts` — HTTP client for Zerant API
 - [ ] Tool: `tandem_navigate(url)`
 - [ ] Tool: `tandem_go_back()`
 - [ ] Tool: `tandem_go_forward()`

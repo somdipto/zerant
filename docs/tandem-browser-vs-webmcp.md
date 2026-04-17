@@ -1,15 +1,15 @@
-# Tandem Browser vs WebMCP
+# Zerant Browser vs WebMCP
 
 WebMCP is one of the most interesting developments in the agentic web story. It
 deserves attention.
 
-It also does **not** make Tandem Browser redundant, because the two projects solve
+It also does **not** make Zerant Browser redundant, because the two projects solve
 different layers of the problem.
 
 ## Short version
 
 - **WebMCP** helps websites become more agent-readable.
-- **Tandem Browser** helps humans and agents work together in the real browser.
+- **Zerant Browser** helps humans and agents work together in the real browser.
 
 Those can complement each other, but they are not the same category.
 
@@ -28,9 +28,9 @@ That is valuable because it can make agent interactions:
 
 If the web adopts WebMCP widely, the agentic web gets better.
 
-## What Tandem Browser is trying to do
+## What Zerant Browser is trying to do
 
-Tandem Browser starts from a different place.
+Zerant Browser starts from a different place.
 
 The core problem is not just "how does an agent call a site tool?" It is:
 
@@ -39,11 +39,11 @@ The core problem is not just "how does an agent call a site tool?" It is:
 - how do they work across multiple sites, tabs, and sessions?
 - how do you keep that safe when the agent is operating in a real browser?
 
-Tandem Browser answers that by making the **browser itself** the shared workspace.
+Zerant Browser answers that by making the **browser itself** the shared workspace.
 
 ## Comparison
 
-| | WebMCP | Tandem Browser |
+| | WebMCP | Zerant Browser |
 |---|---|---|
 | Main scope | Individual websites expose structured agent actions | The browser becomes a shared human-AI workspace |
 | Integration point | Site/page level | Browser-wide |
@@ -61,9 +61,9 @@ WebMCP is strongest when:
 
 That is a good and legitimate direction.
 
-## Where Tandem Browser is strong
+## Where Zerant Browser is strong
 
-Tandem Browser is strongest when:
+Zerant Browser is strongest when:
 
 - the work spans multiple websites
 - the user is already browsing in a real authenticated session
@@ -78,19 +78,19 @@ Examples:
 - handoff-heavy tasks with CAPTCHAs or approvals
 - live browser assistance where the human and agent can both see progress
 
-## Why Tandem Browser does not depend on WebMCP adoption
+## Why Zerant Browser does not depend on WebMCP adoption
 
 This is the practical difference that matters most today.
 
 WebMCP becomes useful where websites adopt it.
-Tandem Browser is useful on the web as it already exists.
+Zerant Browser is useful on the web as it already exists.
 
-That makes Tandem Browser a browser-layer product, not a bet on future protocol
+That makes Zerant Browser a browser-layer product, not a bet on future protocol
 coverage.
 
 ## The strategic framing
 
-If you only describe Tandem Browser as:
+If you only describe Zerant Browser as:
 
 - an MCP server
 - a browser automation tool
@@ -102,7 +102,7 @@ The better framing is:
 
 > WebMCP helps websites become agent-readable.
 >
-> Tandem Browser helps humans and agents work together in the real browser, across the web.
+> Zerant Browser helps humans and agents work together in the real browser, across the web.
 
 That is the difference in one sentence.
 
@@ -111,7 +111,7 @@ That is the difference in one sentence.
 WebMCP is good for the ecosystem.
 It validates the idea that browser-based agent work needs better primitives.
 
-Tandem Browser sits at a different layer:
+Zerant Browser sits at a different layer:
 
 - local-first
 - browser-wide
@@ -119,4 +119,4 @@ Tandem Browser sits at a different layer:
 - security-conscious
 - built around shared context instead of detached execution
 
-That is the category Tandem Browser should own.
+That is the category Zerant Browser should own.

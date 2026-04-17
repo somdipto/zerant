@@ -144,7 +144,7 @@ export class McpHttpTransportManager {
    */
   private async prepareSession(): Promise<{ transport: StreamableHTTPServerTransport; server: McpServer }> {
     const server = new McpServer({
-      name: 'tandem-browser',
+      name: 'zerant-browser',
       version: '1.0.0',
     });
 

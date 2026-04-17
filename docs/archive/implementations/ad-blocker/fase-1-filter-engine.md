@@ -9,7 +9,7 @@
 
 ## Goal or this fase
 
-Bouw the ad blocking system: download EasyList and EasyPrivacy filterlijsten, parse ze to a efficiënte in-memory datastructuur, and blokkeer matchende HTTP requests via the existing `RequestDispatcher`. Registreer API endpoints for status and filter management. After this phase blokkeert Tandem advertenties and trackers op netwerk-niveau.
+Bouw the ad blocking system: download EasyList and EasyPrivacy filterlijsten, parse ze to a efficiënte in-memory datastructuur, and blokkeer matchende HTTP requests via the existing `RequestDispatcher`. Registreer API endpoints for status and filter management. After this phase blokkeert Zerant advertenties and trackers op netwerk-niveau.
 
 ---
 
@@ -305,7 +305,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 # Verwacht: {"ok":true}
 
 # Test 8: Navigeer to ad-heavy site, check stats
-# (open a page in Tandem, wait even, then:)
+# (open a page in Zerant, wait even, then:)
 curl -H "Authorization: Bearer $TOKEN" \
   http://localhost:8765/adblock/stats
 # Verwacht: {"ok":true, "totalBlocked":N, "blockedPerTab":{...}}

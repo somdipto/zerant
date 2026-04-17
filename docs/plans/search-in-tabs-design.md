@@ -13,7 +13,7 @@ With 20+ tabs open it becomes difficult to find the right tab. Robin has to scro
 
 **Opera has:** Search in Tabs — Ctrl+Space opens a search popup. Real-time filtering of open tabs by title and URL. Shows favicon, title, URL. Recently closed tabs also visible. Arrow keys + Enter to navigate.
 
-**Tandem currently has:** `GET /tabs/list` API endpoint via `function registerTabRoutes()` in `src/api/routes/tabs.ts`. `class TabManager` has `listTabs()` and `closedTabs` array. But: no search UI in the shell.
+**Zerant currently has:** `GET /tabs/list` API endpoint via `function registerTabRoutes()` in `src/api/routes/tabs.ts`. `class TabManager` has `listTabs()` and `closedTabs` array. But: no search UI in the shell.
 
 **Gap:** The data is there (API + manager), but the user interface is completely missing. This is a purely shell/UI feature.
 
@@ -27,7 +27,7 @@ With 20+ tabs open it becomes difficult to find the right tab. Robin has to scro
 >
 > An overlay appears centered at the top of the window — a search bar with a list of all open tabs below it. Robin starts typing: "generics".
 >
-> The list filters in real-time: 2 tabs remain — the Stack Overflow page and a TypeScript docs tab. Robin presses ↓ and Enter → Tandem switches directly to that tab. The overlay disappears.
+> The list filters in real-time: 2 tabs remain — the Stack Overflow page and a TypeScript docs tab. Robin presses ↓ and Enter → Zerant switches directly to that tab. The overlay disappears.
 >
 > Later Robin wants to find a tab he accidentally closed. He presses Ctrl+Space and scrolls down — below the open tabs there is a "Recently Closed" section with the last 10 closed tabs. He clicks one → the tab is reopened.
 

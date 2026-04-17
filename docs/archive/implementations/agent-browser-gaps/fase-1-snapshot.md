@@ -19,7 +19,7 @@ Voorbeeld output (same stijl if agent-browser):
 ```
 - document [document]
   - banner [banner]
-    - heading "Tandem Browser" [@e1] level=1
+    - heading "Zerant Browser" [@e1] level=1
   - navigation [navigation]
     - link "Home" [@e2] (focused)
     - link "About" [@e3]
@@ -48,7 +48,7 @@ Read this files (usage Read tool, NIET cat):
 4. **`src/api/server.ts`** — ~2385 rules, ~170 endpoints
    - Focus op the DevTools section (regel ~2162): zoek to `// DEVTOOLS — CDP Bridge`
    - Kijk to the response-pattern: `try/catch` + `res.json({ ok: true, ... })`
-   - Kijk to TandemAPIOptions interface (regel ~64) — hier must SnapshotManager bij
+   - Kijk to ZerantAPIOptions interface (regel ~64) — hier must SnapshotManager bij
 5. **`src/tabs/manager.ts`** — `getActiveWebContents()` methode + Tab interface
 6. **`src/main.ts`** — `startAPI()` function (regel ~250) + `will-quit` handler (regel ~852)
 
@@ -159,18 +159,18 @@ export class SnapshotManager {
 
 Na the bouwen or SnapshotManager, must you hem op 3 plekken aansluiten:
 
-### 1. `src/api/server.ts` — TandemAPIOptions interface (regel ~64)
+### 1. `src/api/server.ts` — ZerantAPIOptions interface (regel ~64)
 
 Voeg toe about the interface:
 
 ```typescript
-export interface TandemAPIOptions {
+export interface ZerantAPIOptions {
   // ... existing velden ...
   snapshotManager: SnapshotManager;
 }
 ```
 
-And in the TandemAPI class a private field + toewijzing in constructor:
+And in the ZerantAPI class a private field + toewijzing in constructor:
 
 ```typescript
 private snapshotManager: SnapshotManager;
@@ -181,10 +181,10 @@ this.snapshotManager = opts.snapshotManager;
 ### 2. `src/main.ts` — startAPI() (regel ~250)
 
 ```typescript
-// NA devToolsManager aanmaken, VOOR new TandemAPI():
+// NA devToolsManager aanmaken, VOOR new ZerantAPI():
 const snapshotManager = new SnapshotManager(devToolsManager!);
 
-// In new TandemAPI({...}):
+// In new ZerantAPI({...}):
 snapshotManager: snapshotManager!,
 ```
 
@@ -265,7 +265,7 @@ Hetzelfde pattern: per karakter `wc.sendInputEvent({type:'char', keyCode: char})
 ### `GET /snapshot/text?ref=@e1`
 
 ```json
-{"ok": true, "ref": "@e1", "text": "Tandem Browser"}
+{"ok": true, "ref": "@e1", "text": "Zerant Browser"}
 ```
 
 ---
@@ -277,7 +277,7 @@ Hetzelfde pattern: per karakter `wc.sendInputEvent({type:'char', keyCode: char})
 3. Implementeer `getSnapshot()` — CDP calls via `this.devtools.sendCommand()`
 4. Implementeer `assignRefs()` — simpele teller, @e1 @e2 etc.
 5. Implementeer `formatTree()` — recursief, inspringing per niveau
-6. **Manager Wiring:** voeg SnapshotManager toe about TandemAPIOptions, main.ts startAPI(), will-quit
+6. **Manager Wiring:** voeg SnapshotManager toe about ZerantAPIOptions, main.ts startAPI(), will-quit
 7. Voeg section + `GET /snapshot` endpoint toe about `src/api/server.ts`
 8. `npx tsc` — fix errors
 9. Test: `curl -H "Authorization: Bearer $(cat ~/.tandem/api-token)" http://localhost:8765/snapshot`
@@ -361,4 +361,4 @@ curl -H "Authorization: Bearer $TOKEN" "http://localhost:8765/snapshot/text?ref=
 **Wiring:**
 
 - ❌ Only endpoint add about server.ts and vergeten the manager te registreren
-- ✅ Altijd 3 plekken: TandemAPIOptions, startAPI(), will-quit
+- ✅ Altijd 3 plekken: ZerantAPIOptions, startAPI(), will-quit

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import type { WebContents } from 'electron';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { resolvePathWithinRoot, tryParseUrl, urlHasProtocol } from '../utils/security';
 
@@ -57,7 +57,7 @@ export class SiteMemoryManager {
   // === 2. Constructor ===
 
   constructor() {
-    this.memoryDir = tandemDir('site-memory');
+    this.memoryDir = zerantDir('site-memory');
     if (!fs.existsSync(this.memoryDir)) {
       fs.mkdirSync(this.memoryDir, { recursive: true });
     }

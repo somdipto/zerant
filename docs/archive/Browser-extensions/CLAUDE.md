@@ -33,7 +33,7 @@
 
 1. **Run `npx tsc --noEmit`** — must be 0 errors
    - Pre-existing errors in `src/gateway/server.chat.gateway-server-chat-b.e2e.test.ts`
-     lines 151 and 299 are safe to ignore (upstream issue, not Tandem)
+     lines 151 and 299 are safe to ignore (upstream issue, not Zerant)
 2. **Review your own changes** — run `git diff` and read through every change you made:
    - Check for logic errors, typos, missing error handling
    - Verify no accidental deletions or unintended side effects
@@ -62,7 +62,7 @@
 
 ## Security Stack Rules
 
-Tandem has a 6-layer security stack (NetworkShield, OutboundGuard, ContentAnalyzer,
+Zerant has a 6-layer security stack (NetworkShield, OutboundGuard, ContentAnalyzer,
 ScriptGuard, BehaviorMonitor, GatekeeperWebSocket) wired into the RequestDispatcher
 in main.ts. Extensions MUST NOT break this.
 
@@ -175,10 +175,10 @@ Key limitations to be aware or (see TOP30-EXTENSIONS.md for full matrix):
 - `chrome.identity.*` — NOT supported natively, needs Phase 7 polyfill
 - `chrome.offscreen` — NOT supported in Electron 40
 - `chrome.sidePanel` — NOT supported in Electron 40
-- `chrome.tabGroups` — NOT supported (Tandem has own tab groups)
-- `chrome.omnibox` — NOT supported (Tandem has custom URL bar)
+- `chrome.tabGroups` — NOT supported (Zerant has own tab groups)
+- `chrome.omnibox` — NOT supported (Zerant has custom URL bar)
 - `chrome.action.openPopup()` — needs Phase 5b custom implementation
-- `chrome.commands` — shortcuts may conflict with Tandem's own keybindings (Phase 10a detects)
+- `chrome.commands` — shortcuts may conflict with Zerant's own keybindings (Phase 10a detects)
 - `chrome.storage.sync` — works as local storage (no Google account sync)
 - Service Workers (MV3) — fully supported since Electron 28
 - `session.setPreloads()` — does NOT work for MV3 service workers

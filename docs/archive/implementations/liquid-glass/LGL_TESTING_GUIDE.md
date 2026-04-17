@@ -3,7 +3,7 @@
 ## Quick Start
 
 ```bash
-cd ~/genx/tandem-browser
+cd ~/genx/zerant-browser
 npm run start
 ```
 
@@ -141,7 +141,7 @@ top -pid $(pgrep -f "Electron")
 ### Reduced Motion
 1. Go to macOS System Settings → Accessibility → Display
 2. Enable "Reduce motion"
-3. Relaunch Tandem Browser
+3. Relaunch Zerant Browser
 4. **Expected:**
    - No gel press animations
    - No materialization animations

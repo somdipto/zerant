@@ -5,7 +5,7 @@ import fs from 'fs';
 import type { RouteContext} from '../context';
 import { getActiveWC } from '../context';
 import { getPasswordManager } from '../../passwords/manager';
-import { tandemDir } from '../../utils/paths';
+import { zerantDir } from '../../utils/paths';
 import { handleRouteError } from '../../utils/errors';
 import { createRateLimitMiddleware } from '../rate-limit';
 import { getActorContext, normalizeTabSource } from '../../tabs/context';
@@ -94,7 +94,7 @@ export function registerMiscRoutes(router: Router, ctx: RouteContext): void {
       const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
       if (!win) {
         res.status(422).json({
-          error: 'Folder picker requires a local Tandem window. This endpoint is not available for remote agents.',
+          error: 'Folder picker requires a local Zerant window. This endpoint is not available for remote agents.',
           localOnly: true,
         });
         return;
@@ -391,7 +391,7 @@ export function registerMiscRoutes(router: Router, ctx: RouteContext): void {
     message: 'Too many behavior clear requests. Retry shortly.',
   }), (_req: Request, res: Response) => {
     try {
-      const rawDir = tandemDir('behavior', 'raw');
+      const rawDir = zerantDir('behavior', 'raw');
       if (fs.existsSync(rawDir)) {
         const files = fs.readdirSync(rawDir).filter(f => f.endsWith('.jsonl'));
         for (const file of files) {
@@ -749,7 +749,7 @@ export function registerMiscRoutes(router: Router, ctx: RouteContext): void {
     message: 'Too many data wipe requests. Retry shortly.',
   }), (_req: Request, res: Response) => {
     try {
-      const baseDir = tandemDir();
+      const baseDir = zerantDir();
 
       // Wipe chat history
       const chatPath = path.join(baseDir, 'chat-history.json');

@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerSidebarTools(server: McpServer): void {
   server.tool(
-    'tandem_sidebar_config',
+    'zerant_sidebar_config',
     'Get the current sidebar configuration (items, state, active item).',
     async () => {
       const data = await apiCall('GET', '/sidebar/config');
@@ -15,7 +15,7 @@ export function registerSidebarTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_sidebar_update',
+    'zerant_sidebar_update',
     'Update sidebar configuration (state, activeItemId, item order).',
     {
       config: z.object({}).passthrough().describe('Sidebar configuration fields to update'),
@@ -28,7 +28,7 @@ export function registerSidebarTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_sidebar_toggle_item',
+    'zerant_sidebar_toggle_item',
     'Toggle a sidebar item on or off.',
     {
       id: z.string().describe('Sidebar item ID to toggle'),
@@ -41,7 +41,7 @@ export function registerSidebarTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_sidebar_activate_item',
+    'zerant_sidebar_activate_item',
     'Activate a sidebar item (open its panel), or deactivate if already active.',
     {
       id: z.string().describe('Sidebar item ID to activate'),
@@ -54,7 +54,7 @@ export function registerSidebarTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_sidebar_reorder',
+    'zerant_sidebar_reorder',
     'Reorder sidebar items by providing an ordered list of item IDs.',
     coerceShape({
       orderedIds: z.array(z.string()).describe('Array of sidebar item IDs in desired order'),
@@ -67,7 +67,7 @@ export function registerSidebarTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_sidebar_state',
+    'zerant_sidebar_state',
     'Set the sidebar visibility state.',
     {
       state: z.enum(['hidden', 'narrow', 'wide']).describe('Sidebar state: hidden, narrow, or wide'),

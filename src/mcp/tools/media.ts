@@ -7,8 +7,8 @@ export function registerMediaTools(server: McpServer): void {
   // ── Voice ──
 
   server.tool(
-    'tandem_voice_start',
-    'Start speech recognition (voice-to-text). Tandem will begin listening for voice input.',
+    'zerant_voice_start',
+    'Start speech recognition (voice-to-text). Zerant will begin listening for voice input.',
     async () => {
       const data = await apiCall('POST', '/voice/start');
       await logActivity('voice_start');
@@ -17,7 +17,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_voice_stop',
+    'zerant_voice_stop',
     'Stop speech recognition.',
     async () => {
       const data = await apiCall('POST', '/voice/stop');
@@ -27,7 +27,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_voice_status',
+    'zerant_voice_status',
     'Get current voice recognition status (listening, language, etc.).',
     async () => {
       const data = await apiCall('GET', '/voice/status');
@@ -38,7 +38,7 @@ export function registerMediaTools(server: McpServer): void {
   // ── Audio Recording ──
 
   server.tool(
-    'tandem_audio_start',
+    'zerant_audio_start',
     'Start audio/screen recording of the application.',
     async () => {
       const data = await apiCall('POST', '/audio/start');
@@ -48,7 +48,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_audio_stop',
+    'zerant_audio_stop',
     'Stop audio/screen recording.',
     async () => {
       const data = await apiCall('POST', '/audio/stop');
@@ -58,7 +58,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_audio_status',
+    'zerant_audio_status',
     'Get current audio recording status.',
     async () => {
       const data = await apiCall('GET', '/audio/status');
@@ -67,7 +67,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_audio_recordings',
+    'zerant_audio_recordings',
     'List saved audio recordings.',
     async () => {
       const data = await apiCall('GET', '/audio/recordings');
@@ -78,7 +78,7 @@ export function registerMediaTools(server: McpServer): void {
   // ── Screenshots (Annotated) ──
 
   server.tool(
-    'tandem_screenshot_annotated',
+    'zerant_screenshot_annotated',
     'Get the last annotated screenshot (with draw-mode annotations) as a PNG image.',
     async () => {
       const base64 = await apiCall('GET', '/screenshot/annotated');
@@ -94,7 +94,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_screenshot_capture_annotated',
+    'zerant_screenshot_capture_annotated',
     'Capture a new annotated screenshot of the active tab and return it as a PNG image.',
     async () => {
       const data = await apiCall('POST', '/screenshot/annotated');
@@ -104,8 +104,8 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_screenshot_capture_application',
-    'Capture a fresh screenshot of the full Tandem application window and return the saved file path.',
+    'zerant_screenshot_capture_application',
+    'Capture a fresh screenshot of the full Zerant application window and return the saved file path.',
     async () => {
       const data = await apiCall('POST', '/screenshot/application');
       await logActivity('screenshot_capture_application');
@@ -114,7 +114,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_screenshot_capture_region',
+    'zerant_screenshot_capture_region',
     'Capture a fresh screenshot of a specific application region and return the saved file path.',
     coerceShape({
       x: z.number().describe('Region left coordinate in application-window pixels.'),
@@ -130,7 +130,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_screenshots_list',
+    'zerant_screenshots_list',
     'List saved screenshots.',
     coerceShape({
       limit: z.number().optional().describe('Maximum number of screenshots to return (default: 10)'),
@@ -148,7 +148,7 @@ export function registerMediaTools(server: McpServer): void {
   // ── Draw Mode ──
 
   server.tool(
-    'tandem_draw_toggle',
+    'zerant_draw_toggle',
     'Toggle draw mode on/off. When enabled, users can annotate the screen.',
     coerceShape({
       enabled: z.boolean().optional().describe('Set draw mode on (true) or off (false). Omit to toggle.'),
@@ -165,7 +165,7 @@ export function registerMediaTools(server: McpServer): void {
   // ── Panel ──
 
   server.tool(
-    'tandem_panel_toggle',
+    'zerant_panel_toggle',
     'Toggle the Wingman side panel open/closed.',
     coerceShape({
       open: z.boolean().optional().describe('Set panel open (true) or closed (false). Omit to toggle.'),
@@ -182,7 +182,7 @@ export function registerMediaTools(server: McpServer): void {
   // ── Wingman Stream ──
 
   server.tool(
-    'tandem_wingman_stream_toggle',
+    'zerant_wingman_stream_toggle',
     'Toggle Wingman activity streaming to OpenClaw on/off.',
     coerceShape({
       enabled: z.boolean().describe('Enable (true) or disable (false) the wingman stream'),
@@ -195,7 +195,7 @@ export function registerMediaTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_wingman_stream_status',
+    'zerant_wingman_stream_status',
     'Get current Wingman stream status (enabled/disabled).',
     async () => {
       const data = await apiCall('GET', '/wingman-stream/status');

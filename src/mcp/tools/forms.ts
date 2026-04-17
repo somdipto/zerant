@@ -4,7 +4,7 @@ import { apiCall, tabHeaders, logActivity } from '../api-client.js';
 
 export function registerFormTools(server: McpServer): void {
   server.tool(
-    'tandem_forms_saved',
+    'zerant_forms_saved',
     'List saved form autofill data. Optionally filter by domain to get form data for a specific site.',
     {
       domain: z.string().optional().describe('Optional domain to filter saved form data'),
@@ -17,7 +17,7 @@ export function registerFormTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_form_fill',
+    'zerant_form_fill',
     'Get saved form fill data for a domain, ready to inject into form fields',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -29,7 +29,7 @@ export function registerFormTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_forms_clear',
+    'zerant_forms_clear',
     'Delete all saved form autofill data for a specific domain',
     {
       domain: z.string().describe('The domain to clear saved form data for'),

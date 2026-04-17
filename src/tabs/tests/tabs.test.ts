@@ -100,7 +100,7 @@ describe('TabManager', () => {
       expect(tab.url).toBe('https://test.com');
       expect(tab.source).toBe('user');
       expect(tab.pinned).toBe(false);
-      expect(tab.partition).toBe('persist:tandem');
+      expect(tab.partition).toBe('persist:zerant');
       expect(tm.count).toBe(1);
     });
 
@@ -120,7 +120,7 @@ describe('TabManager', () => {
 
     it('does not focus when focus=false', async () => {
       const t1 = await tm.openTab('https://one.com');
-      await tm.openTab('https://two.com', undefined, 'user', 'persist:tandem', false);
+      await tm.openTab('https://two.com', undefined, 'user', 'persist:zerant', false);
       expect(tm.getActiveTab()?.id).toBe(t1.id);
     });
 
@@ -142,7 +142,7 @@ describe('TabManager', () => {
         'https://discord.com/channels/123',
         undefined,
         'user',
-        'persist:tandem',
+        'persist:zerant',
         true,
         { inheritSessionFrom: sourceTab.id },
       );
@@ -158,13 +158,13 @@ describe('TabManager', () => {
         'https://discord.com/channels/@me',
         undefined,
         'user',
-        'persist:tandem',
+        'persist:zerant',
         true,
         { inheritSessionFrom: 'tab-999' },
       );
 
       expect(tab.url).toBe('https://discord.com/channels/@me');
-      expect(tab.partition).toBe('persist:tandem');
+      expect(tab.partition).toBe('persist:zerant');
     });
 
     it('sends tab-source-changed IPC', async () => {
@@ -228,7 +228,7 @@ describe('TabManager', () => {
   describe('focusTab()', () => {
     it('activates the target tab and deactivates the previous', async () => {
       const t1 = await tm.openTab('https://one.com');
-      const t2 = await tm.openTab('https://two.com', undefined, 'user', 'persist:tandem', false);
+      const t2 = await tm.openTab('https://two.com', undefined, 'user', 'persist:zerant', false);
       await tm.focusTab(t2.id);
       expect(tm.getActiveTab()?.id).toBe(t2.id);
       expect(tm.getTab(t1.id)?.active).toBe(false);
@@ -243,7 +243,7 @@ describe('TabManager', () => {
       const handler = vi.fn();
       tm.setActiveTabChangedHandler(handler);
       await tm.openTab('https://one.com');
-      const t2 = await tm.openTab('https://two.com', undefined, 'user', 'persist:tandem', false);
+      const t2 = await tm.openTab('https://two.com', undefined, 'user', 'persist:zerant', false);
 
       handler.mockClear();
       await tm.focusTab(t2.id);

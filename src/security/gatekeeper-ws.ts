@@ -4,7 +4,7 @@ import type { IncomingMessage } from 'http';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import type { Guardian } from './guardian';
 import type { SecurityDB } from './security-db';
 import type {
@@ -363,7 +363,7 @@ export class GatekeeperWebSocket {
   }
 
   private getOrCreateSecret(): string {
-    const secretDir = tandemDir('security');
+    const secretDir = zerantDir('security');
     const secretPath = path.join(secretDir, 'gatekeeper.secret');
 
     try {

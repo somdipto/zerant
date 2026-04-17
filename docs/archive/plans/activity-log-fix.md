@@ -187,7 +187,7 @@ curl -s 'http://127.0.0.1:8765/activity-log?limit=20'
 
 ## Testing
 
-1. Start Tandem
+1. Start Zerant
 2. Browse to a site, scroll around, select text, click in a form
 3. `curl 'http://127.0.0.1:8765/activity-log?types=scroll-position,text-selected,form-interaction&limit=10'`
 4. Should see the CDP events in the activity log

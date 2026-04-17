@@ -13,7 +13,7 @@ When Robin opens many tabs from one page (for example, 5 links from a Google sea
 
 **Opera has:** Tab Islands — automatic grouping or tabs opened from the same parent. Color-coded clusters with names, collapsible, with visual connections between tabs in the same island.
 
-**Tandem currently has:** `POST /tabs/group` via `function registerTabRoutes()` in `src/api/routes/tabs.ts`. Manual grouping with colors via `class TabManager` → `setGroup()` in `src/tabs/manager.ts`. Tabs have a `groupId` field and there is a `group-dot` element in the shell. But: no auto-grouping, no visual islands, no collapse behavior, and no naming.
+**Zerant currently has:** `POST /tabs/group` via `function registerTabRoutes()` in `src/api/routes/tabs.ts`. Manual grouping with colors via `class TabManager` → `setGroup()` in `src/tabs/manager.ts`. Tabs have a `groupId` field and there is a `group-dot` element in the shell. But: no auto-grouping, no visual islands, no collapse behavior, and no naming.
 
 **Gap:** The entire auto-grouping logic is missing (opener tracking), and the shell UI only shows a small colored dot instead or a real island design with gap, name, and collapse.
 
@@ -21,7 +21,7 @@ When Robin opens many tabs from one page (for example, 5 links from a Google sea
 
 ## User Experience — How It Works
 
-> Robin opens Tandem and gaat to Google. He zoekt "best noise cancelling headphones 2026" and opens 4 reviews in new tabs.
+> Robin opens Zerant and gaat to Google. He zoekt "best noise cancelling headphones 2026" and opens 4 reviews in new tabs.
 >
 > An **island** automatically appears in the tab bar: the 4 review tabs get a light-blue background and a small label "google.com" above them. To the left and right or the island is a subtle extra gap (8px) that visually separates it from standalone tabs.
 >

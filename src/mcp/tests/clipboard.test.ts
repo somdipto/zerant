@@ -19,8 +19,8 @@ describe('MCP clipboard tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_clipboard_read', () => {
-    const handler = getHandler(tools, 'tandem_clipboard_read');
+  describe('zerant_clipboard_read', () => {
+    const handler = getHandler(tools, 'zerant_clipboard_read');
 
     it('returns text content', async () => {
       mockApiCall.mockResolvedValueOnce({ text: 'hello', formats: ['text'] });
@@ -51,8 +51,8 @@ describe('MCP clipboard tools', () => {
     });
   });
 
-  describe('tandem_clipboard_write', () => {
-    const handler = getHandler(tools, 'tandem_clipboard_write');
+  describe('zerant_clipboard_write', () => {
+    const handler = getHandler(tools, 'zerant_clipboard_write');
 
     it('writes text to clipboard', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -83,8 +83,8 @@ describe('MCP clipboard tools', () => {
     });
   });
 
-  describe('tandem_clipboard_save', () => {
-    const handler = getHandler(tools, 'tandem_clipboard_save');
+  describe('zerant_clipboard_save', () => {
+    const handler = getHandler(tools, 'zerant_clipboard_save');
 
     it('saves clipboard to file', async () => {
       mockApiCall.mockResolvedValueOnce({ path: '/tmp/shot.png', size: 2048 });

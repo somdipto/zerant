@@ -1,7 +1,7 @@
 # Opera Browser — Complete Feature Inventory
 
 > Compiled 2026-02-28 from help.opera.com and opera.com/features
-> Purpose: Gap analysis reference for Tandem Browser
+> Purpose: Gap analysis reference for Zerant Browser
 
 ---
 
@@ -14,7 +14,7 @@
 **Visual Design:** Each island has a distinct color tag and optional custom name. Collapsed islands occupy minimal space. Tooltip preview on hover shows grouped tab thumbnails. Visual connections (subtle lines/shading) between grouped tabs.
 **Keyboard Shortcut:** Alt+T (new tab in current island)
 **Technical Notes:** Auto-creates islands on new browsing sessions. Works alongside Workspaces. Supports multi-tab drag-and-drop operations. Configurable via Settings > Features > User Interface > "Automatically create tab islands."
-**Tandem Relevance:** **HIGH** — Core tab organization paradigm. Tandem should evaluate whether island-style grouping fits its UX model.
+**Zerant Relevance:** **HIGH** — Core tab organization paradigm. Zerant should evaluate whether island-style grouping fits its UX model.
 
 ### 1.2 Workspaces
 **Category:** Tab Organization
@@ -23,7 +23,7 @@
 **Visual Design:** Customizable icons and names per workspace. Clean single-click switching.
 **Keyboard Shortcut:** Custom hotkeys configurable per workspace. Ctrl+Tab cycles within current workspace only.
 **Technical Notes:** Workspace tabs are fully isolated — actions (reload all, duplicate highlighting) apply only within current workspace. Right-click tab > "Move tab to workspace" or right-click link > "Open link in workspace."
-**Tandem Relevance:** **HIGH** — Workspace isolation is a powerful organizational concept for multi-context browsing.
+**Zerant Relevance:** **HIGH** — Workspace isolation is a powerful organizational concept for multi-context browsing.
 
 ### 1.3 Split Screen
 **Category:** Tab Management / Productivity
@@ -32,7 +32,7 @@
 **Visual Design:** Vertically connected tabs with a vertical line separator. Three-dot menu in each frame. Toolbar organizes icons by function — browser-wide icons on right tab toolbar, tab-specific icons appear on hover.
 **Keyboard Shortcut:** Shift+click to select multiple tabs for split.
 **Technical Notes:** Integrates with Tab Islands. Each panel maintains independent navigation. "Disconnect from Split Screen" via right-click removes a single page.
-**Tandem Relevance:** **HIGH** — Multi-pane browsing is a core differentiator for power users.
+**Zerant Relevance:** **HIGH** — Multi-pane browsing is a core differentiator for power users.
 
 ### 1.4 Tab Emojis
 **Category:** Tab Personalization
@@ -41,7 +41,7 @@
 **Visual Design:** Emoji appears as a badge on the tab. Interactive popup selector on hover.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Persists across sessions. Can add/remove freely.
-**Tandem Relevance:** **MEDIUM** — Fun personalization feature, low implementation effort.
+**Zerant Relevance:** **MEDIUM** — Fun personalization feature, low implementation effort.
 
 ### 1.5 Tab Traces
 **Category:** Tab Visual Feedback
@@ -50,7 +50,7 @@
 **Visual Design:** Highlight brightness correlates with usage recency. Activates automatically with 8+ open tabs.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Customizable activation threshold (minimum number or tabs before traces appear).
-**Tandem Relevance:** **MEDIUM** — Subtle but useful visual cue for heavy tab users.
+**Zerant Relevance:** **MEDIUM** — Subtle but useful visual cue for heavy tab users.
 
 ### 1.6 Search in Tabs
 **Category:** Tab Navigation
@@ -59,7 +59,7 @@
 **Visual Design:** Dropdown list with site favicons, page titles, and web addresses. Clear visual hierarchy.
 **Keyboard Shortcut:** Ctrl+Space
 **Technical Notes:** Arrow keys navigate results, Enter selects. Searches both titles and URLs.
-**Tandem Relevance:** **HIGH** — Essential for power users with many tabs open.
+**Zerant Relevance:** **HIGH** — Essential for power users with many tabs open.
 
 ### 1.7 Visual Tab Cycler
 **Category:** Tab Navigation
@@ -68,7 +68,7 @@
 **Visual Design:** Thumbnail grid/list or open tab previews.
 **Keyboard Shortcut:** Hold Ctrl, then press Tab repeatedly to cycle; release Ctrl to switch to selected tab.
 **Technical Notes:** Requires Settings > Advanced > Browser > "Show tab previews" to be enabled.
-**Tandem Relevance:** **MEDIUM** — Nice-to-have visual tab switching.
+**Zerant Relevance:** **MEDIUM** — Nice-to-have visual tab switching.
 
 ### 1.8 Tab Preview on Hover
 **Category:** Tab Navigation
@@ -76,7 +76,7 @@
 **UI Location:** Tab bar hover tooltip.
 **Visual Design:** Thumbnail preview popup.
 **Technical Notes:** Enable via Settings > Advanced > Browser > "Show tab previews."
-**Tandem Relevance:** **MEDIUM** — Common browser feature, useful UX enhancement.
+**Zerant Relevance:** **MEDIUM** — Common browser feature, useful UX enhancement.
 
 ### 1.9 Pin Tabs
 **Category:** Tab Management
@@ -84,7 +84,7 @@
 **UI Location:** Right-click tab > "Pin Tab" / "Unpin Tab."
 **Visual Design:** Compact favicon-only display, pinned to the left.
 **Keyboard Shortcut:** None.
-**Tandem Relevance:** **HIGH** — Standard browser feature, should be implemented.
+**Zerant Relevance:** **HIGH** — Standard browser feature, should be implemented.
 
 ### 1.10 Tab Snoozing
 **Category:** Tab Performance
@@ -93,26 +93,26 @@
 **Visual Design:** Inactive tab state (no strong visual indicator described).
 **Keyboard Shortcut:** None.
 **Technical Notes:** Enabled by default. Toggleable.
-**Tandem Relevance:** **HIGH** — Memory management is critical for multi-tab browsers.
+**Zerant Relevance:** **HIGH** — Memory management is critical for multi-tab browsers.
 
 ### 1.11 Duplicate Tabs Highlighter
 **Category:** Tab Management
 **Description:** Identifies and highlights duplicate tabs on hover. Bulk closure or all duplicates via right-click context menu.
 **UI Location:** Tab hover + right-click > "Close duplicate tabs."
 **Visual Design:** Hover-activated highlighting or duplicate tabs.
-**Tandem Relevance:** **MEDIUM** — Useful cleanup utility.
+**Zerant Relevance:** **MEDIUM** — Useful cleanup utility.
 
 ### 1.12 Close Tab Variations
 **Category:** Tab Management
 **Description:** Multiple tab closure options: close single tab (x button), close other tabs, close tabs to the right, close duplicate tabs, reopen last closed tab.
 **UI Location:** Right-click context menu on tab.
-**Tandem Relevance:** **HIGH** — Standard but important tab management options.
+**Zerant Relevance:** **HIGH** — Standard but important tab management options.
 
 ### 1.13 Save Tabs as Speed Dial Folder
 **Category:** Tab Management
 **Description:** Batch-save all open tabs or a selection or tabs as a Speed Dial folder for later access.
 **UI Location:** Right-click tab bar > "Save all tabs as Speed Dial folder" or Ctrl+click multiple tabs > right-click > "Save tabs as Speed Dial folder."
-**Tandem Relevance:** **MEDIUM** — Session-saving concept is valuable.
+**Zerant Relevance:** **MEDIUM** — Session-saving concept is valuable.
 
 ---
 
@@ -125,14 +125,14 @@
 **Visual Design:** Narrow mode toggle available. Notification badges on messenger icons. Pinnable panels. Clean, icon-based navigation.
 **Keyboard Shortcut:** None dedicated (individual panels may have shortcuts).
 **Technical Notes:** Sidebar elements include: Workspaces, Facebook Messenger (SKIP), WhatsApp, Telegram, VK (SKIP), Instagram, Discord, Slack, X/Twitter, Spotify, My Flow, Speed Dial, Bookmarks, Personal News, Tabs, History, Downloads, Extensions, Settings.
-**Tandem Relevance:** **HIGH** — Sidebar is a defining Opera UX pattern. Tandem should consider sidebar architecture.
+**Zerant Relevance:** **HIGH** — Sidebar is a defining Opera UX pattern. Zerant should consider sidebar architecture.
 
 ### 2.2 Sidebar Panels — Messenger/App Integration
 **Category:** Sidebar
 **Description:** Each integrated app (WhatsApp, Discord, Slack, Instagram, X, Spotify) opens as a sidebar panel — essentially a narrow webview pinned to the left side. Users can pin/unpin, mute notifications, and log in/out independently.
 **UI Location:** Sidebar icons, each opening a panel overlay.
 **Visual Design:** Panel width adjustable. Three-dot menu per panel for mute/hide/logout. Notification badges.
-**Tandem Relevance:** **HIGH** — Sidebar webview panels are a core Opera differentiator.
+**Zerant Relevance:** **HIGH** — Sidebar webview panels are a core Opera differentiator.
 
 ---
 
@@ -145,7 +145,7 @@
 **Visual Design:** Contact list, chat threads, input box at bottom, paper clip for attachments, microphone for voice, three-dot menu.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Syncs with mobile WhatsApp via QR code authentication. No separate app needed.
-**Tandem Relevance:** **HIGH** — WhatsApp is the most popular messenger globally.
+**Zerant Relevance:** **HIGH** — WhatsApp is the most popular messenger globally.
 
 ### 3.2 Discord
 **Category:** Integrated Messenger
@@ -153,7 +153,7 @@
 **UI Location:** Sidebar icon. Pin/unpin toggles.
 **Visual Design:** Standard Discord web interface adapted to sidebar width.
 **Technical Notes:** Standard Discord login. No additional software required.
-**Tandem Relevance:** **HIGH** — Discord is essential for gaming/dev/community audiences.
+**Zerant Relevance:** **HIGH** — Discord is essential for gaming/dev/community audiences.
 
 ### 3.3 Slack
 **Category:** Integrated Messenger
@@ -161,7 +161,7 @@
 **UI Location:** Sidebar icon.
 **Visual Design:** Collapsible conversation views, quick-access messaging.
 **Technical Notes:** Standard Slack login. Works alongside other sidebar messengers.
-**Tandem Relevance:** **HIGH** — Slack is essential for professional/team users.
+**Zerant Relevance:** **HIGH** — Slack is essential for professional/team users.
 
 ### 3.4 Instagram
 **Category:** Integrated Social Media
@@ -169,7 +169,7 @@
 **UI Location:** Sidebar icon. Profile button, Messages icon (paper airplane), Post creation (+) icon, Settings gear.
 **Visual Design:** Mobile-style design adapted for desktop sidebar width.
 **Technical Notes:** Standard Instagram login. Full posting capability from desktop.
-**Tandem Relevance:** **MEDIUM** — Social media integration is a differentiator but not core to browser function.
+**Zerant Relevance:** **MEDIUM** — Social media integration is a differentiator but not core to browser function.
 
 ### 3.5 X (Twitter)
 **Category:** Integrated Social Media
@@ -177,7 +177,7 @@
 **UI Location:** Sidebar icon. Pin option for always-visible access.
 **Visual Design:** Full image/GIF/video rendering. Desktop navigation optimized for efficient context switching.
 **Technical Notes:** Standard X login. No separate extension needed.
-**Tandem Relevance:** **MEDIUM** — Social media integration.
+**Zerant Relevance:** **MEDIUM** — Social media integration.
 
 ### 3.6 Spotify (Music Player)
 **Category:** Integrated Media / Music
@@ -185,13 +185,13 @@
 **UI Location:** Sidebar Music Player icon. Detachable — can be moved anywhere, even outside browser or into toolbar.
 **Visual Design:** Modular, detachable player. Floating controller. Sonic theme provides reactive visuals ("soft, muted shades to vibrant acids").
 **Technical Notes:** Supports Spotify, Apple Music, YouTube Music, Deezer. Auto-pauses during calls/video. Cross-device sync via Opera Sync.
-**Tandem Relevance:** **MEDIUM** — Music integration is a lifestyle feature; nice differentiator.
+**Zerant Relevance:** **MEDIUM** — Music integration is a lifestyle feature; nice differentiator.
 
 ### 3.7 Telegram
 **Category:** Integrated Messenger
 **Description:** Telegram messaging accessible from sidebar panel. (Referenced in help pages as an available sidebar messenger.)
 **UI Location:** Sidebar icon.
-**Tandem Relevance:** **MEDIUM** — Popular in certain regions.
+**Zerant Relevance:** **MEDIUM** — Popular in certain regions.
 
 ### 3.8 Facebook Messenger — **SKIP**
 ### 3.9 VKontakte — **SKIP**
@@ -216,7 +216,7 @@
 **Visual Design:** Right-side panel. "+" button next to chat input for image generation. Smiley face icon for feedback.
 **Keyboard Shortcut:** Ctrl+O / Cmd+O
 **Technical Notes:** Toggle page context access on/off within chat. Disable entirely via Settings (Alt+P) > Opera AI toggle. Dynamically selects between Google and OpenAI models based on task.
-**Tandem Relevance:** **HIGH** — AI assistant integration is a major competitive feature. Tandem should evaluate AI integration strategy.
+**Zerant Relevance:** **HIGH** — AI assistant integration is a major competitive feature. Zerant should evaluate AI integration strategy.
 
 ---
 
@@ -229,7 +229,7 @@
 **Visual Design:** Blue shield badge in address bar showing blocked count. "Turn off for this site" button.
 **Keyboard Shortcut:** Alt+P (settings access).
 **Technical Notes:** Uses filter lists (EasyList default + NoCoin). Auto-updates. Operates at network request level.
-**Tandem Relevance:** **HIGH** — Ad blocking is table stakes for modern browsers.
+**Zerant Relevance:** **HIGH** — Ad blocking is table stakes for modern browsers.
 
 ### 5.2 Tracker Blocker
 **Category:** Privacy
@@ -237,7 +237,7 @@
 **UI Location:** Ad Blocker popup window toggle. Blue shield badge in address bar. Settings > Basic > Privacy protection.
 **Visual Design:** Badge displays blocked tracker count alongside ad count.
 **Technical Notes:** Manages exception and blocklist preferences. Works alongside ad blocker.
-**Tandem Relevance:** **HIGH** — Tracker blocking is essential for privacy-focused browsers.
+**Zerant Relevance:** **HIGH** — Tracker blocking is essential for privacy-focused browsers.
 
 ### 5.3 Free VPN
 **Category:** Privacy / Security
@@ -246,7 +246,7 @@
 **Visual Design:** Badge with VPN status. Clean control panel showing real-time stats and location toggles.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Browser-only protection (not device-wide; VPN Pro is paid upgrade for device-wide). Unlimited bandwidth. "Bypass VPN for default search engines" option. 3 general regions (free) vs 48 locations (Pro).
-**Tandem Relevance:** **HIGH** — VPN is a major Opera differentiator. Significant technical undertaking to implement.
+**Zerant Relevance:** **HIGH** — VPN is a major Opera differentiator. Significant technical undertaking to implement.
 
 ### 5.4 Paste Protection
 **Category:** Security
@@ -254,7 +254,7 @@
 **UI Location:** Paste Protection icon appears in address bar right side after copying sensitive data.
 **Visual Design:** Icon with notification upon sensitive data copy. Warning display if clipboard tampered with.
 **Technical Notes:** 2-minute monitoring window or until paste occurs.
-**Tandem Relevance:** **MEDIUM** — Nice security feature but niche use case.
+**Zerant Relevance:** **MEDIUM** — Nice security feature but niche use case.
 
 ### 5.5 Private Browsing Window
 **Category:** Privacy
@@ -262,44 +262,44 @@
 **UI Location:** Menu > New Private Window. File > New Private Window (Mac).
 **Keyboard Shortcut:** Ctrl+Shift+N (Mac: Cmd+Shift+N).
 **Technical Notes:** Manually saved items (passwords, downloads, Speed Dial entries) persist. AI features disabled.
-**Tandem Relevance:** **HIGH** — Standard browser feature, must have.
+**Zerant Relevance:** **HIGH** — Standard browser feature, must have.
 
 ### 5.6 Security Badges
 **Category:** Security
 **Description:** Visual indicators in address bar showing connection status and active features/permissions. Lock icon = secure HTTPS. Other badges for: compressed connection, ads blocked, camera/mic/location access, extensions, fraud/malware warnings, MIDI access, VPN status.
 **UI Location:** Combined address bar (right side for most badges).
 **Visual Design:** Icon-based badge system.
-**Tandem Relevance:** **HIGH** — Security indicators are essential browser UX.
+**Zerant Relevance:** **HIGH** — Security indicators are essential browser UX.
 
 ### 5.7 Phishing & Malware Protection
 **Category:** Security
 **Description:** Checks pages against blacklists or known phishing and malware sites. Warning page displays if site is blacklisted. Enabled by default, no loading delay.
 **UI Location:** Warning page interstitial.
-**Tandem Relevance:** **HIGH** — Essential security feature.
+**Zerant Relevance:** **HIGH** — Essential security feature.
 
 ### 5.8 Do Not Track (DNT)
 **Category:** Privacy
 **Description:** Sends DNT header with every request. Voluntary compliance by websites.
 **UI Location:** Settings > Advanced > Privacy & security > Cookies and other site data.
-**Tandem Relevance:** **LOW** — Largely ineffective standard, but trivial to implement.
+**Zerant Relevance:** **LOW** — Largely ineffective standard, but trivial to implement.
 
 ### 5.9 Security Certificates Management
 **Category:** Security
 **Description:** Display and verify HTTPS/TLS certificates. Manage public and local certificate issuers. EV certificate details. Warnings for local issuer certificates.
 **UI Location:** Click security badge for certificate details. Settings > Advanced > Privacy & security > Manage certificates.
-**Tandem Relevance:** **MEDIUM** — Standard Chromium feature.
+**Zerant Relevance:** **MEDIUM** — Standard Chromium feature.
 
 ### 5.10 Clear Data on Exit
 **Category:** Privacy
 **Description:** Automated deletion or specified data categories every time Opera closes. Configurable per data type.
 **UI Location:** Settings > Privacy and Security > Delete browsing data > "On exit" section.
-**Tandem Relevance:** **MEDIUM** — Useful privacy option.
+**Zerant Relevance:** **MEDIUM** — Useful privacy option.
 
 ### 5.11 Delete Browsing Data
 **Category:** Privacy
 **Description:** Manual clearing with granular control over data types (history, downloads, news usage, cookies, cache, passwords, autofill, site settings, hosted app data) and time ranges.
 **UI Location:** Settings > Privacy & security > Delete browsing data.
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ---
 
@@ -312,7 +312,7 @@
 **Visual Design:** Floating window with adjustable size. Always-on-top. Original video quality maintained. Controls at bottom.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Works with major video platforms and conferencing services. Closing popout returns to original tab.
-**Tandem Relevance:** **HIGH** — Picture-in-picture is a highly valued feature for multitasking.
+**Zerant Relevance:** **HIGH** — Picture-in-picture is a highly valued feature for multitasking.
 
 ### 6.2 Video Skip
 **Category:** Media
@@ -320,7 +320,7 @@
 **UI Location:** Video player hover menu. Settings > Advanced > Features.
 **Visual Design:** Button with two arrows icon appears on hover.
 **Technical Notes:** Works on supported sites. May bypass ad requirements on some sites. Auto-continues or pauses depending on site.
-**Tandem Relevance:** **LOW** — Niche feature.
+**Zerant Relevance:** **LOW** — Niche feature.
 
 ### 6.3 Music Player
 **Category:** Media / Lifestyle
@@ -329,7 +329,7 @@
 **Visual Design:** Modular, detachable window. Dropdown for service selection. Floating controller.
 **Keyboard Shortcut:** None.
 **Technical Notes:** "Automatically pause playback when other media start playing" toggle. Cross-device sync.
-**Tandem Relevance:** **MEDIUM** — Lifestyle differentiator.
+**Zerant Relevance:** **MEDIUM** — Lifestyle differentiator.
 
 ---
 
@@ -342,7 +342,7 @@
 **Keyboard Shortcut:** Ctrl+Shift+5 (Windows/Linux) / Cmd+Shift+2 (Mac)
 **Visual Design:** Crop frame adjustment tool. Editing toolbar with 8 tools. Full-page PDF export option.
 **Technical Notes:** Saves as .png. "Copy and Close" pastes directly to clipboard. Compatible with integrated messengers for direct sharing. PDF export for full-page capture.
-**Tandem Relevance:** **HIGH** — Screenshot with annotation is a frequently requested browser feature.
+**Zerant Relevance:** **HIGH** — Screenshot with annotation is a frequently requested browser feature.
 
 ### 7.2 Easy Files
 **Category:** Productivity / File Management
@@ -350,7 +350,7 @@
 **UI Location:** Appears during file upload/attachment dialogs. Settings > Features > Easy Files.
 **Visual Design:** Thumbnail-based file display. Clipboard visibility. Downloads folder access.
 **Technical Notes:** Auto-prioritizes recently used files. Multi-file toggle in settings.
-**Tandem Relevance:** **MEDIUM** — Nice UX enhancement for file uploads.
+**Zerant Relevance:** **MEDIUM** — Nice UX enhancement for file uploads.
 
 ### 7.3 Currency Converter
 **Category:** Productivity / Tools
@@ -358,7 +358,7 @@
 **UI Location:** Search popup (appears on text selection). Settings > Advanced > Features > Search pop-up.
 **Visual Design:** Copy button revealed on hover over converted value.
 **Keyboard Shortcut:** None (triggered by text selection).
-**Tandem Relevance:** **MEDIUM** — Useful for international users.
+**Zerant Relevance:** **MEDIUM** — Useful for international users.
 
 ### 7.4 Unit Converter
 **Category:** Productivity / Tools
@@ -366,7 +366,7 @@
 **UI Location:** Search popup tool. Settings > Advanced > Features > Search pop-up.
 **Visual Design:** Copy button on hover.
 **Keyword:** Requires unit symbol highlighted with number.
-**Tandem Relevance:** **MEDIUM** — Useful utility.
+**Zerant Relevance:** **MEDIUM** — Useful utility.
 
 ### 7.5 Time Zone Converter
 **Category:** Productivity / Tools
@@ -374,14 +374,14 @@
 **UI Location:** Search popup. Settings > Advanced > Features > Search pop-up.
 **Visual Design:** Copy button on hover.
 **Technical Notes:** Uses system location at Opera installation time.
-**Tandem Relevance:** **MEDIUM** — Useful for remote/distributed teams.
+**Zerant Relevance:** **MEDIUM** — Useful for remote/distributed teams.
 
 ### 7.6 Search Popup (Highlight Actions)
 **Category:** Productivity / Tools
 **Description:** Utility that appears when highlighting text on any webpage. Offers: search with default engine, copy to clipboard, share (Mac only), and automatic conversion display for currencies/units/timezones. Single-click opens search in new tab.
 **UI Location:** Appears above highlighted text. Settings > Advanced > Features > "Enable the search pop-up when selecting text."
 **Visual Design:** Small popup above selected text.
-**Tandem Relevance:** **MEDIUM** — Nice productivity enhancer.
+**Zerant Relevance:** **MEDIUM** — Nice productivity enhancer.
 
 ### 7.7 Opera Translate
 **Category:** Productivity / Tools
@@ -389,21 +389,21 @@
 **UI Location:** Globe icon on address bar when non-default language detected. Settings > Features > Opera Translate.
 **Visual Design:** Globe icon indicates available translations. Popup for language selection.
 **Technical Notes:** Powered by Lingvanex AI. Server-side processing maintains browsing privacy.
-**Tandem Relevance:** **MEDIUM** — Translation is valuable but can be handled by extensions.
+**Zerant Relevance:** **MEDIUM** — Translation is valuable but can be handled by extensions.
 
 ### 7.8 Find on Page
 **Category:** Productivity
 **Description:** Search text on current page. Found words highlighted green, multiple instances highlighted yellow with count. Arrow navigation between matches.
 **UI Location:** Popup search bar.
 **Keyboard Shortcut:** Ctrl+F / Cmd+F
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ### 7.9 Better Address Bar Experience (BABE)
 **Category:** Productivity / Navigation
 **Description:** Pop-out panel when clicking the address bar showing quick access to frequently visited sites, Speed Dials, recommendations, and bookmarks. Layout size toggle. Item-specific dismissal. Recommendations develop with browsing history.
 **UI Location:** Address bar click. Settings > Advanced > Features > "Enhanced address bar."
 **Visual Design:** Pop-out panel with site cards. Layout size toggle icons (top-right). Three-dot menu per item.
-**Tandem Relevance:** **MEDIUM** — Enhanced address bar suggestions are useful.
+**Zerant Relevance:** **MEDIUM** — Enhanced address bar suggestions are useful.
 
 ---
 
@@ -415,21 +415,21 @@
 **UI Location:** Main area or start page. Grid layout or clickable thumbnails.
 **Visual Design:** Grid layout with thumbnail previews. Expandable folder interface.
 **Keyboard Shortcut:** None.
-**Tandem Relevance:** **HIGH** — Start page with quick access tiles is a core browser feature.
+**Zerant Relevance:** **HIGH** — Start page with quick access tiles is a core browser feature.
 
 ### 8.2 Personal News on Start Page
 **Category:** Start Page / Content
 **Description:** Popular news articles displayed below Speed Dial. Category and region/language filtering. Multi-language support. Clickable articles open in new tabs.
 **UI Location:** Start page below Speed Dial. Settings > Advanced > Features > Personal news > "Show news on start page."
 **Visual Design:** News cards/dials. Topic selection tabs. Language/region cogwheel.
-**Tandem Relevance:** **LOW** — Content aggregation is tangential to Tandem's core focus.
+**Zerant Relevance:** **LOW** — Content aggregation is tangential to Zerant's core focus.
 
 ### 8.3 Easy Setup Panel
 **Category:** Start Page / Customization
 **Description:** Quick access panel for managing Opera's most prominent features. Change themes/wallpapers, pin sidebar, show bookmarks bar, toggle ad blocker, change download locations, clear browsing data, access full settings.
 **UI Location:** Top-right corner or start page.
 **Visual Design:** Panel interface with toggle buttons and configuration options.
-**Tandem Relevance:** **MEDIUM** — Quick-setup onboarding panel concept is useful.
+**Zerant Relevance:** **MEDIUM** — Quick-setup onboarding panel concept is useful.
 
 ### 8.4 Continue Shopping / Continue on Booking
 **Category:** Start Page / Commerce
@@ -437,7 +437,7 @@
 **UI Location:** Start page sections. Fold/expand arrow. X button for dismissal.
 **Visual Design:** Product/hotel cards with dismiss options.
 **Technical Notes:** Browser-local processing only. Requires 3+ item views to trigger.
-**Tandem Relevance:** **LOW** — Commerce-focused feature.
+**Zerant Relevance:** **LOW** — Commerce-focused feature.
 
 ---
 
@@ -457,13 +457,13 @@
 **UI Location:** Easy Setup > Theme Gallery. Settings > Customization.
 **Keyboard Shortcut:** Alt+Shift+T (Windows) / Option+Shift+T (Mac) to cycle between last 10 saved themes.
 **Technical Notes:** Browser remembers last 10 configured themes. Last 3 visible in Easy Setup. Audio has 3 categories: browser sounds, keyboard sounds, background music. Themes sync via Opera Sync.
-**Tandem Relevance:** **MEDIUM** — Themes are a nice differentiator. Animated/audio themes are unique but heavy to implement.
+**Zerant Relevance:** **MEDIUM** — Themes are a nice differentiator. Animated/audio themes are unique but heavy to implement.
 
 ### 9.2 Wallpapers
 **Category:** Customization / Visual
 **Description:** Start page and Opera internal pages wallpaper customization. Right-click any web image > "Use Image as Wallpaper." Upload from computer. Browse community designs at addons.opera.com.
 **UI Location:** Settings > Customization > Wallpapers. Right-click context menu on images.
-**Tandem Relevance:** **LOW** — Cosmetic feature.
+**Zerant Relevance:** **LOW** — Cosmetic feature.
 
 ### 9.3 Extensions (Chrome Extension Support)
 **Category:** Customization / Functionality
@@ -471,25 +471,25 @@
 **UI Location:** Extensions icon (cube) in sidebar. Menu > Extensions > Extensions.
 **Keyboard Shortcut:** Ctrl+Shift+E / Cmd+Shift+E
 **Technical Notes:** Chrome Web Store compatibility via addon. Performance impact warning for extensions.
-**Tandem Relevance:** **HIGH** — Chrome extension compatibility is critical for any Chromium-based browser.
+**Zerant Relevance:** **HIGH** — Chrome extension compatibility is critical for any Chromium-based browser.
 
 ### 9.4 Language Customization
 **Category:** Customization
 **Description:** Change browser UI language. Windows/Linux: Settings > Advanced > Browser > Languages. Mac: System Preferences > Language and Region.
 **UI Location:** Settings > Advanced > Browser > Languages.
-**Tandem Relevance:** **LOW** — Standard i18n.
+**Zerant Relevance:** **LOW** — Standard i18n.
 
 ### 9.5 Import Bookmarks and Settings
 **Category:** Customization / Migration
 **Description:** Import browsing data (history, bookmarks, cookies) from Chrome, Firefox, Safari, Yandex, or HTML bookmark files.
 **UI Location:** Settings > Synchronization > Import bookmarks and settings.
-**Tandem Relevance:** **HIGH** — Browser migration/import is essential for user adoption.
+**Zerant Relevance:** **HIGH** — Browser migration/import is essential for user adoption.
 
 ### 9.6 Startup Preferences
 **Category:** Customization
 **Description:** Three options: fresh start page, retain previous session tabs, open specific page(s).
 **UI Location:** Settings > Basic > On startup.
-**Tandem Relevance:** **HIGH** — Standard browser feature, must have.
+**Zerant Relevance:** **HIGH** — Standard browser feature, must have.
 
 ---
 
@@ -502,7 +502,7 @@
 **Visual Design:** Green checkmark indicates active sync.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Anonymous identification tokens on Opera servers. Encrypted password storage. Selective sync per data type. Sign out to desync device.
-**Tandem Relevance:** **HIGH** — Cross-device sync is essential for modern browsers.
+**Zerant Relevance:** **HIGH** — Cross-device sync is essential for modern browsers.
 
 ### 10.2 My Flow
 **Category:** Sync / Cross-Device / Sharing
@@ -511,7 +511,7 @@
 **Visual Design:** QR code for device pairing. Notification badge. Device timestamp display. Preview images for shared content.
 **Keyboard Shortcut:** None.
 **Technical Notes:** End-to-end encryption. No cloud storage consumed. 24-hour auto-delete for files. Supports text highlighting > "Send to My Flow."
-**Tandem Relevance:** **HIGH** — Cross-device sharing without accounts is a compelling feature. QR-code pairing is elegant UX.
+**Zerant Relevance:** **HIGH** — Cross-device sharing without accounts is a compelling feature. QR-code pairing is elegant UX.
 
 ---
 
@@ -532,7 +532,7 @@
 **Visual Design:** Card-based layout. Rich emoji reaction system. Kanban columns. Share button.
 **Keyboard Shortcut:** None documented.
 **Technical Notes:** No login required for viewing shared boards. Cross-device via sync. Supports embedded YouTube playback.
-**Tandem Relevance:** **HIGH** — Pinboards represent a unique content-curation/collaboration concept. The Kanban mode, emoji reactions, and no-login sharing are particularly compelling. Could serve as inspiration for Tandem's note/collection features.
+**Zerant Relevance:** **HIGH** — Pinboards represent a unique content-curation/collaboration concept. The Kanban mode, emoji reactions, and no-login sharing are particularly compelling. Could serve as inspiration for Zerant's note/collection features.
 
 ---
 
@@ -544,17 +544,17 @@
 **UI Location:** Integrated into browser; notifications during shopping.
 **Visual Design:** Promotional notifications during shopping sessions.
 **Technical Notes:** Opera Points integration for bonus rates.
-**Tandem Relevance:** **SKIP** — Commerce/cashback is not aligned with Tandem's focus.
+**Zerant Relevance:** **SKIP** — Commerce/cashback is not aligned with Zerant's focus.
 
 ### 12.2 Continue Shopping / Continue on Booking
 **Category:** Commerce
 **Description:** (See Section 8.4 above.)
-**Tandem Relevance:** **SKIP** — Commerce feature.
+**Zerant Relevance:** **SKIP** — Commerce feature.
 
 ### 12.3 Crypto Wallet
 **Category:** Commerce / Crypto
 **Description:** Referenced in Opera's ecosystem but not a current prominent desktop feature page. Opera historically had a built-in crypto wallet for Ethereum-based tokens.
-**Tandem Relevance:** **SKIP** — Crypto wallet is out or scope.
+**Zerant Relevance:** **SKIP** — Crypto wallet is out or scope.
 
 ---
 
@@ -567,12 +567,12 @@
 **Visual Design:** Icon with on/off switch and time remaining estimate.
 **Keyboard Shortcut:** None.
 **Technical Notes:** Automatic or manual activation. Toggleable display or Battery Saver icon.
-**Tandem Relevance:** **MEDIUM** — Useful for Electron-based apps which tend to be power-hungry.
+**Zerant Relevance:** **MEDIUM** — Useful for Electron-based apps which tend to be power-hungry.
 
 ### 13.2 Tab Snoozing
 **Category:** Performance
 **Description:** (See Section 1.10 above.) Automatically pauses inactive tabs to free memory.
-**Tandem Relevance:** **HIGH** — Memory management is critical.
+**Zerant Relevance:** **HIGH** — Memory management is critical.
 
 ---
 
@@ -585,13 +585,13 @@
 **Visual Design:** Grid or condensed list view toggle. Thumbnail previews with customization options (page preview, color + title, logo).
 **Keyboard Shortcut:** None dedicated.
 **Technical Notes:** Import/export HTML format. Nested folders. Cross-device sync via Opera Account.
-**Tandem Relevance:** **HIGH** — Bookmarks management is a standard browser necessity.
+**Zerant Relevance:** **HIGH** — Bookmarks management is a standard browser necessity.
 
 ### 14.2 Bookmarks Bar
 **Category:** Bookmarks / Quick Access
 **Description:** Persistent bar below address bar for frequently accessed bookmarks. Toggleable via Easy Setup panel.
 **UI Location:** Below address bar. Toggle via Easy Setup > "Show bookmarks bar."
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ---
 
@@ -601,58 +601,58 @@
 **Category:** Core Browser
 **Description:** Back, Forward, Reload, Start Page (Speed Dial) buttons. Click-and-hold back/forward reveals tab browsing history dropdown.
 **UI Location:** Left side or address bar.
-**Tandem Relevance:** **HIGH** — Fundamental browser navigation.
+**Zerant Relevance:** **HIGH** — Fundamental browser navigation.
 
 ### 15.2 Combined Address & Search Bar
 **Category:** Core Browser
 **Description:** Unified input for URLs and search queries. Predictive search suggestions. Alternative search engine tabs in suggestion dropdown (Yahoo!, Amazon, Bing).
 **UI Location:** Center top or browser window.
-**Tandem Relevance:** **HIGH** — Core browser feature.
+**Zerant Relevance:** **HIGH** — Core browser feature.
 
 ### 15.3 Context Menus
 **Category:** Core Browser
 **Description:** Three types: page context menu (navigation, save, view source, save as PDF), link context menu (open/save linked pages), image context menu (open, copy, save image, "Use Image as Wallpaper").
 **UI Location:** Right-click anywhere.
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ### 15.4 Zoom
 **Category:** Core Browser
 **Description:** Adjust page zoom. Default zoom configurable. Per-page zoom.
 **UI Location:** View menu. Settings > Appearance > "Page zoom."
 **Keyboard Shortcut:** Ctrl/Cmd + +/- for zoom in/out. Ctrl/Cmd+0 for reset.
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ### 15.5 Full Screen Mode
 **Category:** Core Browser
 **Description:** Immersive browsing with hidden menu bar. Menu accessible via top-screen hover. Exit with Esc.
 **UI Location:** View > Enter Full Screen. O Menu > Page > Full Screen.
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ### 15.6 Download Management
 **Category:** Core Browser
 **Description:** Progress bar below address bar. Download icon for viewing recent downloads. Configurable save location. Option to prompt for custom save location per download.
 **UI Location:** Address bar right side (download icon). View > Downloads. Settings > Advanced > Browser > Downloads.
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ### 15.7 History Management
 **Category:** Core Browser
 **Description:** Full browsing history with search filtering. Tab Island grouping for multi-selection. Bulk deletion. Restore up to 20 recently closed pages. Delete by domain. Cross-device sync.
 **UI Location:** Sidebar clock icon. Three-dot menu > History.
 **Keyboard Shortcut:** Ctrl+H / Cmd+Y
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ### 15.8 Search Engine Management
 **Category:** Core Browser / Search
 **Description:** Change default search engine (Google, DuckDuckGo, Amazon, Wikipedia, etc.). Create custom search engines with keywords. Right-click any site's search bar > "Create Search Engine" with custom keyword.
 **UI Location:** Settings > Search engine. Right-click site search bars.
 **Technical Notes:** Type keyword + space + query for custom engine search.
-**Tandem Relevance:** **HIGH** — Standard browser feature.
+**Zerant Relevance:** **HIGH** — Standard browser feature.
 
 ---
 
 ## Full Feature Comparison Table
 
-| Feature | Category | Tandem Relevance | Priority |
+| Feature | Category | Zerant Relevance | Priority |
 |---------|----------|-----------------|----------|
 | Tab Islands | Tab Management | HIGH | P1 |
 | Workspaces | Tab Management | HIGH | P1 |
@@ -732,12 +732,12 @@
 ## Summary Statistics
 
 - **Total features catalogued:** 68
-- **HIGH relevance for Tandem:** 40
+- **HIGH relevance for Zerant:** 40
 - **MEDIUM relevance:** 22
 - **LOW relevance:** 4
 - **SKIP (not relevant):** 3
 
-### Top Priority (P1) Features for Tandem Gap Analysis:
+### Top Priority (P1) Features for Zerant Gap Analysis:
 1. Tab Islands (grouped tab management)
 2. Workspaces (multi-context tab isolation)
 3. Split Screen (multi-pane browsing)

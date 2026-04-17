@@ -3,7 +3,7 @@
  * Implements ChatBackend interface (see src/chat/interfaces.ts)
  *
  * Extracted from inline ocChat IIFE in index.html.
- * Connect params are prepared by Tandem so the browser client can present
+ * Connect params are prepared by Zerant so the browser client can present
  * a signed device identity without exposing private keys in the renderer.
  */
 class OpenClawBackend {

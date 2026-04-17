@@ -92,7 +92,7 @@ describe('Snapshot Routes', () => {
           title: 'Background',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
       ]);
       vi.mocked(ctx.snapshotManager.getSnapshot).mockResolvedValue({
@@ -430,7 +430,7 @@ describe('Snapshot Routes', () => {
           title: 'Background',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
       ]);
       vi.mocked(ctx.locatorFinder.find).mockResolvedValue({ found: true, ref: '@e9', role: 'button', text: 'Save' });

@@ -1,7 +1,7 @@
-# Chat Bridge: Tandem ↔ Kees (OpenClaw) — Real-time Verbinding
+# Chat Bridge: Zerant ↔ Kees (OpenClaw) — Real-time Verbinding
 
 > **Status:** PLAN  
-> **Goal:** If Robin a bericht stuurt in Tandem's chat panel (or via "Ask Kees" context menu), must Kees the **direct** ontvangen — not pas bij the next heartbeat.
+> **Goal:** If Robin a bericht stuurt in Zerant's chat panel (or via "Ask Kees" context menu), must Kees the **direct** ontvangen — not pas bij the next heartbeat.
 
 ---
 
@@ -28,14 +28,14 @@ Robin clicks "Ask Kees about Selection"
   → panelManager stuurt webhook to OpenClaw
   → OpenClaw injecteert bericht in Kees' session
   → Kees antwoordt within seconden
-  → Antwoord via POST /chat → appears in Tandem chat panel
+  → Antwoord via POST /chat → appears in Zerant chat panel
 ```
 
 ## Architectuur
 
 ```
 ┌─────────────┐     webhook POST      ┌──────────────┐
-│   Tandem    │ ──────────────────────→│   OpenClaw   │
+│   Zerant    │ ──────────────────────→│   OpenClaw   │
 │ PanelMgr   │   localhost:18789      │   Gateway    │
 │             │←──────────────────────│              │
 │ POST /chat  │   Kees antwoordt      │  Kees session │
@@ -54,7 +54,7 @@ Robin clicks "Ask Kees about Selection"
 
 ### Wat er must gebeuren:
 
-1. **Config uitbreiden** — `webhook` section add about TandemConfig
+1. **Config uitbreiden** — `webhook` section add about ZerantConfig
 2. **PanelManager uitbreiden** — na `addChatMessage('robin', ...)` webhook firen
 3. **API endpoint add** — `POST /chat/webhook/test` to the verbinding te testen
 
@@ -74,15 +74,15 @@ Read these files first:
 - src/api/server.ts (only rules 683-730, the /chat routes)
 
 ## Context
-Tandem Browser has a chat panel where Robin (the human user) talks to Kees (an AI wingman). Kees runs in OpenClaw, a separate process on localhost. Currently Kees only reads chat messages by polling GET /chat — which means messages can take 30-60 minutes to arrive. We need real-time delivery.
+Zerant Browser has a chat panel where Robin (the human user) talks to Kees (an AI wingman). Kees runs in OpenClaw, a separate process on localhost. Currently Kees only reads chat messages by polling GET /chat — which means messages can take 30-60 minutes to arrive. We need real-time delivery.
 
 OpenClaw has a local gateway that accepts wake events. When a wake event is sent, OpenClaw immediately processes it in the active session.
 
 ## Task: Add webhook notification to PanelManager
 
-### Step 1: Add webhook config to TandemConfig (config/manager.ts)
+### Step 1: Add webhook config to ZerantConfig (config/manager.ts)
 
-Add a new section to the TandemConfig interface:
+Add a new section to the ZerantConfig interface:
 ```typescript
 // Webhook — notify external systems on chat events
 webhook: {
@@ -137,12 +137,12 @@ private async fireWebhook(msg: ChatMessage): Promise<void> {
       },
       body: JSON.stringify({
         type: 'tandem-chat',
-        text: `[Tandem Chat] Robin: ${msg.text}`,
+        text: `[Zerant Chat] Robin: ${msg.text}`,
         metadata: {
           messageId: msg.id,
           from: msg.from,
           timestamp: msg.timestamp,
-          source: 'tandem-browser',
+          source: 'zerant-browser',
         },
       }),
       signal: AbortSignal.timeout(5000), // 5s timeout
@@ -246,22 +246,22 @@ Do NOT run `npm start` or `npm run dev`.
 
 ### Kees-kant (OpenClaw configuration)
 
-Na the Tandem build must Kees' kant geconfigureerd be:
+Na the Zerant build must Kees' kant geconfigureerd be:
 
 1. **Testen or webhook aankomt** — `curl -X POST http://127.0.0.1:8765/chat/webhook/test`
 2. **OpenClaw webhook endpoint bepalen** — the juiste pad for incoming events uitzoeken
-3. **HEARTBEAT.md updaten** — Tandem chat polling can weg if webhook works
+3. **HEARTBEAT.md updaten** — Zerant chat polling can weg if webhook works
 4. **TOOLS.md updaten** — webhook flow documenteren
 
 ### Verificatie Flow
 
 ```bash
-# 1. Start Tandem
+# 1. Start Zerant
 npm start
 
 # 2. Open chat panel (Cmd+K)
 # 3. Type a bericht if Robin
-# 4. Check Tandem console for webhook log:
+# 4. Check Zerant console for webhook log:
 #    ✅ No "Webhook failed" waarschuwing = POST gelukt
 #    ⚠️ "OpenClaw not running?" = OpenClaw is out (verwacht if that not draait)
 

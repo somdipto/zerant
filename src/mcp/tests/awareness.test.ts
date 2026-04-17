@@ -20,23 +20,23 @@ describe('MCP awareness tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_awareness_digest returns digest', async () => {
+  it('zerant_awareness_digest returns digest', async () => {
     mockApiCall.mockResolvedValueOnce({ summary: 'User reading docs' });
-    const result = await getHandler(tools, 'tandem_awareness_digest')({});
+    const result = await getHandler(tools, 'zerant_awareness_digest')({});
     expectTextContent(result);
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/awareness/digest');
   });
 
-  it('tandem_awareness_digest applies minutes filter', async () => {
+  it('zerant_awareness_digest applies minutes filter', async () => {
     mockApiCall.mockResolvedValueOnce({});
-    await getHandler(tools, 'tandem_awareness_digest')({ minutes: 15 });
+    await getHandler(tools, 'zerant_awareness_digest')({ minutes: 15 });
     const endpoint = mockApiCall.mock.calls[0][1] as string;
     expect(endpoint).toContain('minutes=15');
   });
 
-  it('tandem_awareness_focus returns focus', async () => {
+  it('zerant_awareness_focus returns focus', async () => {
     mockApiCall.mockResolvedValueOnce({ focus: 'coding' });
-    const result = await getHandler(tools, 'tandem_awareness_focus')({});
+    const result = await getHandler(tools, 'zerant_awareness_focus')({});
     expectTextContent(result);
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/awareness/focus');
   });

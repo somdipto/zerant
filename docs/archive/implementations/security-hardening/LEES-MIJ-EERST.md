@@ -2,7 +2,7 @@
 
 > **Date:** 2026-03-07
 > **Status:** Complete
-> **Goal:** Strengthen Tandem's security model so the local API, Gatekeeper,
+> **Goal:** Strengthen Zerant's security model so the local API, Gatekeeper,
 > runtime monitoring, outbound controls, and extension trust boundaries provide
 > better protection for both Robin and OpenClaw
 > **Order:** Phase 1 → 2 → 3 → 4 → 5 → 6
@@ -11,7 +11,7 @@
 
 ## Why This Track Exists
 
-Tandem already has meaningful browser security controls, but several important
+Zerant already has meaningful browser security controls, but several important
 boundaries still rely on permissive assumptions:
 
 - loopback access is trusted too broadly
@@ -185,7 +185,7 @@ instead or depending on chat context.
 - Status: Complete
 - Date: 2026-03-07
 - Commit: 67d1464
-- Summary: Replaced blanket loopback trust with an explicit caller model in `class TandemAPI`, kept `/status` public, required bearer auth for normal HTTP routes, removed query-string token auth, exported a narrow trusted-extension route allowlist, and applied the same installed-extension validation to the native messaging WebSocket upgrade path.
+- Summary: Replaced blanket loopback trust with an explicit caller model in `class ZerantAPI`, kept `/status` public, required bearer auth for normal HTTP routes, removed query-string token auth, exported a narrow trusted-extension route allowlist, and applied the same installed-extension validation to the native messaging WebSocket upgrade path.
 - Remaining risks for next phase: Gatekeeper fail-closed work must preserve the trusted-extension helper allowlist and the native messaging bridge while avoiding a new implicit bypass for shell/file callers.
 
 ### Phase 2 — Gatekeeper Enforcement

@@ -2,7 +2,7 @@
 
 > **Date:** YYYY-MM-DD
 > **Status:** In progress / Done
-> **Goal:** [One sentence: what will this feature add to Tandem]
+> **Goal:** [One sentence: what will this feature add to Zerant]
 > **Order:** Phase 1 → 2 → 3 (each phase is one session)
 
 ---
@@ -34,7 +34,7 @@ Reference the gap analysis if relevant: docs/research/gap-analysis.md]
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code style, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registration | `startAPI()`, `createWindow()` |
-| `src/api/server.ts` | TandemAPI class, route registration | `class TandemAPI`, `TandemAPIOptions` |
+| `src/api/server.ts` | ZerantAPI class, route registration | `class ZerantAPI`, `ZerantAPIOptions` |
 
 ### Additional reading per phase
 
@@ -56,10 +56,10 @@ _(see the relevant phase file)_
 
 Each new manager must be wired into **3 places**:
 
-### 1. `src/api/server.ts` — `TandemAPIOptions` interface
+### 1. `src/api/server.ts` — `ZerantAPIOptions` interface
 
 ```typescript
-export interface TandemAPIOptions {
+export interface ZerantAPIOptions {
   // ... existing managers ...
   [newManager]: [NewManager];  // ← add
 }
@@ -71,7 +71,7 @@ export interface TandemAPIOptions {
 // After creating the related manager:
 const [newManager] = new [NewManager]([dependencies]);
 
-// In new TandemAPI({...}):
+// In new ZerantAPI({...}):
 [newManager]: [newManager]!,
 ```
 

@@ -32,7 +32,7 @@
 
 1. **Run `npx tsc --noEmit`** — must be 0 errors
    - Pre-existing errors in `src/gateway/server.chat.gateway-server-chat-b.e2e.test.ts`
-     lines 151 and 299 are safe to ignore (upstream issue, not Tandem)
+     lines 151 and 299 are safe to ignore (upstream issue, not Zerant)
 2. **Run the full verification checklist** from the phase doc — check every box
 3. **Update STATUS.md** — fill in all fields (date, commit hash, verification boxes, notes)
 4. **Commit and push** using the exact commit message from the phase doc

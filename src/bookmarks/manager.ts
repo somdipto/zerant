@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('BookmarkManager');
@@ -31,7 +31,7 @@ interface BookmarkStore {
 /**
  * BookmarkManager — CRUD operations for bookmarks with folder support.
  *
- * Storage: ~/.tandem/bookmarks.json
+ * Storage: ~/.zerant/bookmarks.json
  */
 export class BookmarkManager {
 
@@ -43,7 +43,7 @@ export class BookmarkManager {
   // === 2. Constructor ===
 
   constructor() {
-    const dir = ensureDir(tandemDir());
+    const dir = ensureDir(zerantDir());
     this.storePath = path.join(dir, 'bookmarks.json');
     this.store = this.load();
   }

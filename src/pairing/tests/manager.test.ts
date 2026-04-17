@@ -7,7 +7,7 @@ import type { ExchangeInput } from '../manager';
 // Mock fs and paths so we don't touch real disk
 vi.mock('fs');
 vi.mock('../../utils/paths', () => ({
-  tandemDir: (...subpath: string[]) => path.join('/tmp/tandem-test', ...subpath),
+  zerantDir: (...subpath: string[]) => path.join('/tmp/zerant-test', ...subpath),
   ensureDir: (dir: string) => dir,
 }));
 vi.mock('../../utils/logger', () => ({

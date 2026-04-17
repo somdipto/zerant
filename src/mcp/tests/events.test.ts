@@ -20,40 +20,40 @@ describe('MCP event tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_events_recent returns recent events', async () => {
+  it('zerant_events_recent returns recent events', async () => {
     mockApiCall.mockResolvedValueOnce({ events: [] });
-    await getHandler(tools, 'tandem_events_recent')({});
+    await getHandler(tools, 'zerant_events_recent')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/events/recent');
   });
 
-  it('tandem_events_recent applies limit', async () => {
+  it('zerant_events_recent applies limit', async () => {
     mockApiCall.mockResolvedValueOnce({ events: [] });
-    await getHandler(tools, 'tandem_events_recent')({ limit: 10 });
+    await getHandler(tools, 'zerant_events_recent')({ limit: 10 });
     const endpoint = mockApiCall.mock.calls[0][1] as string;
     expect(endpoint).toContain('limit=10');
   });
 
-  it('tandem_live_status returns live status', async () => {
+  it('zerant_live_status returns live status', async () => {
     mockApiCall.mockResolvedValueOnce({ enabled: true });
-    await getHandler(tools, 'tandem_live_status')({});
+    await getHandler(tools, 'zerant_live_status')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/live/status');
   });
 
-  it('tandem_live_toggle toggles monitoring', async () => {
+  it('zerant_live_toggle toggles monitoring', async () => {
     mockApiCall.mockResolvedValueOnce({ enabled: false });
-    await getHandler(tools, 'tandem_live_toggle')({ enabled: false });
+    await getHandler(tools, 'zerant_live_toggle')({ enabled: false });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/live/toggle', { enabled: false });
   });
 
-  it('tandem_behavior_stats returns stats', async () => {
+  it('zerant_behavior_stats returns stats', async () => {
     mockApiCall.mockResolvedValueOnce({ patterns: 5 });
-    await getHandler(tools, 'tandem_behavior_stats')({});
+    await getHandler(tools, 'zerant_behavior_stats')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/behavior/stats');
   });
 
-  it('tandem_behavior_clear clears data', async () => {
+  it('zerant_behavior_clear clears data', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
-    await getHandler(tools, 'tandem_behavior_clear')({});
+    await getHandler(tools, 'zerant_behavior_clear')({});
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/behavior/clear');
   });
 });

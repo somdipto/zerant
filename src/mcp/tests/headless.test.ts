@@ -18,41 +18,41 @@ describe('MCP headless tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_headless_open opens URL', async () => {
+  it('zerant_headless_open opens URL', async () => {
     mockApiCall.mockResolvedValueOnce({ url: 'https://a.com' });
 
-    await getHandler(tools, 'tandem_headless_open')({ url: 'https://a.com' });
+    await getHandler(tools, 'zerant_headless_open')({ url: 'https://a.com' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/headless/open', { url: 'https://a.com' });
   });
 
-  it('tandem_headless_content returns content', async () => {
+  it('zerant_headless_content returns content', async () => {
     mockApiCall.mockResolvedValueOnce({ html: '<html/>' });
-    await getHandler(tools, 'tandem_headless_content')({});
+    await getHandler(tools, 'zerant_headless_content')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/headless/content');
   });
 
-  it('tandem_headless_status returns status', async () => {
+  it('zerant_headless_status returns status', async () => {
     mockApiCall.mockResolvedValueOnce({ open: false });
-    await getHandler(tools, 'tandem_headless_status')({});
+    await getHandler(tools, 'zerant_headless_status')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/headless/status');
   });
 
-  it('tandem_headless_close closes browser', async () => {
+  it('zerant_headless_close closes browser', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
 
-    await getHandler(tools, 'tandem_headless_close')({});
+    await getHandler(tools, 'zerant_headless_close')({});
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/headless/close');
   });
 
-  it('tandem_headless_show makes window visible', async () => {
+  it('zerant_headless_show makes window visible', async () => {
     mockApiCall.mockResolvedValueOnce({});
-    await getHandler(tools, 'tandem_headless_show')({});
+    await getHandler(tools, 'zerant_headless_show')({});
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/headless/show');
   });
 
-  it('tandem_headless_hide hides window', async () => {
+  it('zerant_headless_hide hides window', async () => {
     mockApiCall.mockResolvedValueOnce({});
-    await getHandler(tools, 'tandem_headless_hide')({});
+    await getHandler(tools, 'zerant_headless_hide')({});
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/headless/hide');
   });
 });

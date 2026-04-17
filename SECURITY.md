@@ -1,6 +1,6 @@
 # Security Policy
 
-If you discover a security issue in Tandem Browser, please do not open a public
+If you discover a security issue in Zerant Browser, please do not open a public
 issue with exploit details.
 
 ## Reporting

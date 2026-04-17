@@ -5,7 +5,7 @@ import { coerceShape } from '../coerce.js';
 
 export function registerTaskTools(server: McpServer): void {
   server.tool(
-    'tandem_create_task',
+    'zerant_create_task',
     'Create an AI task with multiple steps that can be tracked and approved by Robin',
     coerceShape({
       description: z.string().describe('What the task is about'),
@@ -41,7 +41,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_emergency_stop',
+    'zerant_emergency_stop',
     'Emergency stop: pause ALL running agent tasks immediately',
     async () => {
       const result = await apiCall('POST', '/emergency-stop');
@@ -56,7 +56,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_task_list',
+    'zerant_task_list',
     'List all agent tasks. Returns task IDs, descriptions, and statuses.',
     async () => {
       const tasks = await apiCall('GET', '/tasks');
@@ -66,7 +66,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_task_get',
+    'zerant_task_get',
     'Get detailed information about a specific task including its steps and status.',
     {
       id: z.string().describe('The task ID to retrieve'),
@@ -78,7 +78,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_task_approve',
+    'zerant_task_approve',
     'Approve a task step that is waiting for user approval.',
     {
       id: z.string().describe('The task ID'),
@@ -92,7 +92,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_task_reject',
+    'zerant_task_reject',
     'Reject a task step that is waiting for user approval.',
     {
       id: z.string().describe('The task ID'),
@@ -106,7 +106,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_lock',
+    'zerant_tab_lock',
     'Acquire a lock on a browser tab for exclusive agent access. Use for multi-agent coordination to prevent conflicting actions on the same tab.',
     coerceShape({
       tabId: z.string().describe('The tab ID to lock'),
@@ -124,7 +124,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_unlock',
+    'zerant_tab_unlock',
     'Release a lock on a browser tab, allowing other agents to access it.',
     {
       tabId: z.string().describe('The tab ID to unlock'),
@@ -137,7 +137,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_locks_list',
+    'zerant_tab_locks_list',
     'List all active tab locks. Shows which tabs are locked and by which agents.',
     async () => {
       const data = await apiCall('GET', '/tab-locks');
@@ -146,7 +146,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_task_check_approval',
+    'zerant_task_check_approval',
     'Check whether a specific action type needs user approval before execution.',
     {
       actionType: z.string().optional().describe('The action type to check (e.g. "navigate", "click")'),
@@ -163,7 +163,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_autonomy_get',
+    'zerant_autonomy_get',
     'Get the current autonomy settings that control how much freedom the agent has.',
     async () => {
       const data = await apiCall('GET', '/autonomy');
@@ -172,7 +172,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_autonomy_update',
+    'zerant_autonomy_update',
     'Update autonomy settings that control agent freedom level.',
     {
       settings: z.object({}).passthrough().describe('Autonomy settings to update'),
@@ -184,7 +184,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_agent_activity_log',
+    'zerant_agent_activity_log',
     'Get recent activity log entries for agent actions specifically.',
     coerceShape({
       limit: z.number().optional().describe('Maximum entries to return (default: 50)'),
@@ -199,7 +199,7 @@ export function registerTaskTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_tab_lock_status',
+    'zerant_tab_lock_status',
     'Get the lock status for a specific tab.',
     {
       tabId: z.string().describe('The tab ID to check lock status for'),

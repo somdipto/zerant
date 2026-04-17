@@ -36,7 +36,7 @@ vi.mock('../../context', () => ({
 // The tests for /passwords/generate verify the endpoint works with the real PasswordCrypto class.
 
 vi.mock('../../../utils/paths', () => ({
-  tandemDir: vi.fn().mockReturnValue('/tmp/tandem-test'),
+  zerantDir: vi.fn().mockReturnValue('/tmp/zerant-test'),
 }));
 
 vi.mock('fs', () => ({
@@ -204,7 +204,7 @@ describe('misc routes', () => {
         title: 'Example',
         active: true,
         source: 'claude',
-        partition: 'persist:tandem',
+        partition: 'persist:zerant',
       };
       const otherTab = {
         id: 'tab-2',
@@ -213,7 +213,7 @@ describe('misc routes', () => {
         title: 'OpenAI',
         active: false,
         source: 'user',
-        partition: 'persist:tandem',
+        partition: 'persist:zerant',
       };
       const workspaces = {
         'ws-agent': { id: 'ws-agent', name: 'Codex', icon: 'cpu-chip', color: '#2563eb', order: 1, isDefault: false, tabIds: [100] },

@@ -4,7 +4,7 @@ import { apiCall, logActivity } from '../api-client.js';
 
 export function registerWorkspaceTools(server: McpServer): void {
   server.tool(
-    'tandem_workspace_list',
+    'zerant_workspace_list',
     'List all workspaces and the currently active workspace',
     async () => {
       const data = await apiCall('GET', '/workspaces');
@@ -14,7 +14,7 @@ export function registerWorkspaceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workspace_create',
+    'zerant_workspace_create',
     'Create a new workspace for organizing tabs',
     {
       name: z.string().describe('Name for the new workspace'),
@@ -32,7 +32,7 @@ export function registerWorkspaceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workspace_activate',
+    'zerant_workspace_activate',
     'Switch to a workspace by its ID',
     {
       id: z.string().describe('Workspace ID to activate'),
@@ -45,7 +45,7 @@ export function registerWorkspaceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workspace_delete',
+    'zerant_workspace_delete',
     'Delete a workspace by its ID. This removes the workspace and ungroups its tabs.',
     {
       id: z.string().describe('Workspace ID to delete'),
@@ -63,7 +63,7 @@ export function registerWorkspaceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workspace_update',
+    'zerant_workspace_update',
     'Update a workspace name, icon, or color',
     {
       id: z.string().describe('Workspace ID to update'),
@@ -83,7 +83,7 @@ export function registerWorkspaceTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_workspace_move_tab',
+    'zerant_workspace_move_tab',
     'Move a tab into a workspace',
     {
       id: z.string().describe('Workspace ID to move the tab into'),

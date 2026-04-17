@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import type { SyncManager } from '../sync/manager';
 
@@ -46,7 +46,7 @@ interface PinboardStore {
 
 // ─── Storage path ───────────────────────────────────────────────────
 
-const STORAGE_DIR = ensureDir(tandemDir('pinboards'));
+const STORAGE_DIR = ensureDir(zerantDir('pinboards'));
 const STORAGE_PATH = path.join(STORAGE_DIR, 'boards.json');
 
 // ─── Manager ────────────────────────────────────────────────────────
@@ -54,7 +54,7 @@ const STORAGE_PATH = path.join(STORAGE_DIR, 'boards.json');
 /**
  * PinboardManager — CRUD operations for pinboards and their items.
  *
- * Persistence: ~/.tandem/pinboards/boards.json
+ * Persistence: ~/.zerant/pinboards/boards.json
  * API routes:  src/api/routes/pinboards.ts
  * MCP tools:   src/mcp/tools/pinboards.ts
  */
@@ -286,7 +286,7 @@ export class PinboardManager {
   private async fetchOGMeta(url: string): Promise<OGMeta> {
     try {
       const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Tandem/1.0)' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Zerant/1.0)' },
         signal: AbortSignal.timeout(5000),
       });
       const html = await res.text();

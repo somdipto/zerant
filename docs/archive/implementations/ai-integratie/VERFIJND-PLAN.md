@@ -1,4 +1,4 @@
-# Tandem Browser — Verfijnd AI Implementatie Plan
+# Zerant Browser — Verfijnd AI Implementatie Plan
 
 > Audit & optimalisatie door Cowork (Claude Opus) — 12 februari 2026
 > Gebaseerd op cross-referentie or the originele plan tegen the werkelijke codebase.
@@ -12,19 +12,19 @@ Robin has a **Claude Max Pro account** ($200/maand). Dit betekent:
 
 - **NO Anthropic API key** — Claude does not work through direct API calls
 - **NO API costs** — flat-rate subscription, unlimited usage
-- **Claude works UITSLUITEND via Claude Code/Cowork** → MCP → Tandem API
+- **Claude works UITSLUITEND via Claude Code/Cowork** → MCP → Zerant API
 - **Phase 3 (Claude Direct Backend) VERVALT** — er is no API to about te roepen
 
 **New architectuur:**
 ```
-Robin spreekt/typt ──→ Cowork/Claude Code ──→ MCP Server ──→ Tandem API (:8765)
+Robin spreekt/typt ──→ Cowork/Claude Code ──→ MCP Server ──→ Zerant API (:8765)
                                                     ↕
 Robin sees resultaat ←── Kees Panel ←── OpenClaw Gateway (:18789)
                                                     +
                              MCP tool calls verschijnen if activiteit in browser
 ```
 
-**MCP is DE primaire Claude-integratie.** Alles wat Claude doet with Tandem gaat via MCP tools. The Kees panel blijft for OpenClaw, with a activity feed that shows zien wat Claude/Cowork about the doen is.
+**MCP is DE primaire Claude-integratie.** Alles wat Claude doet with Zerant gaat via MCP tools. The Kees panel blijft for OpenClaw, with a activity feed that shows zien wat Claude/Cowork about the doen is.
 
 ---
 
@@ -139,7 +139,7 @@ Content truncatie is WEL still relevant — grote page's vullen Claude's context
 Wanneer Claude Code/Cowork MCP tools aanroept, must Robin this ZIEN in the Kees panel. Dit is the "Claude" aanwezigheid in the browser.
 
 **Implementatie:**
-- The MCP server logt elke tool call to Tandem's chat API (`POST /chat`)
+- The MCP server logt elke tool call to Zerant's chat API (`POST /chat`)
 - Kees panel shows this if "[🤖 Claude] actie: navigeert to google.com"
 - Robin can reageren in the panel (bericht gaat to chat history, Claude leest this via MCP resource)
 
@@ -155,25 +155,25 @@ This creates a **chat loop** between Robin (browser) and Claude (Cowork) WITHOUT
 
 **Scenario's that not gedekt are:**
 - OpenClaw gateway is down → chat panel shows only errors
-- Tandem API crash → MCP server gets connection refused
+- Zerant API crash → MCP server gets connection refused
 - MCP tool execution timeout → Claude Code wait
 
 **Add:**
 - Per-backend health check (ping elke 30s)
 - Tool execution timeout: 30s per tool call
-- Graceful degradation: duidelijke foutmelding if Tandem not draait
+- Graceful degradation: duidelijke foutmelding if Zerant not draait
 - MCP server geeft context-rijke errors terug
 
 ### 3.3 MCP Server lifecycle
 
-Claude Code/Cowork starten the MCP server zelf via hun config. Tandem must only draaien (API op :8765).
+Claude Code/Cowork starten the MCP server zelf via hun config. Zerant must only draaien (API op :8765).
 
 **Correct model:**
 ```
-1. Robin start Tandem Browser (npm start) → API draait op :8765
+1. Robin start Zerant Browser (npm start) → API draait op :8765
 2. Robin opens Cowork → Cowork leest MCP config → start tandem-mcp bridge
 3. tandem-mcp maakt HTTP calls to localhost:8765
-4. If Tandem not draait → MCP server geeft foutmelding
+4. If Zerant not draait → MCP server geeft foutmelding
 ```
 
 **Documenteer this duidelijk** in the MCP setup guide.
@@ -201,7 +201,7 @@ Robin uses primair Cowork. The MCP config must daar juist ingesteld be:
   "mcpServers": {
     "tandem": {
       "command": "node",
-      "args": ["/Users/robinwaslander/Documents/dev/tandem-browser/dist/mcp/server.js"]
+      "args": ["/Users/robinwaslander/Documents/dev/zerant-browser/dist/mcp/server.js"]
     }
   }
 }
@@ -220,7 +220,7 @@ The oude 7 fases are teruggebracht to **5 fases** door:
 NIEUW PLAN (5 FASES):
 
 Phase 1: MCP Server                    [2-3 sessions]
-  → Claude Code/Cowork can Tandem bedienen via MCP tools
+  → Claude Code/Cowork can Zerant bedienen via MCP tools
   → Activity feed to Kees panel
   → Content truncatie
 
@@ -264,12 +264,12 @@ TOTAAL: 8-13 sessions
 **Sessie 1.1: Basis MCP Server + Read/Navigatie Tools**
 
 Pre-checks:
-- [ ] Tandem draait op :8765 (`curl http://localhost:8765/status`)
+- [ ] Zerant draait op :8765 (`curl http://localhost:8765/status`)
 - [ ] `npm install @modelcontextprotocol/sdk` succesvol
 - [ ] API token exists (`cat ~/.tandem/api-token`)
 
 Taken:
-1. Maak `src/mcp/api-client.ts` — HTTP wrapper for Tandem API
+1. Maak `src/mcp/api-client.ts` — HTTP wrapper for Zerant API
    - Leest auth token out `~/.tandem/api-token`
    - Maar: auth middleware skipt no-origin requests, dus token is optional local
 2. Maak `src/mcp/server.ts` — MCP server with stdio transport
@@ -288,14 +288,14 @@ Taken:
 Verificatie:
 - [ ] MCP server start without errors
 - [ ] Cowork can `tandem_read_page()` aanroepen
-- [ ] Cowork can navigeren and page verandert in Tandem
+- [ ] Cowork can navigeren and page verandert in Zerant
 - [ ] Screenshot tool geeft zichtbare image terug
 - [ ] Tool calls verschijnen in Kees panel activity log
 - [ ] `npx tsc` — zero errors
 
 Mogelijke obstakels:
 - MCP SDK versie-incompatibiliteit → check latest docs, pin versie
-- Tandem must draaien → duidelijke foutmelding if API not beschikbaar
+- Zerant must draaien → duidelijke foutmelding if API not beschikbaar
 - Screenshot formaat → usage MCP `image` content type
 
 **Sessie 1.2: Interactie + Tabs + Chat Tools**
@@ -342,7 +342,7 @@ Taken:
    - `~/.claude/settings.json` voorbeeld for Claude Code
 3. Setup documentatie:
    - Hoe Cowork configureren
-   - Hoe Tandem + MCP testen
+   - Hoe Zerant + MCP testen
    - Troubleshooting guide
 4. Content truncatie in `tandem_read_page`:
    - Usage ContentExtractor for structured extraction
@@ -432,7 +432,7 @@ Taken:
 
 3. **Step 3: Claude Activity Backend** (new, laag risk)
    - Maak `ClaudeActivityBackend` class
-   - Luistert op Tandem's chat API for berichten with `from: "claude"`
+   - Luistert op Zerant's chat API for berichten with `from: "claude"`
    - Shows MCP tool calls if activiteit in the Kees panel
    - Robin can terugschrijven → chat history → Claude leest via MCP
 
@@ -564,7 +564,7 @@ Verificatie:
 | 3 | Grote page's overflow Claude's context | MEDIUM | HOOG | ContentExtractor + 2000 woorden limiet |
 | 4 | Bot-detection bij autonomous browsing | HOOG | LAAG | Behavioral timing + stealth patches |
 | 5 | Multiple agents conflict op tabs | MEDIUM | MEDIUM | TabLockManager + isolatie |
-| 6 | Tandem not draaien = MCP broken | MEDIUM | MEDIUM | Duidelijke errors + startup docs |
+| 6 | Zerant not draaien = MCP broken | MEDIUM | MEDIUM | Duidelijke errors + startup docs |
 
 **Opmerking:** Risk "Claude API kosten lopen op" is **VERWIJDERD** — Max Pro = vast bedrag.
 
@@ -616,11 +616,11 @@ This items out the originele plan are **removed or not or toepassing:**
 
 Start with **Phase 1, Sessie 1.1.** Voorwaarden:
 
-1. Tandem Browser draait (`npm start`)
+1. Zerant Browser draait (`npm start`)
 2. `npm install @modelcontextprotocol/sdk`
 3. Bouw MCP server with basis tools
 4. Configureer Cowork to the MCP server te use
-5. Test: "read the page that open staat in Tandem" via Cowork
+5. Test: "read the page that open staat in Zerant" via Cowork
 
 ---
 

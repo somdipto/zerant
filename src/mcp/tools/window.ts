@@ -25,7 +25,7 @@ const TIMING = {
 
 export function registerWindowTools(server: McpServer): void {
   server.tool(
-    'tandem_research',
+    'zerant_research',
     'Perform autonomous research by opening tabs, searching, and reading pages. Returns a summary of findings. Uses human-paced timing to avoid detection.',
     coerceShape({
       query: z.string().describe('What to research'),

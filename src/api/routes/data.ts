@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 import fs from 'fs';
 import type { RouteContext } from '../context';
-import { tandemDir } from '../../utils/paths';
+import { zerantDir } from '../../utils/paths';
 import { handleRouteError } from '../../utils/errors';
 import { createLogger } from '../../utils/logger';
 import { buildOpenClawConnectParams, readOpenClawGatewayToken } from '../../openclaw/connect';
@@ -254,7 +254,7 @@ export function registerDataRoutes(router: Router, ctx: RouteContext): void {
     message: 'Too many data export requests. Retry shortly.',
   }), (_req: Request, res: Response) => {
     try {
-      const baseDir = tandemDir();
+      const baseDir = zerantDir();
       const data: Record<string, unknown> = {
         exportDate: new Date().toISOString(),
         version: '0.1.0',
@@ -290,7 +290,7 @@ export function registerDataRoutes(router: Router, ctx: RouteContext): void {
         ctx.configManager.updateConfig(data.config);
       }
       if (data.chatHistory) {
-        const chatPath = tandemDir('chat-history.json');
+        const chatPath = zerantDir('chat-history.json');
         fs.writeFileSync(chatPath, JSON.stringify(data.chatHistory, null, 2));
       }
       res.json({ ok: true, imported: true });

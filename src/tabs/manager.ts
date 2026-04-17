@@ -40,7 +40,7 @@ export interface OpenTabOptions {
 // ─── Manager ────────────────────────────────────────────────────────
 
 /**
- * TabManager — manages multiple webview tabs in Tandem Browser.
+ * TabManager — manages multiple webview tabs in Zerant Browser.
  *
  * Each tab is a <webview> element in the shell, managed from the main process.
  * Only one tab is visible at a time; the rest are hidden.
@@ -162,7 +162,7 @@ export class TabManager {
     url: string = 'about:blank',
     groupId?: string,
     source: TabSource = 'user',
-    partition: string = 'persist:tandem',
+    partition: string = 'persist:zerant',
     focus: boolean = true,
     options?: OpenTabOptions,
   ): Promise<Tab> {
@@ -183,13 +183,13 @@ export class TabManager {
     let webContentsId: number;
     try {
       webContentsId = await this.win.webContents.executeJavaScript(`
-        window.__tandemTabs.createTab(${JSON.stringify(id)}, ${JSON.stringify(resolvedUrl)}, ${JSON.stringify(resolvedPartition)})
+        window.__zerantTabs.createTab(${JSON.stringify(id)}, ${JSON.stringify(resolvedUrl)}, ${JSON.stringify(resolvedPartition)})
       `);
     } catch (e) {
       // Best-effort renderer cleanup — ignore secondary errors.
       try {
         await this.win.webContents.executeJavaScript(
-          `window.__tandemTabs.cleanupOrphan(${JSON.stringify(id)})`
+          `window.__zerantTabs.cleanupOrphan(${JSON.stringify(id)})`
         );
       } catch { /* renderer may be in bad state; nothing more we can do */ }
       throw e;
@@ -267,7 +267,7 @@ export class TabManager {
     // main-process cleanup so the tab doesn't become permanently uncloseable.
     try {
       await this.win.webContents.executeJavaScript(`
-        window.__tandemTabs.removeTab(${JSON.stringify(tabId)})
+        window.__zerantTabs.removeTab(${JSON.stringify(tabId)})
       `);
     } catch (e) {
       // Log but don't abort — main-process state must still be cleaned up.
@@ -308,7 +308,7 @@ export class TabManager {
 
     // Tell renderer to show this tab
     await this.win.webContents.executeJavaScript(`
-      window.__tandemTabs.focusTab(${JSON.stringify(tabId)})
+      window.__zerantTabs.focusTab(${JSON.stringify(tabId)})
     `);
 
     await this.notifyActiveTabChanged(tab);
@@ -468,7 +468,7 @@ export class TabManager {
       createdAt: Date.now(),
       source: 'user',
       pinned: false,
-      partition: 'persist:tandem',
+      partition: 'persist:zerant',
       emoji: null,
       emojiFlash: false,
     };
@@ -497,7 +497,7 @@ export class TabManager {
     let rendererTabIds: string[];
     try {
       rendererTabIds = await this.win.webContents.executeJavaScript(
-        `window.__tandemTabs.getTabIds()`
+        `window.__zerantTabs.getTabIds()`
       ) as string[];
     } catch {
       // Renderer not ready or getTabIds not yet exposed — nothing to reconcile.
@@ -512,7 +512,7 @@ export class TabManager {
         // Renderer has this tab but main process doesn't → orphan → clean up.
         try {
           await this.win.webContents.executeJavaScript(
-            `window.__tandemTabs.cleanupOrphan(${JSON.stringify(rtabId)})`
+            `window.__zerantTabs.cleanupOrphan(${JSON.stringify(rtabId)})`
           );
           removed.push(rtabId);
         } catch { /* best-effort */ }

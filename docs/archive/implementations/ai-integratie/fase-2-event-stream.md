@@ -94,7 +94,7 @@ type BrowserEventType =
    - `getContextSummary()` — compact text for MCP (~500 tokens max):
      ```
      Actieve tab: Google Search - https://google.com (tab-abc)
-     Open tabs: 4 (Google, LinkedIn, GitHub, Tandem Settings)
+     Open tabs: 4 (Google, LinkedIn, GitHub, Zerant Settings)
      Last events: navigatie to google.com (2s geleden), tab switch (15s geleden)
      Voice: inactief
      ```

@@ -78,7 +78,7 @@ describe('Network Routes', () => {
 
     it('uses X-Tab-Id to target a background tab', async () => {
       vi.mocked(ctx.tabManager.listTabs).mockReturnValue([
-        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:tandem' } as any,
+        { id: 'tab-2', webContentsId: 202, url: 'https://two.example', title: 'Two', active: false, source: 'wingman', partition: 'persist:zerant' } as any,
       ]);
       vi.mocked(ctx.networkInspector.getLog).mockReturnValue([]);
 
@@ -219,7 +219,7 @@ describe('Network Routes', () => {
 
   describe('GET /network/har', () => {
     it('returns HAR export with default limit', async () => {
-      const fakeHar = { log: { version: '1.2', creator: { name: 'Tandem Browser', version: '0.49.0' }, pages: [], entries: [] } };
+      const fakeHar = { log: { version: '1.2', creator: { name: 'Zerant Browser', version: '0.49.0' }, pages: [], entries: [] } };
       vi.mocked(ctx.networkInspector.toHar).mockReturnValue(fakeHar as any);
 
       const res = await request(app).get('/network/har');
@@ -238,7 +238,7 @@ describe('Network Routes', () => {
     });
 
     it('parses limit and domain query params for har export', async () => {
-      vi.mocked(ctx.networkInspector.toHar).mockReturnValue({ log: { version: '1.2', creator: { name: 'Tandem Browser', version: '0.49.0' }, pages: [], entries: [] } } as any);
+      vi.mocked(ctx.networkInspector.toHar).mockReturnValue({ log: { version: '1.2', creator: { name: 'Zerant Browser', version: '0.49.0' }, pages: [], entries: [] } } as any);
 
       const res = await request(app).get('/network/har?limit=25&domain=example.com');
 
@@ -263,7 +263,7 @@ describe('Network Routes', () => {
 
     it('generates filename with tab-none when no active tab', async () => {
       vi.mocked(ctx.tabManager.getActiveTab).mockReturnValue(null as any);
-      const emptyHar = { log: { version: '1.2', creator: { name: 'Tandem Browser', version: '0.0.0' }, pages: [], entries: [] } };
+      const emptyHar = { log: { version: '1.2', creator: { name: 'Zerant Browser', version: '0.0.0' }, pages: [], entries: [] } };
       vi.mocked(ctx.networkInspector.toHar).mockReturnValue(emptyHar as any);
 
       const res = await request(app).get('/network/har');

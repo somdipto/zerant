@@ -7,8 +7,8 @@ export function registerExtensionTools(server: McpServer): void {
   // ── Chrome extension import ──
 
   server.tool(
-    'tandem_extensions_chrome_list',
-    'List Chrome extensions available for import into Tandem.',
+    'zerant_extensions_chrome_list',
+    'List Chrome extensions available for import into Zerant.',
     {
       profile: z.string().optional().describe('Chrome profile name (default: "Default")'),
     },
@@ -23,8 +23,8 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extensions_chrome_import',
-    'Import Chrome extension(s) into Tandem. Provide an extensionId for a single extension or set all=true to import all.',
+    'zerant_extensions_chrome_import',
+    'Import Chrome extension(s) into Zerant. Provide an extensionId for a single extension or set all=true to import all.',
     coerceShape({
       extensionId: z.string().optional().describe('Chrome extension ID to import'),
       all: z.boolean().optional().describe('Import all Chrome extensions'),
@@ -44,7 +44,7 @@ export function registerExtensionTools(server: McpServer): void {
   // ── Gallery ──
 
   server.tool(
-    'tandem_extensions_gallery',
+    'zerant_extensions_gallery',
     'Browse the curated extension gallery with install status.',
     {
       category: z.string().optional().describe('Filter by category'),
@@ -64,7 +64,7 @@ export function registerExtensionTools(server: McpServer): void {
   // ── Updates ──
 
   server.tool(
-    'tandem_extensions_updates_check',
+    'zerant_extensions_updates_check',
     'Trigger a manual update check for all installed extensions.',
     async () => {
       const data = await apiCall('GET', '/extensions/updates/check');
@@ -74,7 +74,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extensions_updates_status',
+    'zerant_extensions_updates_status',
     'Get current extension update status without triggering a check.',
     async () => {
       const data = await apiCall('GET', '/extensions/updates/status');
@@ -84,7 +84,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extensions_updates_apply',
+    'zerant_extensions_updates_apply',
     'Apply available extension updates. Optionally target a specific extension.',
     {
       extensionId: z.string().optional().describe('Extension ID to update (updates all if omitted)'),
@@ -101,7 +101,7 @@ export function registerExtensionTools(server: McpServer): void {
   // ── Disk usage, conflicts, native messaging ──
 
   server.tool(
-    'tandem_extensions_disk_usage',
+    'zerant_extensions_disk_usage',
     'Get per-extension disk usage statistics.',
     async () => {
       const data = await apiCall('GET', '/extensions/disk-usage');
@@ -111,7 +111,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extensions_conflicts',
+    'zerant_extensions_conflicts',
     'Detect conflicts across all installed extensions.',
     async () => {
       const data = await apiCall('GET', '/extensions/conflicts');
@@ -121,7 +121,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extensions_native_messaging',
+    'zerant_extensions_native_messaging',
     'Get native messaging host detection status for extensions.',
     async () => {
       const data = await apiCall('GET', '/extensions/native-messaging/status');
@@ -133,7 +133,7 @@ export function registerExtensionTools(server: McpServer): void {
   // ── Existing tools ──
 
   server.tool(
-    'tandem_extensions_list',
+    'zerant_extensions_list',
     'List all loaded and available browser extensions with conflict info.',
     async () => {
       const data = await apiCall('GET', '/extensions/list');
@@ -143,7 +143,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extension_load',
+    'zerant_extension_load',
     'Load a browser extension from a local directory path.',
     {
       path: z.string().describe('Absolute path to the extension directory'),
@@ -156,7 +156,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extension_install',
+    'zerant_extension_install',
     'Install a browser extension from the Chrome Web Store. Accepts a CWS URL or extension ID.',
     {
       input: z.string().describe('Chrome Web Store URL or extension ID'),
@@ -169,7 +169,7 @@ export function registerExtensionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extension_uninstall',
+    'zerant_extension_uninstall',
     'Uninstall a browser extension by its ID. Removes from session and disk.',
     {
       id: z.string().describe('Extension ID (32 lowercase a-p characters)'),

@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { assertChromeExtensionId, assertSinglePathSegment, resolvePathWithinRoot } from '../utils/security';
 
@@ -31,7 +31,7 @@ export interface BulkImportResult {
   details: ImportResult[];
 }
 
-interface TandemMeta {
+interface ZerantMeta {
   source: 'chrome-import';
   importedAt: string;
   cwsId: string;
@@ -42,7 +42,7 @@ interface TandemMeta {
 
 /**
  * ChromeExtensionImporter — Detects Chrome's extension directory
- * and imports extensions into ~/.tandem/extensions/.
+ * and imports extensions into ~/.zerant/extensions/.
  *
  * Chrome stores extensions in:
  *   macOS:   ~/Library/Application Support/Google/Chrome/{Profile}/Extensions/
@@ -54,11 +54,11 @@ interface TandemMeta {
  */
 export class ChromeExtensionImporter {
   private profile: string;
-  private tandemExtensionsDir: string;
+  private zerantExtensionsDir: string;
 
   constructor(profile: string = 'Default') {
     this.profile = assertSinglePathSegment(profile, 'Chrome profile');
-    this.tandemExtensionsDir = tandemDir('extensions');
+    this.zerantExtensionsDir = zerantDir('extensions');
   }
 
   /**
@@ -161,8 +161,8 @@ export class ChromeExtensionImporter {
   }
 
   /**
-   * Import a single Chrome extension into ~/.tandem/extensions/.
-   * Skips if already imported. Writes .tandem-meta.json with CWS ID.
+   * Import a single Chrome extension into ~/.zerant/extensions/.
+   * Skips if already imported. Writes .zerant-meta.json with CWS ID.
    */
   importExtension(extensionId: string): ImportResult {
     // Validate extension ID format
@@ -183,7 +183,7 @@ export class ChromeExtensionImporter {
   }
 
   /**
-   * Import all Chrome extensions into ~/.tandem/extensions/.
+   * Import all Chrome extensions into ~/.zerant/extensions/.
    * Skips already-imported extensions.
    */
   importAll(): BulkImportResult {
@@ -212,11 +212,11 @@ export class ChromeExtensionImporter {
   }
 
   /**
-   * Check if an extension is already imported in Tandem.
+   * Check if an extension is already imported in Zerant.
    */
   isAlreadyImported(extensionId: string): boolean {
     const safeExtensionId = assertChromeExtensionId(extensionId);
-    const destPath = resolvePathWithinRoot(this.tandemExtensionsDir, safeExtensionId);
+    const destPath = resolvePathWithinRoot(this.zerantExtensionsDir, safeExtensionId);
     return fs.existsSync(destPath) && fs.existsSync(resolvePathWithinRoot(destPath, 'manifest.json'));
   }
 
@@ -239,15 +239,15 @@ export class ChromeExtensionImporter {
     const safeExtensionId = assertChromeExtensionId(ext.id);
     const versionName = assertSinglePathSegment(path.basename(ext.chromePath), 'extension version');
     const safeChromePath = resolvePathWithinRoot(chromeDir, safeExtensionId, versionName);
-    const destPath = resolvePathWithinRoot(this.tandemExtensionsDir, safeExtensionId);
+    const destPath = resolvePathWithinRoot(this.zerantExtensionsDir, safeExtensionId);
 
     try {
-      // Ensure Tandem extensions directory exists
-      if (!fs.existsSync(this.tandemExtensionsDir)) {
-        fs.mkdirSync(this.tandemExtensionsDir, { recursive: true });
+      // Ensure Zerant extensions directory exists
+      if (!fs.existsSync(this.zerantExtensionsDir)) {
+        fs.mkdirSync(this.zerantExtensionsDir, { recursive: true });
       }
 
-      // Copy the Chrome extension version folder to Tandem
+      // Copy the Chrome extension version folder to Zerant
       fs.cpSync(safeChromePath, destPath, { recursive: true });
 
       // Verify manifest.json exists after copy
@@ -268,15 +268,15 @@ export class ChromeExtensionImporter {
         // Non-fatal: manifest already verified during listing
       }
 
-      // Write .tandem-meta.json with import metadata
-      const meta: TandemMeta = {
+      // Write .zerant-meta.json with import metadata
+      const meta: ZerantMeta = {
         source: 'chrome-import',
         importedAt: new Date().toISOString(),
         cwsId: ext.id,
         importedVersion: ext.version,
       };
       fs.writeFileSync(
-        resolvePathWithinRoot(destPath, '.tandem-meta.json'),
+        resolvePathWithinRoot(destPath, '.zerant-meta.json'),
         JSON.stringify(meta, null, 2),
         'utf-8'
       );

@@ -6,7 +6,7 @@ import { coerceShape } from '../coerce.js';
 export function registerAwarenessTools(server: McpServer): void {
 
   server.tool(
-    'tandem_awareness_digest',
+    'zerant_awareness_digest',
     'Get a smart digest of recent browser activity — what the user has been doing, ' +
     'sites visited, interactions, errors encountered, and tab changes. ' +
     'Call this at the start of a conversation to understand what the user is working on, ' +
@@ -27,7 +27,7 @@ export function registerAwarenessTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_awareness_focus',
+    'zerant_awareness_focus',
     'Quick check: what is the user doing right now? Returns the active tab, ' +
     'current activity type (reading/typing/navigating/idle), and whether there are errors. ' +
     'Much lighter than awareness_digest — use this for quick context checks.',

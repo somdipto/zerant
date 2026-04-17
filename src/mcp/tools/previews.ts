@@ -4,8 +4,8 @@ import { apiCall, logActivity } from '../api-client.js';
 
 export function registerPreviewTools(server: McpServer): void {
   server.tool(
-    'tandem_preview_create',
-    'Create a live HTML preview page in Tandem Browser. Returns the preview URL. The page supports live reload — use tandem_preview_update to push changes.',
+    'zerant_preview_create',
+    'Create a live HTML preview page in Zerant Browser. Returns the preview URL. The page supports live reload — use zerant_preview_update to push changes.',
     {
       html: z.string().describe('The HTML content for the preview page'),
       title: z.string().optional().describe('Optional title for the preview'),
@@ -20,7 +20,7 @@ export function registerPreviewTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_preview_update',
+    'zerant_preview_update',
     'Update the HTML content of an existing preview. The browser tab will live-reload automatically.',
     {
       id: z.string().describe('The preview ID to update'),
@@ -34,7 +34,7 @@ export function registerPreviewTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_preview_list',
+    'zerant_preview_list',
     'List all active HTML previews with their IDs, titles, and URLs.',
     async () => {
       const data = await apiCall('GET', '/previews');
@@ -44,7 +44,7 @@ export function registerPreviewTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_preview_delete',
+    'zerant_preview_delete',
     'Delete an existing HTML preview.',
     {
       id: z.string().describe('The preview ID to delete'),

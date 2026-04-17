@@ -1,8 +1,8 @@
-# Tandem Browser — AI Integration Vision
+# Zerant Browser — AI Integration Vision
 
 ## Core Idea
 
-Tandem Browser is not a normal browser. It is a **human-AI fusion interface** where Robin and the AI become one user together. The browser is the place where human agency and AI capabilities meet.
+Zerant Browser is not a normal browser. It is a **human-AI fusion interface** where Robin and the AI become one user together. The browser is the place where human agency and AI capabilities meet.
 
 ### Why This Works
 
@@ -56,7 +56,7 @@ Everything a human can do with a browser:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                    Tandem Browser (Electron)                │
+│                    Zerant Browser (Electron)                │
 │                                                            │
 │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐ │
 │  │   Webview     │  │  Kees Panel  │  │   API Server    │ │
@@ -85,7 +85,7 @@ Everything a human can do with a browser:
           │  │ Gateway  │       │                     │
           │  │ :18789   │       │  ┌───────────────┐  │
           │  └──────────┘       │  │ MCP Server    │  │
-          │                     │  │ (Tandem tools)│  │
+          │                     │  │ (Zerant tools)│  │
           │                     │  └───────┬───────┘  │
           │                     │          │          │
           │                     │  ┌───────┴───────┐  │
@@ -108,7 +108,7 @@ Everything a human can do with a browser:
 
 ## Cross-Platform Strategy
 
-Tandem is being built for:
+Zerant is being built for:
 1. **macOS** (current development environment)
 2. **Linux** (second priority, docs in `/Linux-version/`)
 3. **Windows** (later)

@@ -14,7 +14,7 @@ changing startup performance yet. The result should be a source manifest and
 parser layer that can ingest plain domain lists, URL lists, JSON feeds, and CSV
 feeds from a single consistent path.
 
-After this phase, Tandem should be able to describe each source declaratively
+After this phase, Zerant should be able to describe each source declaratively
 instead or hardcoding parser logic in multiple places.
 
 ---

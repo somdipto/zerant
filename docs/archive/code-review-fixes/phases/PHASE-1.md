@@ -38,7 +38,7 @@ if (!status.connected || status.pendingDecisions >= 100) return;
 
 ---
 
-### 1.3 productName "Google Chrome" → "Tandem Browser"
+### 1.3 productName "Google Chrome" → "Zerant Browser"
 
 **Review issue:** #18
 **File:** `package.json`, line 47
@@ -50,7 +50,7 @@ if (!status.connected || status.pendingDecisions >= 100) return;
 
 **Fix:**
 ```json
-"productName": "Tandem Browser",
+"productName": "Zerant Browser",
 ```
 
 ---
@@ -165,7 +165,7 @@ fix(review): Phase 1 — triviale safe fixes
 
 - Guardian backpressure: && → || (prevent unbounded queue)
 - SecurityDB: close() called on app quit (WAL checkpoint)
-- productName: "Google Chrome" → "Tandem Browser"
+- productName: "Google Chrome" → "Zerant Browser"
 - Remove 17 [DEBUG] console.logs from onboarding
 - Remove hardcoded 'levelsio' from X Scout
 - Add cookieCounts eviction (max 1000 domains)

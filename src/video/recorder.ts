@@ -2,7 +2,7 @@ import { app } from 'electron';
 import { execFile } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('VideoRecorder');
@@ -32,7 +32,7 @@ interface Recording {
 /**
  * VideoRecorderManager — records the browser window to MP4 via ffmpeg.
  *
- * Persistence: ~/Movies/Tandem/ and ~/.tandem/recordings/
+ * Persistence: ~/Movies/Zerant/ and ~/.zerant/recordings/
  */
 export class VideoRecorderManager {
 
@@ -53,9 +53,9 @@ export class VideoRecorderManager {
   // === 2. Constructor ===
 
   constructor() {
-    this.recordingsDir = tandemDir('recordings');
+    this.recordingsDir = zerantDir('recordings');
     this.tmpDir = path.join(this.recordingsDir, 'tmp');
-    this.moviesDir = path.join(app.getPath('home'), 'Movies', 'Tandem');
+    this.moviesDir = path.join(app.getPath('home'), 'Movies', 'Zerant');
     for (const dir of [this.recordingsDir, this.tmpDir, this.moviesDir]) {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     }
@@ -113,7 +113,7 @@ export class VideoRecorderManager {
 
     // Convert WebM → MP4
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const mp4Filename = `tandem-recording-${timestamp}.mp4`;
+    const mp4Filename = `zerant-recording-${timestamp}.mp4`;
     const moviesPath = path.join(this.moviesDir, mp4Filename);
     // appPath was used for a redundant copy to recordingsDir — removed, movies dir is sufficient
     const stoppedAt = Date.now();
@@ -132,7 +132,7 @@ export class VideoRecorderManager {
     } catch (e) {
       log.warn('ffmpeg conversion failed, keeping WebM:', e);
       // Keep the webm as fallback — rename to movies dir so user can find it
-      const webmFilename = `tandem-recording-${timestamp}.webm`;
+      const webmFilename = `zerant-recording-${timestamp}.webm`;
       const fallbackMoviesPath = path.join(this.moviesDir, webmFilename);
       const fallbackAppPath = path.join(this.recordingsDir, webmFilename);
       try {
@@ -196,7 +196,7 @@ export class VideoRecorderManager {
     // Try to convert the webm to mp4 in the background even on force-stop
     if (tmpPath && fs.existsSync(tmpPath)) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const mp4Filename = `tandem-recording-${timestamp}.mp4`;
+      const mp4Filename = `zerant-recording-${timestamp}.mp4`;
       const moviesPath = path.join(this.moviesDir, mp4Filename);
       log.info(`Force-stop: converting ${tmpPath} → ${moviesPath}`);
       this.convertToMp4(tmpPath, moviesPath)

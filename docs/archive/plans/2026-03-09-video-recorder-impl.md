@@ -89,7 +89,7 @@ export class VideoRecorderManager {
     this.recordingsDir = tandemDir('recordings');
     this.tmpDir = path.join(this.recordingsDir, 'tmp');
     this.moviesDir = path.join(
-      app.getPath('home'), 'Movies', 'Tandem'
+      app.getPath('home'), 'Movies', 'Zerant'
     );
     for (const dir of [this.recordingsDir, this.tmpDir, this.moviesDir]) {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -725,10 +725,10 @@ This is the core renderer file handling desktopCapturer, MediaRecorder, region c
 
   async function startRecording(mode, region) {
     try {
-      // Get the Tandem window source via desktopCapturer
+      // Get the Zerant window source via desktopCapturer
       const { desktopCapturer } = require('electron');
       const sources = await desktopCapturer.getSources({ types: ['window'], fetchWindowIcons: false });
-      const tandemSource = sources.find(s => s.name.includes('Tandem')) || sources[0];
+      const tandemSource = sources.find(s => s.name.includes('Zerant')) || sources[0];
 
       if (!tandemSource) {
         console.error('[video-recorder] No window source found');
@@ -917,7 +917,7 @@ Run: `npm start`
 Test manually:
 1. Click screenshot button → verify Record Application and Record Region appear in menu
 2. Click Record Application → overlay bar appears, timer ticks
-3. Click Stop → overlay bar disappears, check `~/Movies/Tandem/` for MP4 file
+3. Click Stop → overlay bar disappears, check `~/Movies/Zerant/` for MP4 file
 4. Click Record Region → drag a region → recording starts → stop → check output
 
 **Step 3: Commit**
@@ -943,8 +943,8 @@ Test: Web Page, Application, and Region screenshots should all still work correc
 **Step 3: Verify recording**
 
 Test all paths:
-- Record Application → MP4 in `~/Movies/Tandem/`
-- Record Region → select area → MP4 in `~/Movies/Tandem/`
+- Record Application → MP4 in `~/Movies/Zerant/`
+- Record Region → select area → MP4 in `~/Movies/Zerant/`
 - Mic toggle → verify mic icon changes
 - Esc key → stops recording
 - Timer counts correctly

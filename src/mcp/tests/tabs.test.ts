@@ -24,9 +24,9 @@ describe('MCP tab tools', () => {
     mockGetMcpSource.mockReturnValue('wingman');
   });
 
-  // ── tandem_list_tabs ──────────────────────────────────────────────
-  describe('tandem_list_tabs', () => {
-    const handler = getHandler(tools, 'tandem_list_tabs');
+  // ── zerant_list_tabs ──────────────────────────────────────────────
+  describe('zerant_list_tabs', () => {
+    const handler = getHandler(tools, 'zerant_list_tabs');
 
     it('lists open tabs with formatted text', async () => {
       mockApiCall.mockResolvedValueOnce({
@@ -77,9 +77,9 @@ describe('MCP tab tools', () => {
     });
   });
 
-  // ── tandem_open_tab ───────────────────────────────────────────────
-  describe('tandem_open_tab', () => {
-    const handler = getHandler(tools, 'tandem_open_tab');
+  // ── zerant_open_tab ───────────────────────────────────────────────
+  describe('zerant_open_tab', () => {
+    const handler = getHandler(tools, 'zerant_open_tab');
 
     it('opens a tab with URL', async () => {
       mockApiCall.mockResolvedValueOnce({ tab: { id: 't3' } });
@@ -138,9 +138,9 @@ describe('MCP tab tools', () => {
     });
   });
 
-  // ── tandem_close_tab ──────────────────────────────────────────────
-  describe('tandem_close_tab', () => {
-    const handler = getHandler(tools, 'tandem_close_tab');
+  // ── zerant_close_tab ──────────────────────────────────────────────
+  describe('zerant_close_tab', () => {
+    const handler = getHandler(tools, 'zerant_close_tab');
 
     it('closes a tab by ID', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -153,9 +153,9 @@ describe('MCP tab tools', () => {
     });
   });
 
-  // ── tandem_focus_tab ──────────────────────────────────────────────
-  describe('tandem_focus_tab', () => {
-    const handler = getHandler(tools, 'tandem_focus_tab');
+  // ── zerant_focus_tab ──────────────────────────────────────────────
+  describe('zerant_focus_tab', () => {
+    const handler = getHandler(tools, 'zerant_focus_tab');
 
     it('focuses a tab by ID', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -172,9 +172,9 @@ describe('MCP tab tools', () => {
     });
   });
 
-  // ── tandem_tab_emoji_set ─────────────────────────────────────────
-  describe('tandem_tab_emoji_set', () => {
-    const handler = getHandler(tools, 'tandem_tab_emoji_set');
+  // ── zerant_tab_emoji_set ─────────────────────────────────────────
+  describe('zerant_tab_emoji_set', () => {
+    const handler = getHandler(tools, 'zerant_tab_emoji_set');
 
     it('sets emoji on a tab', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -187,9 +187,9 @@ describe('MCP tab tools', () => {
     });
   });
 
-  // ── tandem_tab_emoji_remove ──────────────────────────────────────
-  describe('tandem_tab_emoji_remove', () => {
-    const handler = getHandler(tools, 'tandem_tab_emoji_remove');
+  // ── zerant_tab_emoji_remove ──────────────────────────────────────
+  describe('zerant_tab_emoji_remove', () => {
+    const handler = getHandler(tools, 'zerant_tab_emoji_remove');
 
     it('removes emoji from a tab', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -202,9 +202,9 @@ describe('MCP tab tools', () => {
     });
   });
 
-  // ── tandem_tab_emoji_flash ───────────────────────────────────────
-  describe('tandem_tab_emoji_flash', () => {
-    const handler = getHandler(tools, 'tandem_tab_emoji_flash');
+  // ── zerant_tab_emoji_flash ───────────────────────────────────────
+  describe('zerant_tab_emoji_flash', () => {
+    const handler = getHandler(tools, 'zerant_tab_emoji_flash');
 
     it('flashes emoji on a tab', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });

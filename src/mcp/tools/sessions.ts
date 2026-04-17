@@ -4,7 +4,7 @@ import { apiCall, logActivity } from '../api-client.js';
 
 export function registerSessionTools(server: McpServer): void {
   server.tool(
-    'tandem_session_list',
+    'zerant_session_list',
     'List all isolated browser sessions with tab counts',
     async () => {
       const data = await apiCall('GET', '/sessions/list');
@@ -14,7 +14,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_create',
+    'zerant_session_create',
     'Create a new isolated browser session with its own cookies and storage',
     {
       name: z.string().describe('Name for the new session'),
@@ -30,7 +30,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_switch',
+    'zerant_session_switch',
     'Switch the active browser session',
     {
       name: z.string().describe('Name of the session to switch to'),
@@ -43,7 +43,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_destroy',
+    'zerant_session_destroy',
     'Destroy an isolated browser session and close all its tabs',
     {
       name: z.string().describe('Name of the session to destroy'),
@@ -61,7 +61,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_fetch',
+    'zerant_session_fetch',
     'Perform a fetch request within the context of a browser session (same-origin, includes cookies/auth). The request runs inside the active tab using the page\'s session credentials.',
     {
       url: z.string().describe('URL to fetch (must be same-origin as the active tab)'),
@@ -81,7 +81,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_state_save',
+    'zerant_session_state_save',
     'Save the current session state (cookies, storage) to a named snapshot',
     {
       name: z.string().describe('Name for the saved state'),
@@ -94,7 +94,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_state_load',
+    'zerant_session_state_load',
     'Load a previously saved session state (cookies, storage)',
     {
       name: z.string().describe('Name of the saved state to load'),
@@ -107,7 +107,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_session_state_list',
+    'zerant_session_state_list',
     'List all saved session states',
     async () => {
       const data = await apiCall('GET', '/sessions/state/list');

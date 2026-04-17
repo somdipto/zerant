@@ -973,7 +973,7 @@ describe('security routes', () => {
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
         secret: 'test-secret',
-        path: '~/.tandem/security/gatekeeper.secret',
+        path: '~/.zerant/security/gatekeeper.secret',
       });
     });
 

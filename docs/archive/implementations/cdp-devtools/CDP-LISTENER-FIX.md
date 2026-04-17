@@ -100,7 +100,7 @@ When CDP detaches and re-attaches (tab switch), `installWingmanBindings()` is ca
 
 ## Testing
 
-1. Start Tandem — CDP auto-attaches
+1. Start Zerant — CDP auto-attaches
 2. Scroll on a page → check `activity-log?types=scroll-position`
 3. Select text → check `activity-log?types=text-selected`
 4. Click in a form field → check `activity-log?types=form-interaction`

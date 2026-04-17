@@ -1,5 +1,5 @@
 (() => {
-    const renderer = window.__tandemRenderer;
+    const renderer = window.__zerantRenderer;
     if (!renderer) {
       console.error('[browser-tools] Missing renderer bridge');
       return;
@@ -62,15 +62,15 @@
         const liveEl = document.getElementById('voice-live-text');
         if (liveEl) liveEl.textContent = interimText || finalText;
 
-        if (window.tandem) {
+        if (window.zerant) {
           if (finalText) {
-            window.tandem.sendVoiceTranscript(finalText, true);
+            window.zerant.sendVoiceTranscript(finalText, true);
             if (liveEl) liveEl.textContent = '';
             if (window.chatRouter && window.chatRouter.router) {
               window.chatRouter.sendMessage(finalText);
             }
           } else if (interimText) {
-            window.tandem.sendVoiceTranscript(interimText, false);
+            window.zerant.sendVoiceTranscript(interimText, false);
           }
         }
       };
@@ -110,11 +110,11 @@
       }
       document.getElementById('voice-indicator').classList.remove('active');
       document.getElementById('voice-live-text').textContent = '';
-      if (window.tandem) window.tandem.sendVoiceStatus(false);
+      if (window.zerant) window.zerant.sendVoiceStatus(false);
     }
 
-    if (window.tandem) {
-      window.tandem.onVoiceToggle((data) => {
+    if (window.zerant) {
+      window.zerant.onVoiceToggle((data) => {
         if (data.listening) {
           startVoiceRecognition();
         } else {
@@ -122,12 +122,12 @@
         }
       });
 
-      window.tandem.onVoiceTranscript(() => {
+      window.zerant.onVoiceTranscript(() => {
         // Already handled via onChatMessage for final messages
       });
 
-      window.tandem.onAutoSnapshotRequest(() => {
-        window.tandem.snapForWingman();
+      window.zerant.onAutoSnapshotRequest(() => {
+        window.zerant.snapForWingman();
       });
     }
 
@@ -174,7 +174,7 @@
     const bookmarksBar = document.getElementById('bookmarks-bar');
     let bookmarksBarVisible = true;
 
-    const bmToken = () => window.__TANDEM_TOKEN__ || '';
+    const bmToken = () => window.__ZERANT_TOKEN__ || '';
 
     async function updateBookmarkStar() {
       const entry = getActiveEntry();
@@ -680,9 +680,9 @@
       });
     }
 
-    const createTabWithFind = window.__tandemTabs.createTab;
-    window.__tandemTabs.createTab = function (tabId, url, partition) {
-      const result = createTabWithFind.call(window.__tandemTabs, tabId, url, partition);
+    const createTabWithFind = window.__zerantTabs.createTab;
+    window.__zerantTabs.createTab = function (tabId, url, partition) {
+      const result = createTabWithFind.call(window.__zerantTabs, tabId, url, partition);
       const entry = getTabs().get(tabId);
       if (entry && entry.webview) wireFindEvents(entry.webview);
       return result;
@@ -720,8 +720,8 @@
     // Screenshot preview with actual images in panel
     // ═══════════════════════════════════════════════
 
-    if (window.tandem) {
-      window.tandem.onScreenshotTaken((data) => {
+    if (window.zerant) {
+      window.zerant.onScreenshotTaken((data) => {
         const listEl = document.getElementById('screenshot-list');
         const placeholder = listEl.querySelector('p');
         if (placeholder) placeholder.remove();

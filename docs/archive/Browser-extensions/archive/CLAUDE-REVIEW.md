@@ -2,7 +2,7 @@
 
 **Date:** February 25, 2026
 **Reviewer:** Claude (Opus 4.6)
-**Reviewed:** Kees' review (KEES-REVIEW.md) verified against the Tandem codebase
+**Reviewed:** Kees' review (KEES-REVIEW.md) verified against the Zerant codebase
 **Method:** All claims verified by reading the source code and tracing the architecture
 
 ---
@@ -166,7 +166,7 @@ Phase 2 says uninstall requires a restart. `session.removeExtension(extensionId)
 
 ### Verification: removeExtension API confirmed
 
-The codebase contains no calls to `removeExtension` — it's not used anywhere. But the API has existed in Electron since version 12. Tandem runs Electron 40.
+The codebase contains no calls to `removeExtension` — it's not used anywhere. But the API has existed in Electron since version 12. Zerant runs Electron 40.
 
 I also found `session.getAllExtensions()` in the Electron API — this can be used to verify which extensions are loaded.
 
@@ -233,7 +233,7 @@ This is a double problem:
 
 `process.versions.chrome` is used nowhere in the codebase. The value is available in the Electron runtime and returns the exact Chromium version (e.g., `130.0.6723.91`).
 
-The `prodversion` parameter in the CWS download URL determines which version or the CRX Google returns. If Tandem updates to a newer Electron (with a higher Chromium version) but still sends `130.0.0.0`, Google may return an older CRX version that isn't compatible with the newer Chromium.
+The `prodversion` parameter in the CWS download URL determines which version or the CRX Google returns. If Zerant updates to a newer Electron (with a higher Chromium version) but still sends `130.0.0.0`, Google may return an older CRX version that isn't compatible with the newer Chromium.
 
 ### Required plan changes: prodversion
 
@@ -260,11 +260,11 @@ Installed extensions don't auto-update. This is a security risk — extensions r
 
 An extension without updates is a frozen snapshot or the code at the time or installation. This means:
 
-- **Security vulnerabilities stay open** — if uBlock Origin releases an XSS fix, Tandem keeps running the old vulnerable version
+- **Security vulnerabilities stay open** — if uBlock Origin releases an XSS fix, Zerant keeps running the old vulnerable version
 - **Functionality degrades** — extensions that depend on external APIs (Grammarly, Honey, Wappalyzer) stop working when those APIs change
 - **Compatibility breaks** — when a website changes its structure, content scripts that match on it stop working
 
-Chrome checks for updates every few hours via the same CWS CRX endpoint that we use for installation. Tandem must do this too.
+Chrome checks for updates every few hours via the same CWS CRX endpoint that we use for installation. Zerant must do this too.
 
 ### Required plan changes: auto-updates
 
@@ -312,7 +312,7 @@ A hardcoded `GALLERY_EXTENSIONS` array in TypeScript has these consequences:
 
 - **Every gallery change requires a new build** — adding a new popular extension, correcting an ID, updating a compatibility status, or adjusting a description requires a code change, TypeScript compile, and app rebuild
 - **Users cannot add their own extensions to the gallery** — power users who want to share a niche extension with their team cannot do so
-- **The gallery ages with the app version** — if Tandem v0.9 ships with 30 extensions and 5 new popular extensions emerge, all users must wait for v0.10 to see them
+- **The gallery ages with the app version** — if Zerant v0.9 ships with 30 extensions and 5 new popular extensions emerge, all users must wait for v0.10 to see them
 
 ### Required plan changes: gallery architecture
 

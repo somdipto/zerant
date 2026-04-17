@@ -9,7 +9,7 @@ Patrols security status, processes pending gatekeeper decisions, and checks for 
 
 ```json
 {
-  "name": "Tandem Sentinel",
+  "name": "Zerant Sentinel",
   "schedule": {"kind": "every", "everyMs": 300000},
   "sessionTarget": "isolated",
   "payload": {
@@ -27,7 +27,7 @@ Deep security scan — checks open tabs against baselines, reports anomalies and
 
 ```json
 {
-  "name": "Tandem Scanner",
+  "name": "Zerant Scanner",
   "schedule": {"kind": "every", "everyMs": 7200000},
   "sessionTarget": "isolated",
   "payload": {
@@ -45,7 +45,7 @@ Daily maintenance — updates blocklists, generates report, reviews zero-days, p
 
 ```json
 {
-  "name": "Tandem Security Updater",
+  "name": "Zerant Security Updater",
   "schedule": {"kind": "cron", "expr": "0 6 * * *", "tz": "Europe/Brussels"},
   "sessionTarget": "isolated",
   "payload": {

@@ -8,7 +8,7 @@
 - Chat input is a `<textarea>` (text-only)
 - `ChatMessage` interface has only `text: string`
 - No image/attachment support in the chat flow
-- Screenshots be opgeslagen in `~/Pictures/Tandem/` but can not in the chat geplakt be
+- Screenshots be opgeslagen in `~/Pictures/Zerant/` but can not in the chat geplakt be
 
 ## Wat er must gebeuren
 
@@ -46,7 +46,7 @@ Read these files first:
 - src/api/server.ts search for "/chat" routes (GET and POST)
 
 ## Context
-Tandem Browser has a chat panel (right sidebar) where Robin talks to Kees (AI wingman). The chat input is a <textarea>. Robin wants to paste images from clipboard (Cmd+V) into the chat, see a preview, and send them with the message. Images should be saved to disk and the file path stored in the ChatMessage.
+Zerant Browser has a chat panel (right sidebar) where Robin talks to Kees (AI wingman). The chat input is a <textarea>. Robin wants to paste images from clipboard (Cmd+V) into the chat, see a preview, and send them with the message. Images should be saved to disk and the file path stored in the ChatMessage.
 
 The chat system has multiple backends (OpenClaw WebSocket, Claude API) managed by a ChatRouter. The sendMessage() function in the renderer handles both modes. For this feature, we focus on the OpenClaw backend path since that's how Kees receives messages.
 
@@ -124,12 +124,12 @@ In the fireWebhook method, add image path to the webhook payload so Kees knows a
 ```typescript
 body: JSON.stringify({
   type: 'tandem-chat',
-  text: `[Tandem Chat] Robin: ${msg.text}${msg.image ? ' [image attached: ' + msg.image + ']' : ''}`,
+  text: `[Zerant Chat] Robin: ${msg.text}${msg.image ? ' [image attached: ' + msg.image + ']' : ''}`,
   metadata: {
     messageId: msg.id,
     from: msg.from,
     timestamp: msg.timestamp,
-    source: 'tandem-browser',
+    source: 'zerant-browser',
     image: msg.image || null,
   },
 }),
@@ -420,7 +420,7 @@ Do NOT install any new npm packages.
 # 1. Compile
 npm run compile
 
-# 2. Start Tandem
+# 2. Start Zerant
 npm start
 
 # 3. Test paste:
@@ -438,7 +438,7 @@ npm start
 #    - Preview must verschijnen
 
 # 5. Test history:
-#    - Herstart Tandem
+#    - Herstart Zerant
 #    - Eerder gestuurde images must visible are in chat history
 
 # 6. Test API:

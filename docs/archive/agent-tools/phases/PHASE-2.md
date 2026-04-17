@@ -278,7 +278,7 @@ ref terug for DOM-gebaseerde zoekopdrachten. Zorg that `/find/click` and `/find/
 
 ### 2. `src/api/server.ts` — Routes registreren
 
-Voeg `LocatorFinder` toe about `TandemAPIOptions` and registreer the routes.
+Voeg `LocatorFinder` toe about `ZerantAPIOptions` and registreer the routes.
 
 ```
 POST   /find              body: LocatorQuery                → LocatorResult
@@ -401,5 +401,5 @@ git push origin main
 ## Scope (1 Claude Code session)
 
 - `src/locators/finder.ts` — new file
-- `src/api/server.ts` — TandemAPIOptions + 4 routes
+- `src/api/server.ts` — ZerantAPIOptions + 4 routes
 - TypeScript check + verificatie + commit

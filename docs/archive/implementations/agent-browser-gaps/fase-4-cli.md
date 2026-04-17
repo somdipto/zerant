@@ -1,7 +1,7 @@
 # Phase 4 — tandem CLI: Command Line Wrapper
 
-> **Goal:** Thin CLI wrapper rond the Tandem REST API.
-> Zelfde developer UX if agent-browser, but then to jouw own Tandem.
+> **Goal:** Thin CLI wrapper rond the Zerant REST API.
+> Zelfde developer UX if agent-browser, but then to jouw own Zerant.
 > **Sessions:** 1
 > **Requires:** Phase 1-3 compleet (snapshot + sessions)
 
@@ -51,7 +51,7 @@ API token staat in `~/.tandem/api-token` — same file if the server uses.
 
 ```
 cli/
-├── package.json          ← apart package: @hydro13/tandem-cli
+├── package.json          ← apart package: @zerant/zerant-cli
 ├── tsconfig.json         ← OWN tsconfig, output to cli/dist/
 ├── index.ts              ← entry point, commander setup + #!/usr/bin/env node
 ├── client.ts             ← HTTP client, token laden
@@ -204,9 +204,9 @@ export async function api(
 
 ```json
 {
-  "name": "@hydro13/tandem-cli",
+  "name": "@zerant/zerant-cli",
   "version": "0.1.0",
-  "description": "CLI for Tandem Browser API",
+  "description": "CLI for Zerant Browser API",
   "bin": {
     "tandem": "./dist/index.js"
   },

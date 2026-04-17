@@ -18,27 +18,27 @@ describe('MCP form tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_forms_saved lists saved forms', async () => {
+  it('zerant_forms_saved lists saved forms', async () => {
     mockApiCall.mockResolvedValueOnce({ forms: [] });
-    await getHandler(tools, 'tandem_forms_saved')({});
+    await getHandler(tools, 'zerant_forms_saved')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/forms/memory');
   });
 
-  it('tandem_forms_saved filters by domain', async () => {
+  it('zerant_forms_saved filters by domain', async () => {
     mockApiCall.mockResolvedValueOnce({ forms: [] });
-    await getHandler(tools, 'tandem_forms_saved')({ domain: 'github.com' });
+    await getHandler(tools, 'zerant_forms_saved')({ domain: 'github.com' });
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/forms/memory/github.com');
   });
 
-  it('tandem_form_fill fills form', async () => {
+  it('zerant_form_fill fills form', async () => {
     mockApiCall.mockResolvedValueOnce({ filled: true });
-    await getHandler(tools, 'tandem_form_fill')({});
+    await getHandler(tools, 'zerant_form_fill')({});
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/forms/fill', expect.any(Object), undefined);
   });
 
-  it('tandem_forms_clear clears saved forms', async () => {
+  it('zerant_forms_clear clears saved forms', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
-    await getHandler(tools, 'tandem_forms_clear')({ domain: 'github.com' });
+    await getHandler(tools, 'zerant_forms_clear')({ domain: 'github.com' });
     expect(mockApiCall).toHaveBeenCalledWith('DELETE', '/forms/memory/github.com');
   });
 });

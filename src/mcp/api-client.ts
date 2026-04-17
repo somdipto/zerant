@@ -1,16 +1,16 @@
 import * as fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { API_PORT } from '../utils/constants';
 import { normalizeTabSource } from '../tabs/context';
 
 const API_BASE = `http://localhost:${API_PORT}`;
 
 function getToken(): string {
-  const tokenPath = tandemDir('api-token');
+  const tokenPath = zerantDir('api-token');
   return fs.readFileSync(tokenPath, 'utf-8').trim();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- MCP relays many heterogeneous Tandem API responses
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- MCP relays many heterogeneous Zerant API responses
 export async function apiCall(method: string, endpoint: string, body?: any, headers?: Record<string, string>): Promise<any> {
   const token = getToken();
 
@@ -28,14 +28,14 @@ export async function apiCall(method: string, endpoint: string, body?: any, head
   } catch (err) {
     const errObj = err as NodeJS.ErrnoException & { cause?: NodeJS.ErrnoException };
     if (errObj.code === 'ECONNREFUSED' || errObj.cause?.code === 'ECONNREFUSED') {
-      throw new Error('Tandem Browser is not running. Start Tandem with \'npm start\' and try again.', { cause: err });
+      throw new Error('Zerant Browser is not running. Start Zerant with \'npm start\' and try again.', { cause: err });
     }
     throw err;
   }
 
   if (!response.ok) {
     const text = await response.text().catch(() => '');
-    throw new Error(`Tandem API error: ${response.status} ${response.statusText} — ${text}`);
+    throw new Error(`Zerant API error: ${response.status} ${response.statusText} — ${text}`);
   }
 
   const contentType = response.headers.get('content-type');
@@ -54,9 +54,9 @@ export function tabHeaders(tabId?: string): Record<string, string> | undefined {
 
 export function getMcpSource(): string {
   const candidates = [
-    process.env.TANDEM_SOURCE,
-    process.env.TANDEM_MCP_SOURCE,
-    process.env.TANDEM_ACTOR_SOURCE,
+    process.env.ZERANT_SOURCE,
+    process.env.ZERANT_MCP_SOURCE,
+    process.env.ZERANT_ACTOR_SOURCE,
   ];
 
   for (const candidate of candidates) {

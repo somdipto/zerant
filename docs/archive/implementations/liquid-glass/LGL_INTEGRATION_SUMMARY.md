@@ -200,7 +200,7 @@ Expected FPS: **60fps** on all elements, even on integrated graphics.
 
 ## Next Steps
 
-1. **Test the browser** — Launch Tandem and verify glass effects work
+1. **Test the browser** — Launch Zerant and verify glass effects work
 2. **Capture screenshots** — Show before/after for documentation
 3. **Record demo video** — Highlight the stunning glass effects
 4. **Wait for core package** — When `@mblock/liquid-glass` is ready, integrate WebGL
@@ -214,7 +214,7 @@ The LGL core package is being built in parallel at `/home/robin/.openclaw/worksp
 - WebGL lensing will layer **on top** for devices that support it
 - Users can choose performance vs quality in settings
 
-This architecture ensures Tandem looks beautiful everywhere, with progressive enhancement for capable devices.
+This architecture ensures Zerant looks beautiful everywhere, with progressive enhancement for capable devices.
 
 ---
 

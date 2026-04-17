@@ -29,14 +29,14 @@
 | `src/bootstrap/runtime.ts` | Initialize PairingManager, wire into registry, add destroy call |
 | `src/config/manager.ts` | Add `apiListenHost` (default `0.0.0.0`); migration from old `127.0.0.1` saved value |
 | `src/api/tests/helpers.ts` | Add `pairingManager` mock to `createMockContext()` |
-| `shell/settings.html` | Onboarding-first "Connect your AI to Tandem" with mode selector, address detection, instruction generation with `bindingKind`, binding cards, controls, polling |
+| `shell/settings.html` | Onboarding-first "Connect your AI to Zerant" with mode selector, address detection, instruction generation with `bindingKind`, binding cards, controls, polling |
 
 ---
 
 ## Architectural choices
 
 ### 1. Standalone manager + JSON storage
-Follows existing Tandem patterns (BookmarkManager, PinboardManager). JSON at `~/.tandem/pairing/bindings.json` with 0600 permissions. Setup codes are in-memory only (correct for 5-min TTL ephemeral secrets).
+Follows existing Zerant patterns (BookmarkManager, PinboardManager). JSON at `~/.tandem/pairing/bindings.json` with 0600 permissions. Setup codes are in-memory only (correct for 5-min TTL ephemeral secrets).
 
 ### 2. Dual-token auth
 Binding tokens (`tdm_ast_`) are validated alongside the existing local `api-token` in `classifyCaller()`. Both result in `local-automation` caller class (full API access). The existing auth path is untouched — binding validation is an additive check. Short-circuits on prefix so non-binding tokens skip the lookup.
@@ -45,7 +45,7 @@ Binding tokens (`tdm_ast_`) are validated alongside the existing local `api-toke
 Design doc suggested SHA-256 + argon2. Implementation uses SHA-256 only. Rationale: the token is 256-bit random (not a password), so SHA-256 with timing-safe comparison is sufficient. Argon2 would add a native dependency and slow down every API request for no security gain.
 
 ### 4. Public bootstrap routes
-`/agent`, `/skill`, `/agent/manifest`, `/agent/version` are unauthenticated. They contain no sensitive data — only version info, capability lists, and pairing instructions. This is intentional: an agent must be able to discover Tandem before it has a token.
+`/agent`, `/skill`, `/agent/manifest`, `/agent/version` are unauthenticated. They contain no sensitive data — only version info, capability lists, and pairing instructions. This is intentional: an agent must be able to discover Zerant before it has a token.
 
 ### 5. Listen host defaults to 0.0.0.0
 Local and remote connections must work simultaneously (not either/or). The server listens on all interfaces by default. Existing installs that had `127.0.0.1` saved are auto-migrated to `0.0.0.0` during config load. This migration was validated after hitting the exact problem during live Tailscale testing.
@@ -102,7 +102,7 @@ The manifest and version endpoints report transports as structured objects (`{ h
 
 All HTTP route files were audited line-by-line for remaining remote-breaking patterns. Result: **no remaining remote-breaking gaps found**. Every endpoint reachable by a local `api-token` is equally reachable by a `tdm_ast_` binding token. Auth is uniform via `classifyCaller()` — there is no per-route auth divergence.
 
-**Filesystem-path-in-response pattern (not a bug):** Several endpoints return a local filesystem path in the response body when they save files on the Tandem host (e.g. `GET /screenshot?save=...`, `POST /screenshot/application`, `POST /clipboard/save`, `POST /sessions/state/save`). These operations succeed remotely — the file is saved on the Tandem machine — but the `path` field is only meaningful locally. Remote agents should use the direct-data variants (e.g. `GET /screenshot` without `?save` returns PNG data directly). This is documented in the manifest `remoteNotes` section.
+**Filesystem-path-in-response pattern (not a bug):** Several endpoints return a local filesystem path in the response body when they save files on the Zerant host (e.g. `GET /screenshot?save=...`, `POST /screenshot/application`, `POST /clipboard/save`, `POST /sessions/state/save`). These operations succeed remotely — the file is saved on the Zerant machine — but the `path` field is only meaningful locally. Remote agents should use the direct-data variants (e.g. `GET /screenshot` without `?save` returns PNG data directly). This is documented in the manifest `remoteNotes` section.
 
 ### Remaining items (phase 2+)
 

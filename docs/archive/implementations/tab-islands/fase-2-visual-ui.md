@@ -375,7 +375,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ## Bekende valkuilen
 
 - [ ] DOM-order: tabs verplaatsen to a wrapper can event listeners breken — test that tab click/close/context menu still werken
-- [ ] Drag-and-drop: if Tandem tab DnD has, must tabs also between islands gesleept can be — can complex are, eventueel to a next iteratie
+- [ ] Drag-and-drop: if Zerant tab DnD has, must tabs also between islands gesleept can be — can complex are, eventueel to a next iteratie
 - [ ] Performance: `renderIslands()` is bij elk event aangeroepen — bij veel islands can this traag be. Overweeg debouncing.
 - [ ] CSS `color-mix()` is modern CSS — controleer that Electron's Chromium versie this ondersteunt (Electron 40 = Chromium 134+, dus this is prima)
 - [ ] `-webkit-app-region: drag` op the tab bar can interfere with island-label interactie — zorg that island-elementen `no-drag` hebben

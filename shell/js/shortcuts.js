@@ -214,8 +214,8 @@
 
         // Show Wingman panel after a brief moment
         setTimeout(() => {
-          if (window.tandem && window.tandem.openPanel) {
-            window.tandem.openPanel();
+          if (window.zerant && window.zerant.openPanel) {
+            window.zerant.openPanel();
           }
         }, 1000);
 

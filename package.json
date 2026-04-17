@@ -1,21 +1,21 @@
 {
-  "name": "tandem-browser",
+  "name": "zerant-browser",
   "version": "0.73.1",
   "description": "Local-first Electron browser with a 250-tool MCP server, MCP/HTTP control surfaces, and built-in security controls",
   "main": "dist/main.js",
-  "author": "Tandem Browser contributors",
+  "author": "Zerant Browser contributors",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hydro13/tandem-browser.git"
+    "url": "git+https://github.com/somdipto/zerant.git"
   },
   "bugs": {
-    "url": "https://github.com/hydro13/tandem-browser/issues"
+    "url": "https://github.com/somdipto/zerant/issues"
   },
-  "homepage": "https://github.com/hydro13/tandem-browser",
+  "homepage": "https://github.com/somdipto/zerant",
   "keywords": [
     "browser",
     "electron",
@@ -80,10 +80,10 @@
   "overrides": {
     "yauzl": "3.2.1"
   },
-  "productName": "Tandem Browser",
+  "productName": "Zerant Browser",
   "build": {
-    "appId": "com.tandem.browser",
-    "artifactName": "tandem-browser-${version}-${arch}.${ext}",
+    "appId": "com.zerant.browser",
+    "artifactName": "zerant-browser-${version}-${arch}.${ext}",
     "files": [
       "dist/**/*",
       "shell/**/*",

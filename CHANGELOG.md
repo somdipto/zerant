@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Tandem Browser will be documented in this file.
+All notable changes to Zerant Browser will be documented in this file.
 
 ## [v0.73.1] - 2026-04-16
 
@@ -29,12 +29,12 @@ against a test server for reliable SDK integration coverage.
 
 ### Added
 
-- Remote agent pairing over Tailscale: agents on another machine can pair with Tandem via a one-time setup code (TDM-XXXX-XXXX), receive a durable binding token, and use the full HTTP API remotely — proven with Windows 11 + VS Code + Claude Code connecting to macOS over Tailscale
+- Remote agent pairing over Tailscale: agents on another machine can pair with Zerant via a one-time setup code (TDM-XXXX-XXXX), receive a durable binding token, and use the full HTTP API remotely — proven with Windows 11 + VS Code + Claude Code connecting to macOS over Tailscale
 - PairingManager with setup code generation (5-minute TTL), token exchange, binding lifecycle (paired/paused/revoked/removed), SHA-256 token hashing, and persistent storage at `~/.tandem/pairing/bindings.json`
 - Public bootstrap/discovery routes: `GET /agent` (human-readable), `GET /agent/manifest` (machine-readable with all endpoint families), `GET /agent/version` (capability summary), `GET /skill` (version-matched usage guide) — all request-aware so URLs are correct over Tailscale
 - Pairing HTTP routes: `POST /pairing/setup-code`, `POST /pairing/exchange` (public, rate-limited), `GET /pairing/whoami`, `GET /pairing/bindings`, pause/resume/revoke/remove per binding, and `GET /pairing/addresses` for Tailscale address auto-detection
 - Binding token auth (`tdm_ast_` prefix) accepted alongside existing local `api-token` for all HTTP routes and the `/watch/live` WebSocket
-- Onboarding-first "Connect your AI to Tandem" Settings UI with mode selector (same machine / another machine), address detection, instruction generation with `bindingKind`, and binding management cards
+- Onboarding-first "Connect your AI to Zerant" Settings UI with mode selector (same machine / another machine), address detection, instruction generation with `bindingKind`, and binding management cards
 - API listen host defaults to `0.0.0.0` (local + remote simultaneously) with auto-migration from `127.0.0.1` for existing installs
 - `ws://127.0.0.1:8765/watch/live` now streams an immediate watch snapshot plus incremental watch add/remove/check events to authenticated local clients, giving agents a real-time watch surface instead of polling `/watch/list`
 - Watches now support configurable diff modes for change detection: `content`, `title`, `title-or-content`, and `text-length`, exposed through both the HTTP API and MCP watch-add flow
@@ -73,7 +73,7 @@ against a test server for reliable SDK integration coverage.
 - Wingman Activity logging now records handoff lifecycle updates so the user can see when a handoff was created, updated, or resolved
 - Handoff metadata normalization now treats blank titles/reasons as defaults, and focused route/MCP/manager tests cover the new handoff lifecycle more thoroughly so coverage matches the added product surface
 - The Wingman Activity inbox now surfaces status-aware actions: approval handoffs show `Approve` / `Reject`, human-blocked handoffs show `Mark Ready`, and `ready_to_resume` handoffs show `Resume Agent`
-- `skill/SKILL.md` now teaches agents the real runtime model more explicitly: Tandem must already be running, some clients are effectively MCP-first, durable handoffs are preferred over transient alerts for resumable blockers, interaction completion should be verified explicitly, and DevTools/network observation should stay tab-aware
+- `skill/SKILL.md` now teaches agents the real runtime model more explicitly: Zerant must already be running, some clients are effectively MCP-first, durable handoffs are preferred over transient alerts for resumable blockers, interaction completion should be verified explicitly, and DevTools/network observation should stay tab-aware
 
 ## [v0.71.4] - 2026-04-13
 
@@ -236,14 +236,14 @@ and break the protocol. All MCP server logging now goes through console.error
 ## [v0.67.0] - 2026-04-02
 
 ### Added
-- AI workspaces for agents: OpenClaw or any API-driven agent can now operate in its own dedicated Tandem workspace, keep its tabs separate from Robin's browsing, and persist that workspace across sessions
-- `POST /workspaces/:id/activate` switches the active workspace via API so Tandem can bring the agent's workspace into view instantly
+- AI workspaces for agents: OpenClaw or any API-driven agent can now operate in its own dedicated Zerant workspace, keep its tabs separate from Robin's browsing, and persist that workspace across sessions
+- `POST /workspaces/:id/activate` switches the active workspace via API so Zerant can bring the agent's workspace into view instantly
 - `POST /workspaces/:id/tabs` moves an existing tab into a workspace by webContents ID
 - `POST /tabs/open` now accepts `inheritSessionFrom` and copies IndexedDB data from the source tab into the new tab before reloading the destination, preserving Discord-style IndexedDB-backed logins.
 
 ### Changed
 - `POST /tabs/open` now accepts `workspaceId`, so new tabs can be assigned directly into the agent's workspace at creation time
-- `POST /wingman-alert` now accepts optional `workspaceId`, so captcha or takeover alerts can automatically switch Tandem into the right workspace before notifying Robin
+- `POST /wingman-alert` now accepts optional `workspaceId`, so captcha or takeover alerts can automatically switch Zerant into the right workspace before notifying Robin
 
 ## [v0.66.0] - 2026-04-02
 
@@ -252,7 +252,7 @@ and break the protocol. All MCP server logging now goes through console.error
 - Snapshot refs now remember which tab produced them, so ref follow-up actions stay attached to the correct tab
 
 ### Changed
-- `skill/SKILL.md` now reflects the current Tandem API targeting model and includes ClawHub frontmatter metadata
+- `skill/SKILL.md` now reflects the current Zerant API targeting model and includes ClawHub frontmatter metadata
 
 ### Fixed
 - `/find/click` and `/find/fill` now catch thrown route errors and return JSON `500` responses instead of dropping the connection
@@ -300,7 +300,7 @@ from actual XSS vulnerabilities.
 
 ### New: Prompt Injection Guard (Security Layer 8)
 
-Tandem now detects and blocks prompt injection attacks in web page content before
+Zerant now detects and blocks prompt injection attacks in web page content before
 it reaches the AI agent. This is the first browser-level prompt injection defense.
 
 - **New module:** `PromptInjectionGuard` — 40+ regex patterns detecting instruction
@@ -371,10 +371,10 @@ it reaches the AI agent. This is the first browser-level prompt injection defens
 UI/UX polish pass — 18 fixes across shell, sidebar, settings, and screenshots.
 
 ### Shell & Menus
-- fix: rename first app menu from "Electron" to "Tandem Browser"
+- fix: rename first app menu from "Electron" to "Zerant Browser"
 - fix: remove redundant Window menu
 - fix: move Draw Mode to Edit menu, remove Copilot/Wingman menu
-- fix: move "About Tandem Browser" to Help menu
+- fix: move "About Zerant Browser" to Help menu
 
 ### Sidebar
 - fix: sidebar defaults to wide mode on first launch, remembers preference thereafter
@@ -435,7 +435,7 @@ What was built/changed:
 - Chat send/persist flow now stores Robin and Wingman messages without depending on the old local tandem-chat skill
 
 Why this approach:
-- Stock Tandem now signs a real OpenClaw device identity for the gateway WebSocket handshake and uses the same operator read/write chat flow as the official OpenClaw webchat
+- Stock Zerant now signs a real OpenClaw device identity for the gateway WebSocket handshake and uses the same operator read/write chat flow as the official OpenClaw webchat
 - This removes the hidden dependency on a local /chat polling bridge and fixes the misleading connected state in the panel
 
 Tested:
@@ -620,13 +620,13 @@ Tested:
 
 ## [v0.59.0] - 2026-03-15
 
-**Live HTML preview system — build and iterate pages directly inside Tandem**
+**Live HTML preview system — build and iterate pages directly inside Zerant**
 
-OpenClaw can now create, update, and serve live HTML previews inside Tandem Browser. The workflow: ask your agent to build a page, it appears instantly in a new tab, you give feedback, the agent updates it, the tab refreshes automatically. No external tools, no file:// URLs, no dev servers.
+OpenClaw can now create, update, and serve live HTML previews inside Zerant Browser. The workflow: ask your agent to build a page, it appears instantly in a new tab, you give feedback, the agent updates it, the tab refreshes automatically. No external tools, no file:// URLs, no dev servers.
 
 ### New endpoints
 
-- `POST /preview` — create a new preview from HTML. Tandem opens it in a new tab automatically. Pass `title`, `html`, and optionally `inspiration` (source URL for reference). Returns the stable preview URL.
+- `POST /preview` — create a new preview from HTML. Zerant opens it in a new tab automatically. Pass `title`, `html`, and optionally `inspiration` (source URL for reference). Returns the stable preview URL.
 - `PUT /preview/:id` — update an existing preview. The tab auto-refreshes within 2 seconds via a lightweight polling script injected into the page. Version counter increments on every update.
 - `GET /preview/:id` — serve the preview as a real HTTP page (not file://). Bookmarkable, shareable within the local machine, works with external fonts and CDN resources.
 - `GET /preview/:id/meta` — metadata only (id, title, version, dates). Used internally by the live-reload script.
@@ -636,7 +636,7 @@ OpenClaw can now create, update, and serve live HTML previews inside Tandem Brow
 
 ### Storage
 
-Previews are persisted to `~/.tandem/previews/<id>.json`. Each file contains the full HTML, title, inspiration URL, creation/update timestamps, and a version counter. Previews survive Tandem restarts. IDs are slugified from the title (`robin-portfolio`, `kanbu-landing-page`, etc.) and deduplicated automatically.
+Previews are persisted to `~/.tandem/previews/<id>.json`. Each file contains the full HTML, title, inspiration URL, creation/update timestamps, and a version counter. Previews survive Zerant restarts. IDs are slugified from the title (`robin-portfolio`, `kanbu-landing-page`, etc.) and deduplicated automatically.
 
 ### Live reload
 
@@ -648,7 +648,7 @@ Every preview page gets a small injected script that polls `/preview/:id/meta` e
 You:   "build me a portfolio page inspired by this site: https://example.com"
 Agent: opens https://example.com in one tab, reads the design
 Agent: generates HTML/CSS, POSTs to /preview
-Tandem: opens http://127.0.0.1:8765/preview/my-portfolio in a new tab
+Zerant: opens http://127.0.0.1:8765/preview/my-portfolio in a new tab
 You:   "make the header bigger and change the color to dark blue"
 Agent: PUTs updated HTML to /preview/my-portfolio
 Tab:   auto-refreshes within 2 seconds
@@ -675,7 +675,7 @@ Also documented the existing `GET /events/stream` SSE endpoint and `tab-focused`
 
 Sidebar webviews (Telegram, WhatsApp, Discord, Slack, Gmail, etc.) were losing their login state every time the panel was switched or the sidebar setup panel was opened. Root cause: Electron destroys and recreates a `<webview>` session when the element is removed from the DOM.
 
-Fix: moved all sidebar webviews into a persistent `#sidebar-webview-host` container that is never wiped. Panel switches now show/hide webviews without touching the DOM. Login state is preserved for the lifetime of the Tandem session.
+Fix: moved all sidebar webviews into a persistent `#sidebar-webview-host` container that is never wiped. Panel switches now show/hide webviews without touching the DOM. Login state is preserved for the lifetime of the Zerant session.
 
 ## [v0.57.21] - 2026-03-15
 
@@ -699,7 +699,7 @@ This release addresses a series of false positives in the security stack that ma
 
 ### UX fixes
 
-- **Sidebar links now open in new tab** — Links clicked inside sidebar webviews (Telegram, WhatsApp, etc.) were silently denied. They now open in a new Tandem tab as expected.
+- **Sidebar links now open in new tab** — Links clicked inside sidebar webviews (Telegram, WhatsApp, etc.) were silently denied. They now open in a new Zerant tab as expected.
 
 ### Docs
 
@@ -1017,7 +1017,7 @@ surfaces unchanged where translation would be risky.
 ## [v0.44.83] - 2026-03-07
 
 ### Changed
-- **Security blocklist fast-start hydration** (`src/security/network-shield.ts`, `src/security/security-manager.ts`) — replaced synchronous startup blocklist parsing with a snapshot-first load path, queued background hydration, and atomic in-memory swaps so Tandem becomes usable before cached feeds finish rebuilding
+- **Security blocklist fast-start hydration** (`src/security/network-shield.ts`, `src/security/security-manager.ts`) — replaced synchronous startup blocklist parsing with a snapshot-first load path, queued background hydration, and atomic in-memory swaps so Zerant becomes usable before cached feeds finish rebuilding
 - **Hydration regression coverage** (`src/security/tests/network-shield-hydration.test.ts`) — added focused coverage for snapshot boot, no-clear reload behavior, cached hydrate promotion, and snapshot persistence refresh
 
 ### Technical Details
@@ -1057,7 +1057,7 @@ surfaces unchanged where translation would be risky.
 
 ### Technical Details
 - Extension-origin helper routes now evaluate a central `ExtensionManager.evaluateApiRouteAccess()` decision instead or relying on a generic "installed extension" allow path
-- Tandem records extension helper allow/deny decisions with extension identity, trust level, and route scope in the API/NM proxy logs
+- Zerant records extension helper allow/deny decisions with extension identity, trust level, and route scope in the API/NM proxy logs
 - `POST /extensions/identity/auth` now resolves installation status through the same stable extension identity lookup used by the trust model
 - Verification: `npm run compile` passed; focused extension/security Vitest coverage passed; `npm start` plus local `curl` checks succeeded; full `npx vitest run` still reports unrelated pre-existing failures in `src/tabs/tests/tabs.test.ts` and `src/extensions/tests/action-polyfill.test.ts`
 
@@ -1076,7 +1076,7 @@ surfaces unchanged where translation would be risky.
 What was built/changed:
 - Modified files: src/api/server.ts, src/extensions/action-polyfill.ts
 - Added explicit extension ID propagation for local extension helper routes
-- Allowed trusted extension helper auth via origin, referer, or X-Tandem-Extension-Id for installed extensions
+- Allowed trusted extension helper auth via origin, referer, or X-Zerant-Extension-Id for installed extensions
 - Upgraded existing on-disk 1Password patches so old active-tab/log bridge calls are rewritten on startup
 
 Why this approach:
@@ -1129,7 +1129,7 @@ Tested:
 
 What was built/changed:
 - Modified files: src/main.ts
-- Added a RequestDispatcher header hook for internal shell requests to the local Tandem API
+- Added a RequestDispatcher header hook for internal shell requests to the local Zerant API
 - Kept API hardening intact for non-shell callers
 
 Why this approach:
@@ -1147,7 +1147,7 @@ What was built/changed:
 - Modified files: src/main.ts, shell/index.html, shell/newtab.html, shell/settings.html, shell/bookmarks.html
 - New file: shell/js/api-auth.js
 - Registered the get-api-token IPC handler before the shell window loads so the first authenticated shell requests do not race startup
-- Added a shared shell auth bootstrap that wraps local Tandem API fetch calls and retries token acquisition during early startup
+- Added a shared shell auth bootstrap that wraps local Zerant API fetch calls and retries token acquisition during early startup
 - Enabled the same auth bootstrap on shell subpages such as newtab, settings, and bookmarks
 
 Why this approach:
@@ -1155,7 +1155,7 @@ Why this approach:
 
 Tested:
 - npm run compile: zero errors
-- Manual runtime verification still requires restarting the already-running Tandem app
+- Manual runtime verification still requires restarting the already-running Zerant app
 
 ## [v0.44.69] - 2026-03-07
 
@@ -1165,14 +1165,14 @@ What was built/changed:
 - Modified files: src/ipc/handlers.ts, src/preload.ts, shell/index.html
 - Added an IPC handler for reading the local API token from the main process
 - Switched the preload getApiToken bridge to use ipcRenderer.invoke instead or relying on preload-side file access
-- Updated the shell bootstrap fetch wrapper to lazily await and cache the token before authenticating local Tandem API requests
+- Updated the shell bootstrap fetch wrapper to lazily await and cache the token before authenticating local Zerant API requests
 
 Why this approach:
 - The shell page still emitted unauthenticated requests because token retrieval in the sandboxed renderer path was not reliable; fetching the token from the main process makes the page-world auth wrapper deterministic
 
 Tested:
 - npm run compile: zero errors
-- Manual runtime still requires restarting the already-running Tandem app to load the new preload and shell bootstrap
+- Manual runtime still requires restarting the already-running Zerant app to load the new preload and shell bootstrap
 
 ## [v0.44.68] - 2026-03-07
 
@@ -1180,7 +1180,7 @@ Tested:
 
 What was built/changed:
 - Modified files: shell/index.html, src/preload.ts, src/api/server.ts
-- Added a shell bootstrap that patches page-world fetch for local Tandem API calls using the preload-exposed bearer token
+- Added a shell bootstrap that patches page-world fetch for local Zerant API calls using the preload-exposed bearer token
 - Exposed getApiToken() from preload so shell scripts can recover the local API token consistently
 - Broadened trusted extension ID matching so runtime IDs and on-disk extension IDs both satisfy the Phase 1 extension auth checks
 
@@ -1189,7 +1189,7 @@ Why this approach:
 
 Tested:
 - npm run compile: zero errors
-- Manual runtime verification still requires restarting the already-running Tandem app to load the updated preload and shell bootstrap
+- Manual runtime verification still requires restarting the already-running Zerant app to load the updated preload and shell bootstrap
 
 ## [v0.44.67] - 2026-03-07
 
@@ -1197,14 +1197,14 @@ Tested:
 
 What was built/changed:
 - Modified files: src/preload.ts
-- Exposed the local API token to the shell and wrapped shell-side fetch so requests to the Tandem API automatically include Authorization: Bearer unless an explicit auth header is already present
+- Exposed the local API token to the shell and wrapped shell-side fetch so requests to the Zerant API automatically include Authorization: Bearer unless an explicit auth header is already present
 
 Why this approach:
 - Keeps the Phase 1 API hardening intact while restoring authenticated shell access for sidebar, chat polling, and other local UI calls that were previously relying on implicit loopback trust
 
 Tested:
 - npm run compile: zero errors
-- Manual runtime still requires restarting the already-running Tandem app so the updated preload script is loaded
+- Manual runtime still requires restarting the already-running Zerant app so the updated preload script is loaded
 
 ## [v0.44.66] - 2026-03-07
 
@@ -1275,8 +1275,8 @@ Why this approach:
 Tested:
 - npm run compile: zero errors
 - npx vitest run: fails on pre-existing unrelated suites in src/extensions/tests/action-polyfill.test.ts and src/tabs/tests/tabs.test.ts
-- Manual: npm run dev attempted, but a user-run Tandem process already held 127.0.0.1:8765
-- Curl: isolated TandemAPI on 127.0.0.1:8876 returned 401 for unauthenticated /tabs/list, 200 with bearer token, 401 for query-token auth, and 401 for /extensions/active-tab without a trusted extension origin
+- Manual: npm run dev attempted, but a user-run Zerant process already held 127.0.0.1:8765
+- Curl: isolated ZerantAPI on 127.0.0.1:8876 returned 401 for unauthenticated /tabs/list, 200 with bearer token, 401 for query-token auth, and 401 for /extensions/active-tab without a trusted extension origin
 
 ## [v0.44.60] - 2026-03-07
 
@@ -1327,7 +1327,7 @@ the rest or the repository-facing documentation cleanup.
 
 - docs(repo): clarify OpenClaw positioning and classify maintainer workflow docs
 
-Updated the top-level project docs to position Tandem more clearly as the
+Updated the top-level project docs to position Zerant more clearly as the
 browser environment built for OpenClaw, while keeping Wingman as the user-facing
 name for the right-side collaboration panel and documenting Kees as the default
 OpenClaw persona.
@@ -1336,7 +1336,7 @@ Cleaned up several `docs/` entry points so contributor workflow files such as
 `CLAUDE.md` and historical `LEES-MIJ-EERST.md` packs are clearly treated as
 maintainer artifacts rather than the primary public documentation surface. Also
 modernized electron-builder output naming with an explicit
-`tandem-browser-${version}-${arch}.${ext}` artifact pattern and macOS package
+`zerant-browser-${version}-${arch}.${ext}` artifact pattern and macOS package
 targets.
 
 ## [v0.44.55] - 2026-03-07
@@ -1481,7 +1481,7 @@ parameter instead or always targeting the active webcontents.
 Two 1Password autofill errors eliminated:
 - `Kfj()` called `browser.windows.getCurrent()` which is undefined in
   Electron's Service Worker context, causing `getItemDetails()` to throw.
-  Patched to always return `false` (Tandem never opens 1Password in a
+  Patched to always return `false` (Zerant never opens 1Password in a
   detached popup window).
 - `zj.getShortcuts()` called `browser.commands.getAll()` which throws when
   `browser.commands` is undefined in Electron. Guarded with early return
@@ -1555,11 +1555,11 @@ THIS time it's really fixed. Sorry for the confusion!
 
 Changes:
 - Removed 'about' from sidebar config (no icon shown)
-- Hamburger menu → About Tandem Browser now calls renderAboutPanel() directly
+- Hamburger menu → About Zerant Browser now calls renderAboutPanel() directly
 - Opens sidebar panel with frosted glass effect
 - No separate icon in sidebar needed
 
-About is now ONLY accessible via ☰ → Tandem → About Tandem Browser
+About is now ONLY accessible via ☰ → Zerant → About Zerant Browser
 
 ## [v0.44.0] - 2026-03-02
 
@@ -1603,7 +1603,7 @@ matching bookmarks panel style:
 - backdrop-filter now blurs actual page content behind it
 - Same visual effect as bookmarks/history panels
 - Click outside or X button to close
-- GitHub link opens new tab in Tandem
+- GitHub link opens new tab in Zerant
 
 True frosted glass effect finally achieved!
 
@@ -1635,10 +1635,10 @@ with the same name
 
 ## [v0.41.7] - 2026-03-02
 
-- fix: About window links open in new Tandem tab
+- fix: About window links open in new Zerant tab
 
 Instead or opening in system browser (Chrome), links from the
-About window now open in a new tab within Tandem.
+About window now open in a new tab within Zerant.
 
 Added new IPC event 'open-url-in-new-tab' that triggers tab creation.
 
@@ -1672,7 +1672,7 @@ Add explicit type for url parameter
 
 Changes:
 - Co-Pilot Browser → Wingman Browser
-- Remove 'Tandem Repo' link (repo not public yet)
+- Remove 'Zerant Repo' link (repo not public yet)
 - About window frameless on Linux (no native menubar)
 - External links open in system browser, not popup window
 
@@ -1790,7 +1790,7 @@ only the active workspace's tabs. Persisted to ~/.tandem/workspaces.json.
 - feat: bookmarks sidebar panel with search and folder navigation
 
 - New bookmark panel plugin for the sidebar Bookmarks item
-- Renders full bookmark tree from Tandem /bookmarks API
+- Renders full bookmark tree from Zerant /bookmarks API
 - Folders and URLs displayed with favicons (Google s2 service)
 - Click folder to navigate into it with breadcrumb trail
 - Click breadcrumb to jump back up the tree

@@ -1,7 +1,7 @@
 import type { BrowserWindow } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { DEFAULT_TIMEOUT_MS } from '../utils/constants';
 import { humanizedClick, humanizedType } from '../input/humanized';
 import { createLogger } from '../utils/logger';
@@ -153,7 +153,7 @@ export class WorkflowEngine {
   // === 2. Constructor ===
 
   constructor() {
-    this.workflowsDir = tandemDir('workflows');
+    this.workflowsDir = zerantDir('workflows');
     this.ensureDirectories();
     this.loadWorkflows();
   }
@@ -529,7 +529,7 @@ export class WorkflowEngine {
     const buffer = image.toPNG();
 
     const filename = step.params.filename || `workflow-${Date.now()}.png`;
-    const screenshotsDir = tandemDir('screenshots');
+    const screenshotsDir = zerantDir('screenshots');
 
     if (!fs.existsSync(screenshotsDir)) {
       fs.mkdirSync(screenshotsDir, { recursive: true });

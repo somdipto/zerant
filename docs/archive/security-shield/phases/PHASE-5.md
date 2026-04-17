@@ -350,7 +350,7 @@ async onPageLoaded(domain: string, webContents: Electron.WebContents): Promise<v
 
 ```json
 {
-  "name": "Tandem Sentinel",
+  "name": "Zerant Sentinel",
   "schedule": {"kind": "every", "everyMs": 300000},
   "sessionTarget": "isolated",
   "payload": {
@@ -366,7 +366,7 @@ async onPageLoaded(domain: string, webContents: Electron.WebContents): Promise<v
 
 ```json
 {
-  "name": "Tandem Scanner",
+  "name": "Zerant Scanner",
   "schedule": {"kind": "every", "everyMs": 7200000},
   "sessionTarget": "isolated",
   "payload": {
@@ -382,7 +382,7 @@ async onPageLoaded(domain: string, webContents: Electron.WebContents): Promise<v
 
 ```json
 {
-  "name": "Tandem Security Updater",
+  "name": "Zerant Security Updater",
   "schedule": {"kind": "cron", "expr": "0 6 * * *", "tz": "Europe/Brussels"},
   "sessionTarget": "isolated",
   "payload": {

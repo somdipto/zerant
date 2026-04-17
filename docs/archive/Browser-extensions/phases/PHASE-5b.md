@@ -4,7 +4,7 @@
 
 ## Goal
 
-Add the browser extension toolbar to Tandem's UI so users can interact with their installed extensions. Without this, extensions are installed but **invisible** — users have no way to open extension popups, see badge counts, or access extension actions. This is the difference between "extensions work" and "extensions are usable."
+Add the browser extension toolbar to Zerant's UI so users can interact with their installed extensions. Without this, extensions are installed but **invisible** — users have no way to open extension popups, see badge counts, or access extension actions. This is the difference between "extensions work" and "extensions are usable."
 
 ## Background
 
@@ -14,7 +14,7 @@ Chrome extensions define their UI via the `action` (MV3) or `browser_action`/`pa
 - **Badge:** A small text overlay on the icon (e.g. uBlock showing blocked count)
 - **Title:** Tooltip shown on hover
 
-Electron's `session.loadExtension()` makes this data available via the `Extension` object returned. The popup HTML is accessible at `chrome-extension://{id}/{popup_path}`. Tandem needs to render this in its own UI since there is no native Chrome toolbar.
+Electron's `session.loadExtension()` makes this data available via the `Extension` object returned. The popup HTML is accessible at `chrome-extension://{id}/{popup_path}`. Zerant needs to render this in its own UI since there is no native Chrome toolbar.
 
 ## Files to Read
 
@@ -147,8 +147,8 @@ session.on('extension-action-updated', (event, extensionId) => {
 
 Right-clicking an extension icon in the toolbar should show:
 - **Extension name** (disabled, just a label)
-- **Options** → opens the extension's options page (if `manifest.options_page` or `manifest.options_ui` exists) in a new Tandem tab
-- **Remove from Tandem** → calls `DELETE /extensions/uninstall/:id` with confirmation dialog
+- **Options** → opens the extension's options page (if `manifest.options_page` or `manifest.options_ui` exists) in a new Zerant tab
+- **Remove from Zerant** → calls `DELETE /extensions/uninstall/:id` with confirmation dialog
 - **Pin/Unpin** → toggles whether the extension shows in the main toolbar or only in the overflow dropdown
 
 Pin state should be persisted in `~/.tandem/extensions/toolbar-state.json`:
@@ -188,7 +188,7 @@ tandem.onExtensionUninstalled((data) => { /* refresh toolbar */ })
 - [ ] Popup closes when clicking outside or pressing Escape
 - [ ] Badge text updates dynamically (test: uBlock shows blocked count on page load)
 - [ ] Right-click context menu shows Options and Remove
-- [ ] Options page opens in new Tandem tab
+- [ ] Options page opens in new Zerant tab
 - [ ] Remove from context menu triggers uninstall flow
 - [ ] Pin/unpin works and state persists across restarts
 - [ ] Overflow dropdown shows when >6 extensions installed

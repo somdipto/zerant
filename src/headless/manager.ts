@@ -43,7 +43,7 @@ export interface HeadlessStatus {
 /**
  * HeadlessManager — Background BrowserWindow for the AI wingman to browse solo.
  *
- * Uses the same persist:tandem partition (cookies shared).
+ * Uses the same persist:zerant partition (cookies shared).
  * Same stealth patches as main window.
  * Auto-shows on captcha detection or errors.
  */
@@ -167,7 +167,7 @@ export class HeadlessManager {
   private async ensureWindow(): Promise<void> {
     if (this.window && !this.window.isDestroyed()) return;
 
-    const partition = 'persist:tandem';
+    const partition = 'persist:zerant';
     const _ses = session.fromPartition(partition);
 
     this.window = new BrowserWindow({

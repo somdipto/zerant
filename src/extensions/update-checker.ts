@@ -4,7 +4,7 @@ import fs from 'fs';
 import type { Session } from 'electron';
 import type { CrxDownloader } from './crx-downloader';
 import type { ExtensionLoader } from './loader';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { assertSinglePathSegment, resolvePathWithinRoot } from '../utils/security';
 
@@ -19,7 +19,7 @@ export interface InstalledExtension {
   version: string;
   /** Name from manifest.json */
   name: string;
-  /** Whether this was imported from Chrome (has .tandem-meta.json) */
+  /** Whether this was imported from Chrome (has .zerant-meta.json) */
   chromeImported: boolean;
 }
 
@@ -84,7 +84,7 @@ export class UpdateChecker {
     private downloader: CrxDownloader,
     private loader: ExtensionLoader,
   ) {
-    this.extensionsDir = tandemDir('extensions');
+    this.extensionsDir = zerantDir('extensions');
     this.stateFilePath = path.join(this.extensionsDir, 'update-state.json');
     this.state = this.loadState();
   }
@@ -102,7 +102,7 @@ export class UpdateChecker {
   }
 
   private getExtensionMetaPath(extensionId: string): string {
-    return resolvePathWithinRoot(this.getExtensionPath(extensionId), '.tandem-meta.json');
+    return resolvePathWithinRoot(this.getExtensionPath(extensionId), '.zerant-meta.json');
   }
 
   private getExtensionTempPath(prefix: string, extensionId: string): string {
@@ -439,7 +439,7 @@ export class UpdateChecker {
         log.info(`Preserved manifest.json key field for ${safeExtensionId}`);
       }
 
-      // Restore .tandem-meta.json if it existed
+      // Restore .zerant-meta.json if it existed
       if (oldMeta) {
         const updatedMeta = {
           ...oldMeta,
@@ -531,8 +531,8 @@ export class UpdateChecker {
   // ─── Installed Extension Discovery ───────────────────────────────────────
 
   /**
-   * Scan ~/.tandem/extensions/ for installed extensions.
-   * Includes Chrome-imported extensions via .tandem-meta.json.
+   * Scan ~/.zerant/extensions/ for installed extensions.
+   * Includes Chrome-imported extensions via .zerant-meta.json.
    */
   getInstalledExtensions(): InstalledExtension[] {
     const extensions: InstalledExtension[] = [];
@@ -547,7 +547,7 @@ export class UpdateChecker {
 
         try {
           const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-          const metaPath = resolvePathWithinRoot(this.extensionsDir, dir.name, '.tandem-meta.json');
+          const metaPath = resolvePathWithinRoot(this.extensionsDir, dir.name, '.zerant-meta.json');
           let chromeImported = false;
           let cwsId = dir.name;
 

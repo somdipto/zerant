@@ -426,9 +426,9 @@ export class DevToolsManager {
 
     try {
       // Create hidden bindings
-      await wc.debugger.sendCommand('Runtime.addBinding', { name: '__tandemScroll' });
-      await wc.debugger.sendCommand('Runtime.addBinding', { name: '__tandemSelection' });
-      await wc.debugger.sendCommand('Runtime.addBinding', { name: '__tandemFormFocus' });
+      await wc.debugger.sendCommand('Runtime.addBinding', { name: '__zerantScroll' });
+      await wc.debugger.sendCommand('Runtime.addBinding', { name: '__zerantSelection' });
+      await wc.debugger.sendCommand('Runtime.addBinding', { name: '__zerantFormFocus' });
 
       // Inject listeners (runs in page context but communicates via invisible bindings)
       await this.injectWingmanListeners(wc);
@@ -439,8 +439,8 @@ export class DevToolsManager {
 
   private async injectWingmanListeners(wc: WebContents): Promise<void> {
     const script = `(function(){
-      if(window.__tandemVisionActive) return;
-      window.__tandemVisionActive = true;
+      if(window.__zerantVisionActive) return;
+      window.__zerantVisionActive = true;
 
       // --- Scroll ---
       var _sT=null, _lastPct=-1;
@@ -449,7 +449,7 @@ export class DevToolsManager {
         _sT = setTimeout(function(){
           var h = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
           var pct = Math.round((window.scrollY / h) * 100);
-          if(pct !== _lastPct){ _lastPct = pct; __tandemScroll(String(pct)); }
+          if(pct !== _lastPct){ _lastPct = pct; __zerantScroll(String(pct)); }
         }, 2000);
       }, {passive:true});
 
@@ -459,7 +459,7 @@ export class DevToolsManager {
         if(_selT) clearTimeout(_selT);
         _selT = setTimeout(function(){
           var s = (window.getSelection()||'').toString().trim();
-          if(s.length > 10) __tandemSelection(s.substring(0, 500));
+          if(s.length > 10) __zerantSelection(s.substring(0, 500));
         }, 800);
       });
 
@@ -473,7 +473,7 @@ export class DevToolsManager {
           var name = t.name || t.id || t.placeholder || t.getAttribute('aria-label') || '';
           var type = t.type || tag;
           var key = type+':'+name;
-          if(key !== _lastField){ _lastField = key; __tandemFormFocus(JSON.stringify({type:type,name:name})); }
+          if(key !== _lastField){ _lastField = key; __zerantFormFocus(JSON.stringify({type:type,name:name})); }
         }
       }, true);
     })()`;
@@ -508,11 +508,11 @@ export class DevToolsManager {
       // Wingman Vision: binding callbacks (check before subscribers for __tandem* bindings)
       if (method === 'Runtime.bindingCalled') {
         // Wingman bindings — handle internally
-        const wingmanBindings = ['__tandemScroll', '__tandemSelection', '__tandemFormFocus'];
+        const wingmanBindings = ['__zerantScroll', '__zerantSelection', '__zerantFormFocus'];
         if (wingmanBindings.includes(params.name as string)) {
           this.onWingmanBinding(params as unknown as CDPBindingCalledParams, tabId, wcId);
         }
-        // Fall through to subscribers (security bindings like __tandemSecurityAlert)
+        // Fall through to subscribers (security bindings like __zerantSecurityAlert)
       }
 
       // Console events
@@ -550,7 +550,7 @@ export class DevToolsManager {
     const url = wc && !wc.isDestroyed() ? wc.getURL() : '';
 
     switch (params.name) {
-      case '__tandemScroll': {
+      case '__zerantScroll': {
         const scrollPct = parseInt(params.payload, 10);
         this.wingmanStream.emitDebounced(`scroll-${tab}`, {
           type: 'scroll-position',
@@ -564,7 +564,7 @@ export class DevToolsManager {
         break;
       }
 
-      case '__tandemSelection':
+      case '__zerantSelection':
         this.wingmanStream.emitDebounced(`select-${tab}`, {
           type: 'text-selected',
           tabId: tab,
@@ -576,7 +576,7 @@ export class DevToolsManager {
         });
         break;
 
-      case '__tandemFormFocus':
+      case '__zerantFormFocus':
         try {
           const field = JSON.parse(params.payload);
           this.wingmanStream.emitDebounced(`form-${tab}`, {

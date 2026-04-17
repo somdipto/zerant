@@ -26,7 +26,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('creates an explicit handoff', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_create');
+    const handler = getHandler(tools, 'zerant_handoff_create');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'needs_human', title: 'Captcha detected' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -48,7 +48,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('lists open handoffs by default', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_list');
+    const handler = getHandler(tools, 'zerant_handoff_list');
     mockApiCall.mockResolvedValueOnce({ handoffs: [{ id: 'handoff-1' }] });
 
     const result = await handler({});
@@ -58,7 +58,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('lists handoffs with explicit filters and openOnly disabled', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_list');
+    const handler = getHandler(tools, 'zerant_handoff_list');
     mockApiCall.mockResolvedValueOnce({ handoffs: [{ id: 'handoff-2' }] });
 
     const result = await handler({
@@ -76,7 +76,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('fetches a single handoff', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_get');
+    const handler = getHandler(tools, 'zerant_handoff_get');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'needs_human' });
 
     const result = await handler({ id: 'handoff-1' });
@@ -86,7 +86,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('updates a handoff', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_update');
+    const handler = getHandler(tools, 'zerant_handoff_update');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'ready_to_resume' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -101,7 +101,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('resolves a handoff', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_resolve');
+    const handler = getHandler(tools, 'zerant_handoff_resolve');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -112,7 +112,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('marks a handoff ready to resume', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_ready');
+    const handler = getHandler(tools, 'zerant_handoff_ready');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'ready_to_resume' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -123,7 +123,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('resumes a handoff-linked task', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_resume');
+    const handler = getHandler(tools, 'zerant_handoff_resume');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'resolved' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -134,7 +134,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('approves a waiting handoff', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_approve');
+    const handler = getHandler(tools, 'zerant_handoff_approve');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'resolved' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -145,7 +145,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('rejects a waiting handoff', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_reject');
+    const handler = getHandler(tools, 'zerant_handoff_reject');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-1', status: 'resolved' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 
@@ -156,7 +156,7 @@ describe('MCP handoff tools', () => {
   });
 
   it('passes notify and action hints through on create', async () => {
-    const handler = getHandler(tools, 'tandem_handoff_create');
+    const handler = getHandler(tools, 'zerant_handoff_create');
     mockApiCall.mockResolvedValueOnce({ id: 'handoff-9', status: 'waiting_approval', title: 'Need approval' });
     mockLogActivity.mockResolvedValueOnce(undefined);
 

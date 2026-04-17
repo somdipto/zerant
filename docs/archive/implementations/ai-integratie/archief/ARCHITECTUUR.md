@@ -1,4 +1,4 @@
-# Tandem Browser — AI Architectuur
+# Zerant Browser — AI Architectuur
 
 ## Huidige staat or the codebase
 
@@ -68,7 +68,7 @@ Zie the full list in the visie documentatie.
 
 **Werking:**
 1. Cowork/Claude Code start → leest MCP config → start tandem-mcp server
-2. tandem-mcp maakt HTTP calls to localhost:8765 (Tandem API)
+2. tandem-mcp maakt HTTP calls to localhost:8765 (Zerant API)
 3. Claude can via MCP tools the browser bedienen
 4. MCP tool calls be gelogd to chat API → visible in Kees panel
 
@@ -179,13 +179,13 @@ interface ChatBackend {
 
 **Werking:**
 1. Anthropic API key opgeslagen in config
-2. System prompt with Tandem context + beschikbare acties
+2. System prompt with Zerant context + beschikbare acties
 3. Tool use: Claude can browser-tools aanroepen via the lokale API
 4. Streaming responses for real-time chat
 
 **System Prompt Template:**
 ```
-You bent Kees, Robin's AI co-pilot in Tandem Browser.
+You bent Kees, Robin's AI co-pilot in Zerant Browser.
 You kunt the browser bedienen with the next tools:
 [... tool definities ...]
 
@@ -282,7 +282,7 @@ interface BrowserContext {
 
 ```
 1. Robin opens Claude Code/Cowork in VSCode
-2. MCP server verbindt with Tandem API (:8765)
+2. MCP server verbindt with Zerant API (:8765)
 3. Robin zegt: "Kijk eens to the LinkedIn page that open staat"
 4. Cowork roept tandem_screenshot() + tandem_read_page() about
 5. Cowork sees the page content and screenshot

@@ -757,7 +757,7 @@
       applyTheme(c.appearance?.theme || c.theme || 'dark');
     }).catch(() => {});
     try {
-      const bc = new BroadcastChannel('tandem-theme');
+      const bc = new BroadcastChannel('zerant-theme');
       bc.onmessage = (e) => { if (e.data?.theme) applyTheme(e.data.theme); };
     } catch {}
   </script>

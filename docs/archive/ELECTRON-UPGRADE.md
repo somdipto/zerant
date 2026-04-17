@@ -5,7 +5,7 @@
 
 ## Summary
 
-Successfully upgraded Tandem Browser from Electron 28.3.3 to Electron 40.6.0 with all dependencies updated and native modules rebuilt.
+Successfully upgraded Zerant Browser from Electron 28.3.3 to Electron 40.6.0 with all dependencies updated and native modules rebuilt.
 
 ## Dependencies Updated
 

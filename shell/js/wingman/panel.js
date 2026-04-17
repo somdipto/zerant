@@ -69,7 +69,7 @@ export function initPanel({ hooks = {} } = {}) {
       wingmanBadge.classList.remove('panel-open');
     }
     // Sync panel open state to backend so notifications are suppressed when panel is visible
-    if (window.tandem?.setPanelOpen) window.tandem.setPanelOpen(isOpen);
+    if (window.zerant?.setPanelOpen) window.zerant.setPanelOpen(isOpen);
   }
 
   function openWingmanPanel(preferredTab) {
@@ -102,8 +102,8 @@ export function initPanel({ hooks = {} } = {}) {
   });
 
   // Panel toggle from main process
-  if (window.tandem) {
-    window.tandem.onPanelToggle((data) => {
+  if (window.zerant) {
+    window.zerant.onPanelToggle((data) => {
       if (data.open) {
         openWingmanPanel();
       } else {

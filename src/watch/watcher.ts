@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { EventEmitter } from 'events';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { BrowserWindow, session } from 'electron';
 import { StealthManager } from '../stealth/manager';
 import { wingmanAlert } from '../notifications/alert';
@@ -107,7 +107,7 @@ export class WatchManager extends EventEmitter {
 
   constructor() {
     super();
-    const baseDir = tandemDir();
+    const baseDir = zerantDir();
     if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
 
     this.watchFile = path.join(baseDir, 'watches.json');
@@ -347,7 +347,7 @@ export class WatchManager extends EventEmitter {
       return this.hiddenWindow;
     }
 
-    const partition = 'persist:tandem';
+    const partition = 'persist:zerant';
     const _ses = session.fromPartition(partition);
 
     this.hiddenWindow = new BrowserWindow({

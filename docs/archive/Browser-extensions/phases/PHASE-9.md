@@ -4,11 +4,11 @@
 
 ## Goal
 
-Automatically keep installed extensions up to date. Without this, extensions are frozen at the version installed — security fixes, API compatibility updates, and bug fixes never reach the user. Chrome checks for updates every few hours; Tandem must do the same.
+Automatically keep installed extensions up to date. Without this, extensions are frozen at the version installed — security fixes, API compatibility updates, and bug fixes never reach the user. Chrome checks for updates every few hours; Zerant must do the same.
 
 ## Why This Matters
 
-- **Security vulnerabilities stay open** — if uBlock Origin or Bitwarden release a security fix, Tandem keeps running the old vulnerable version
+- **Security vulnerabilities stay open** — if uBlock Origin or Bitwarden release a security fix, Zerant keeps running the old vulnerable version
 - **Functionality degrades** — extensions that depend on external APIs (Grammarly, Honey, Wappalyzer) stop working when those APIs change
 - **Compatibility breaks** — websites change their structure; content scripts that rely on specific selectors stop matching
 

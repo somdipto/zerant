@@ -7,7 +7,7 @@ import type { SecurityDB } from '../security-db';
 const mockedPaths = vi.hoisted(() => ({ root: '' }));
 
 vi.mock('../../utils/paths', () => ({
-  tandemDir: (...segments: string[]) => path.join(mockedPaths.root, ...segments),
+  zerantDir: (...segments: string[]) => path.join(mockedPaths.root, ...segments),
 }));
 
 import { NetworkShield } from '../network-shield';
@@ -43,7 +43,7 @@ describe('NetworkShield fast-start hydration', () => {
   });
 
   it('loads the startup snapshot immediately and swaps to hydrated cache data later', async () => {
-    mockedPaths.root = fs.mkdtempSync(path.join(os.tmpdir(), 'tandem-shield-'));
+    mockedPaths.root = fs.mkdtempSync(path.join(os.tmpdir(), 'zerant-shield-'));
 
     const blocklistDir = path.join(mockedPaths.root, 'security', 'blocklists');
     fs.mkdirSync(blocklistDir, { recursive: true });

@@ -20,7 +20,7 @@
   - [x] `npx tsc --noEmit` — 0 errors (pre-existing errors in gateway test file are OK)
   - [x] Guardian backpressure `&&` → `||` (guardian.ts line 53)
   - [x] SecurityDB closed on quit (security-manager.ts destroy method) — was already present
-  - [x] productName changed to "Tandem Browser" (package.json line 47)
+  - [x] productName changed to "Zerant Browser" (package.json line 47)
   - [x] DEBUG console.logs removed from onboarding (shell/index.html) — 17 lines removed
   - [x] Hardcoded 'levelsio' removed (x-scout.ts line 262)
   - [x] cookieCounts eviction added (guardian.ts)

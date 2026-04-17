@@ -4,7 +4,7 @@ import { apiCall, tabHeaders, truncateToWords, logActivity } from '../api-client
 
 export function registerContentTools(server: McpServer): void {
   server.tool(
-    'tandem_read_page',
+    'zerant_read_page',
     'Read page content as markdown text (max 2000 words). Supports targeting a background tab by ID.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -29,7 +29,7 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_screenshot',
+    'zerant_screenshot',
     'Take a screenshot of a browser tab. Supports targeting a background tab by ID.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -48,7 +48,7 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_get_page_html',
+    'zerant_get_page_html',
     'Get the raw HTML source of the current page. Supports targeting a background tab by ID.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -60,8 +60,8 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extract_content',
-    'Extract structured content from the current page using Tandem\'s content extraction engine. Supports targeting a background tab by ID.',
+    'zerant_extract_content',
+    'Extract structured content from the current page using Zerant\'s content extraction engine. Supports targeting a background tab by ID.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
     },
@@ -72,7 +72,7 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_extract_url',
+    'zerant_extract_url',
     'Extract and parse content from a URL using headless rendering. Returns structured content.',
     {
       url: z.string().describe('The URL to extract content from'),
@@ -85,7 +85,7 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_get_links',
+    'zerant_get_links',
     'Get all links on the page with their text and URLs. Supports targeting a background tab by ID.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -106,7 +106,7 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_get_forms',
+    'zerant_get_forms',
     'Get all forms on the page with their fields and attributes. Supports targeting a background tab by ID.',
     {
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -119,7 +119,7 @@ export function registerContentTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_execute_js',
+    'zerant_execute_js',
     'Execute JavaScript code in the active browser tab. Returns the result.',
     {
       code: z.string().describe('JavaScript code to execute'),

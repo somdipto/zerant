@@ -9,7 +9,7 @@
 
 ## Problem / Motivation
 
-Tandem now has working containment actions in `class SecurityManager`, but the
+Zerant now has working containment actions in `class SecurityManager`, but the
 current shell warning still asks too much or the user.
 
 Today the browser can say:
@@ -23,7 +23,7 @@ answer:
 
 > "Was this a real threat or a false positive?"
 
-That is not an acceptable product boundary for normal users. Tandem should make
+That is not an acceptable product boundary for normal users. Zerant should make
 the safe choice obvious by default and only expose deeper technical evidence to
 users who explicitly want it.
 
@@ -63,7 +63,7 @@ users who explicitly want it.
 
 ### Normal user flow
 
-> Robin opens a site. Tandem detects a critical third-party script and contains
+> Robin opens a site. Zerant detects a critical third-party script and contains
 > the tab. The shell presents a clear warning: the tab was blocked to protect
 > him. He sees three choices: `Close Tab`, `Open Safe Review`, and `Details`.
 > He does not need to decide whether the script was malicious or benign.
@@ -116,7 +116,7 @@ Use plain-language copy such as:
 
 > **This tab was blocked to protect you**
 >
-> Tandem detected a suspicious script or behavior on this page and stopped the
+> Zerant detected a suspicious script or behavior on this page and stopped the
 > tab before it could continue loading.
 
 ### Action labels
@@ -204,7 +204,7 @@ Suggested first implementation:
 
 This is the key product/security rule:
 
-> Tandem may allow part or the page to reload under a stricter review policy,
+> Zerant may allow part or the page to reload under a stricter review policy,
 > but it may not continue the already-contained original page.
 
 Reason:
@@ -298,7 +298,7 @@ critical incidents.
 - All warnings, banners, and review controls stay in the shell
 - Review policy enforcement stays in main-process/session policy layers
 - No page-visible UI is injected into the webview
-- Review mode must not add a stable site-visible Tandem fingerprint beyond the
+- Review mode must not add a stable site-visible Zerant fingerprint beyond the
   normal effects or blocked third-party resources
 
 ---
@@ -307,7 +307,7 @@ critical incidents.
 
 - Should `critical` incidents automatically close the original tab after the
   dialog, or keep it visibly blocked until the user closes it?
-- Should `read-only-snapshot` use Tandem's existing snapshot/content pipeline,
+- Should `read-only-snapshot` use Zerant's existing snapshot/content pipeline,
   or a lightweight HTML/text extraction path?
 - Should the first Safe Review profile block only the flagged domain, or the
   exact flagged resource URLs when available?

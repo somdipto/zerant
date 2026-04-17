@@ -1,6 +1,6 @@
 # Manager Pattern — Standard Template
 
-> Every manager in Tandem should follow this pattern. When creating a new
+> Every manager in Zerant should follow this pattern. When creating a new
 > manager or refactoring an existing one, use this as the reference.
 >
 > Existing managers may deviate slightly. That is OK for now, but new managers

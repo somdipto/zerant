@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tandem — Settings</title>
+  <title>Zerant — Settings</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -475,7 +475,7 @@
 
   <div class="settings-header">
     <span class="logo">🧀</span>
-    <h1>Tandem Settings</h1>
+    <h1>Zerant Settings</h1>
     <span class="version">v0.67.0</span>
   </div>
 
@@ -498,7 +498,7 @@
     <!-- ═══ General ═══ -->
     <div class="section" id="general">
       <h2>⚙️ General</h2>
-      <p class="section-desc">Basic settings for Tandem Browser</p>
+      <p class="section-desc">Basic settings for Zerant Browser</p>
 
       <div class="field">
         <div class="field-info">
@@ -595,7 +595,7 @@
       <div class="field" id="field-localFolderPath">
         <div class="field-info">
           <div class="field-label">Storage path</div>
-          <div class="field-desc" id="cfg-localFolderPath-display" style="font-size:12px;color:var(--text-dim);margin-top:2px;word-break:break-all;">~/Pictures/Tandem/</div>
+          <div class="field-desc" id="cfg-localFolderPath-display" style="font-size:12px;color:var(--text-dim);margin-top:2px;word-break:break-all;">~/Pictures/Zerant/</div>
         </div>
         <button type="button" class="btn btn-secondary" id="btn-chooseFolder">Choose folder…</button>
         <input type="hidden" id="cfg-localFolderPath" />
@@ -769,7 +769,7 @@
     <!-- ═══ Stealth ═══ -->
     <div class="section" id="stealth">
       <h2>🛡️ Stealth</h2>
-      <p class="section-desc">Anti-detection settings — keep Tandem invisible</p>
+      <p class="section-desc">Anti-detection settings — keep Zerant invisible</p>
 
       <div class="field">
         <div class="field-info">
@@ -860,7 +860,7 @@
     <!-- ═══ Behavioral Learning ═══ -->
     <div class="section" id="behavior">
       <h2>🧬 Behavioral Learning</h2>
-      <p class="section-desc">Tandem learns your browsing patterns for natural automation</p>
+      <p class="section-desc">Zerant learns your browsing patterns for natural automation</p>
 
       <div class="field">
         <div class="field-info">
@@ -963,7 +963,7 @@
     <!-- ═══ Data ═══ -->
     <div class="section" id="data">
       <h2>💾 Data</h2>
-      <p class="section-desc">Export, import or clear all your Tandem data</p>
+      <p class="section-desc">Export, import or clear all your Zerant data</p>
 
       <div class="field">
         <div class="field-info">
@@ -976,7 +976,7 @@
       <div class="field">
         <div class="field-info">
           <div class="field-label">Import data</div>
-          <div class="field-desc">Restore a previously exported Tandem backup</div>
+          <div class="field-desc">Restore a previously exported Zerant backup</div>
         </div>
         <button class="btn btn-secondary" id="btn-import">📥 Import</button>
         <input type="file" id="import-file" accept=".json" style="display:none" />
@@ -1032,8 +1032,8 @@
 
     <!-- ═══ Connected Agents ═══ -->
     <div class="section" id="agents">
-      <h2>🔗 Connect your AI to Tandem</h2>
-      <p class="section-desc">Let your AI agent work with you in Tandem Browser</p>
+      <h2>🔗 Connect your AI to Zerant</h2>
+      <p class="section-desc">Let your AI agent work with you in Zerant Browser</p>
 
       <!-- Onboarding: mode selector -->
       <div class="field-group" id="agent-onboard">
@@ -1159,7 +1159,7 @@
       setChecked('cfg-localFolder', s.localFolder !== false);
       setChecked('cfg-applePhotos', !!s.applePhotos);
       setChecked('cfg-googlePhotos', !!s.googlePhotos);
-      const folderPath = s.localFolderPath || '~/Pictures/Tandem/';
+      const folderPath = s.localFolderPath || '~/Pictures/Zerant/';
       setVal('cfg-localFolderPath', folderPath);
       const displayEl = document.getElementById('cfg-localFolderPath-display');
       if (displayEl) displayEl.textContent = folderPath;
@@ -2285,10 +2285,10 @@
       if (mode === 'local') {
         const addr = detectedAddresses ? detectedAddresses.local.address : 'http://127.0.0.1:8765';
         info.innerHTML = `
-          <p class="field-desc">Your AI and Tandem are on the same machine.</p>
-          <p class="field-desc" style="margin-top:4px;">Tandem will generate a ready-to-paste instruction block for your AI.</p>
+          <p class="field-desc">Your AI and Zerant are on the same machine.</p>
+          <p class="field-desc" style="margin-top:4px;">Zerant will generate a ready-to-paste instruction block for your AI.</p>
           <div style="font-size:13px;color:var(--text-dim);margin-top:6px;">
-            Tandem address: <strong style="color:var(--text)">${esc(addr)}</strong>
+            Zerant address: <strong style="color:var(--text)">${esc(addr)}</strong>
           </div>`;
         connectBtn.disabled = false;
         connectBtn.textContent = 'Generate connection instructions';
@@ -2297,18 +2297,18 @@
           const addr = detectedAddresses.tailscale.address;
           info.innerHTML = `
             <p class="field-desc">Your AI runs on another machine in your Tailscale network.</p>
-            <p class="field-desc" style="margin-top:4px;">Tandem will generate a ready-to-paste instruction block for your remote AI.</p>
+            <p class="field-desc" style="margin-top:4px;">Zerant will generate a ready-to-paste instruction block for your remote AI.</p>
             <div style="font-size:13px;color:var(--text-dim);margin-top:6px;">
-              Tandem address: <strong style="color:var(--text)">${esc(addr)}</strong>
+              Zerant address: <strong style="color:var(--text)">${esc(addr)}</strong>
             </div>
-            <p class="field-desc" style="margin-top:6px;font-size:11px;">Both machines must be on the same Tailscale network. Tandem is never exposed to the public internet.</p>`;
+            <p class="field-desc" style="margin-top:6px;font-size:11px;">Both machines must be on the same Tailscale network. Zerant is never exposed to the public internet.</p>`;
           connectBtn.disabled = false;
           connectBtn.textContent = 'Generate connection instructions';
         } else {
           info.innerHTML = `
             <p class="field-desc" style="color:var(--warning)">No Tailscale connection detected.</p>
             <p class="field-desc" style="margin-top:4px;">Remote connections require Tailscale. Make sure Tailscale is running and this machine is connected to your tailnet.</p>
-            <p class="field-desc" style="margin-top:4px;font-size:11px;">Tandem only supports remote connections over private Tailscale networks, never over the public internet.</p>`;
+            <p class="field-desc" style="margin-top:4px;font-size:11px;">Zerant only supports remote connections over private Tailscale networks, never over the public internet.</p>`;
           connectBtn.disabled = true;
           connectBtn.textContent = 'Tailscale not available';
         }
@@ -2322,12 +2322,12 @@
 
       if (mode === 'local') {
         return [
-          `Connect to Tandem Browser on this machine.`,
+          `Connect to Zerant Browser on this machine.`,
           ``,
-          `Tandem address: ${addr}`,
+          `Zerant address: ${addr}`,
           `Setup code: ${code}`,
           ``,
-          `Read ${addr}/agent first. It explains how this Tandem instance works.`,
+          `Read ${addr}/agent first. It explains how this Zerant instance works.`,
           ``,
           `Then exchange the setup code for a connection token:`,
           `POST ${addr}/pairing/exchange`,
@@ -2338,13 +2338,13 @@
         ].join('\n');
       } else {
         return [
-          `Connect to Tandem Browser on another machine via Tailscale.`,
+          `Connect to Zerant Browser on another machine via Tailscale.`,
           `Both machines must be on the same Tailscale network.`,
           ``,
-          `Tandem address: ${addr}`,
+          `Zerant address: ${addr}`,
           `Setup code: ${code}`,
           ``,
-          `Read ${addr}/agent first. It explains how this Tandem instance works.`,
+          `Read ${addr}/agent first. It explains how this Zerant instance works.`,
           ``,
           `Then exchange the setup code for a connection token:`,
           `POST ${addr}/pairing/exchange`,
@@ -2365,7 +2365,7 @@
           `  }`,
           `}`,
           ``,
-          `This connection works only over Tailscale. Tandem is not exposed to the public internet.`,
+          `This connection works only over Tailscale. Zerant is not exposed to the public internet.`,
         ].join('\n');
       }
     }

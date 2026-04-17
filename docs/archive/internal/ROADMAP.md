@@ -1,4 +1,4 @@
-# Tandem Browser — Archived Roadmap Snapshot
+# Zerant Browser — Archived Roadmap Snapshot
 
 This file is retained as a historical planning snapshot from the earlier
 phase-doc workflow.

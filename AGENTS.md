@@ -1,20 +1,20 @@
-# AGENTS.md — Tandem Browser Development Guide
+# AGENTS.md — Zerant Browser Development Guide
 
 > Internal development workflow document. This file exists for local developer
 > and coding-agent operations and is not the primary public project guide.
 
 ## Who Are You?
 
-You are a developer agent working on **Tandem Browser**: an Electron browser
+You are a developer agent working on **Zerant Browser**: an Electron browser
 built for human-AI symbiosis. The user (the human) and Wingman (the AI) browse
 the web together. You write the code.
 
-**Read `PROJECT.md` first.** It contains the full overview or what Tandem is,
+**Read `PROJECT.md` first.** It contains the full overview or what Zerant is,
 how it works, and why it exists.
 
 ## The Project
 
-- **Repo:** `hydro13/tandem-browser` (GitHub: hydro13)
+- **Repo:** `hydro13/zerant-browser` (GitHub: hydro13)
 - **Stack:** Electron 40 + TypeScript + Express.js API (`localhost:8765`) +
   MCP server (250 tools)
 - **Goal:** An agent-first browser where any AI (via MCP, HTTP API, or
@@ -30,7 +30,7 @@ how it works, and why it exists.
 ## Project Structure
 
 ```text
-tandem-browser/
+zerant-browser/
 ├── src/                          # TypeScript application code
 │   ├── api/server.ts             # Express API bootstrap
 │   ├── main.ts                   # Electron main process
@@ -46,7 +46,7 @@ tandem-browser/
 │   ├── devtools/                 # CDP bridge
 │   └── ...                       # 28 other modules
 ├── shell/                        # Browser UI
-├── cli/                          # tandem CLI (@hydro13/tandem-cli)
+├── cli/                          # tandem CLI (@zerant/zerant-cli)
 ├── docs/
 │   ├── internal/ROADMAP.md       # Sprint planning + feature backlog (internal)
 │   ├── internal/STATUS.md        # Daily standup/progress tracker (internal)
@@ -117,7 +117,7 @@ tandem-browser/
 - Default to a branch + pull request workflow, even for maintainer-owned work
 - Do not push directly to `main` unless Robin explicitly asks for a direct
   bypass or the change is an urgent maintainer-only fix
-- While Tandem is still effectively solo-maintained, prefer keeping required CI
+- While Zerant is still effectively solo-maintained, prefer keeping required CI
   checks (`verify`, `CodeQL`) and using PRs as the review step; do not assume a
   second human reviewer will exist
 - Any merged `feat:` change must bump the app version before the PR is merged
@@ -138,7 +138,7 @@ tandem-browser/
 
 ### 4A. Release Policy
 
-- Tandem is currently a **source-only developer preview**
+- Zerant is currently a **source-only developer preview**
 - Do not publish official end-user binaries by default
 - Do not attach old local `release/` artifacts to GitHub releases
 - Source tags / GitHub releases are fine; binary releases should wait until
@@ -158,7 +158,7 @@ tandem-browser/
 
 - Forbidden: “see `server.ts` line 287” because line numbers change
 - Required: “see `function startAPI()` in `main.ts`”
-- Required: “add it to `class TandemAPI` and the `TandemAPIOptions` interface”
+- Required: “add it to `class ZerantAPI` and the `ZerantAPIOptions` interface”
 - Required: “look for `// === SECTION NAME ===` in `shell/index.html`”
 - Use `grep -n "function name" file.ts` if you need to locate something
 
@@ -229,11 +229,11 @@ Wingman is looking over Robin’s shoulder, but the website must not know that.
 
 ### Fundamental Rule: No Unique Fingerprint
 
-Tandem must never have a recognizable fingerprint. If platforms such as Meta,
-Google, or LinkedIn can identify Tandem as an “AI browser,” it is game over for
+Zerant must never have a recognizable fingerprint. If platforms such as Meta,
+Google, or LinkedIn can identify Zerant as an “AI browser,” it is game over for
 all users.
 
-Tandem must be indistinguishable from real Chrome on macOS.
+Zerant must be indistinguishable from real Chrome on macOS.
 
 - Every Electron-specific API must be hidden or patched
 - No custom headers, no custom properties, no detectable patterns
@@ -250,7 +250,7 @@ Background browsing is never fully autonomous:
 
 ### Humanization Timing — Behavioral Learning
 
-Tandem learns Robin’s real behavior patterns and replicates them for automated
+Zerant learns Robin’s real behavior patterns and replicates them for automated
 actions.
 
 **Observation layer** (always active, passive):

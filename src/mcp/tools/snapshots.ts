@@ -14,7 +14,7 @@ function summarizeActionResult(prefix: string, result: Record<string, unknown>):
 
 export function registerSnapshotTools(server: McpServer): void {
   server.tool(
-    'tandem_snapshot',
+    'zerant_snapshot',
     'Get the accessibility tree of the page with @ref IDs for element interaction. Supports targeting a background tab by ID.',
     coerceShape({
       tabId: z.string().optional().describe('Optional tab ID to target a background tab instead of the active tab'),
@@ -36,7 +36,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_snapshot_click',
+    'zerant_snapshot_click',
     'Click an element by its @ref ID from a previous snapshot. Returns explicit scope, completion semantics, and post-action state. Supports targeting a background tab by ID.',
     {
       ref: z.string().describe('The @ref ID of the element to click (e.g. "@e1")'),
@@ -50,7 +50,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_snapshot_fill',
+    'zerant_snapshot_fill',
     'Fill an input element by its @ref ID from a previous snapshot. Returns explicit scope, completion semantics, and confirmed post-fill state when available. Supports targeting a background tab by ID.',
     {
       ref: z.string().describe('The @ref ID of the input element (e.g. "@e3")'),
@@ -65,7 +65,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_snapshot_text',
+    'zerant_snapshot_text',
     'Get the text content of an element by its @ref ID from a previous snapshot. Supports targeting a background tab by ID.',
     {
       ref: z.string().describe('The @ref ID of the element (e.g. "@e1")'),
@@ -80,7 +80,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_find',
+    'zerant_find',
     'Find elements on the page by semantic locator (role, text, label, or placeholder). Returns the locator query result plus the resolved tab scope. Supports targeting a background tab by ID.',
     {
       by: z.enum(['role', 'text', 'label', 'placeholder']).describe('Locator strategy'),
@@ -95,7 +95,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_find_click',
+    'zerant_find_click',
     'Find an element by semantic locator and click it. Returns the resolved tab scope, locator resolution details, completion semantics, and post-action state. Supports targeting a background tab by ID.',
     {
       by: z.enum(['role', 'text', 'label', 'placeholder']).describe('Locator strategy'),
@@ -110,7 +110,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_find_fill',
+    'zerant_find_fill',
     'Find an input element by semantic locator and fill it with text. Returns the resolved tab scope, locator resolution details, completion semantics, and confirmed post-fill state when available. Supports targeting a background tab by ID.',
     {
       by: z.enum(['role', 'text', 'label', 'placeholder']).describe('Locator strategy'),
@@ -126,7 +126,7 @@ export function registerSnapshotTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_find_all',
+    'zerant_find_all',
     'Find all matching elements on the page by semantic locator. Returns all matches instead of just the first. Supports targeting a background tab by ID.',
     {
       by: z.enum(['role', 'text', 'label', 'placeholder']).describe('Locator strategy'),

@@ -5,7 +5,7 @@ import os from 'os';
 import type { RouteContext} from '../context';
 import { getActiveWC, getSessionWC, execInSessionTab, getSessionPartition, resolveRequestedTab } from '../context';
 import { buildInteractionScope, resolveEffectiveTabTarget, sendRequestedTabNotFound } from '../interaction';
-import { tandemDir } from '../../utils/paths';
+import { zerantDir } from '../../utils/paths';
 import { wingmanAlert } from '../../notifications/alert';
 import { humanizedClick, humanizedType } from '../../input/humanized';
 import { captureNavigationState, hasObservablePageChange, readPageState } from '../../interaction/page-state';
@@ -350,7 +350,7 @@ export function registerBrowserRoutes(router: Router, ctx: RouteContext): void {
         const allowedDirs = [
           path.join(os.homedir(), 'Desktop'),
           path.join(os.homedir(), 'Downloads'),
-          tandemDir(),
+          zerantDir(),
         ];
         const rawSavePath = typeof req.query.save === 'string' ? req.query.save : '';
         const filePath = resolvePathInAllowedRoots(rawSavePath, allowedDirs);
@@ -362,7 +362,7 @@ export function registerBrowserRoutes(router: Router, ctx: RouteContext): void {
       }
     } catch (e) {
       if (e instanceof Error && e.message === 'Path is outside the allowed directories') {
-        res.status(400).json({ error: 'Save path must be in ~/Desktop, ~/Downloads, or ~/.tandem' });
+        res.status(400).json({ error: 'Save path must be in ~/Desktop, ~/Downloads, or ~/.zerant' });
         return;
       }
       handleRouteError(res, e);

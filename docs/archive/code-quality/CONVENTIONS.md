@@ -2,7 +2,7 @@
 
 ## Version Scheme
 
-Tandem uses **semver**: `MAJOR.MINOR.PATCH`
+Zerant uses **semver**: `MAJOR.MINOR.PATCH`
 
 - **PATCH** (0.11.X → 0.11.X+1): bug fixes, small refactors, cleanup items
 - **MINOR** (0.X.0 → 0.X+1.0): new features, significant architecture changes
@@ -72,7 +72,7 @@ The changelog is currently behind. The structure improvement work (0.10.3 → no
    - Unified npm test + 152 tests (was 86)
    - CDP types + reduced `any` usage in devtools code
    - Split shell/index.html into external CSS/JS (6572→451 lines)
-   - ManagerRegistry DI pattern (TandemAPIOptions 35→3 params)
+   - ManagerRegistry DI pattern (ZerantAPIOptions 35→3 params)
    - Explicit SecurityManager.init() consolidation
    - Naming consistency (cleanup→destroy)
    - Removed all catch(e: any) → catch(e) + instanceof Error (96 fixes, 32 files)

@@ -9,13 +9,13 @@
 
 ## Problem / Motivation
 
-Tandem has currently **no linker sidebar**. Workspaces, Messengers, Pinboards, Personal News, Bookmarks, History and Downloads are separately ontworpen without shared foundation. If we ze los bouwen, gets elke feature are own ad-hoc icon strip — that is chaos.
+Zerant has currently **no linker sidebar**. Workspaces, Messengers, Pinboards, Personal News, Bookmarks, History and Downloads are separately ontworpen without shared foundation. If we ze los bouwen, gets elke feature are own ad-hoc icon strip — that is chaos.
 
 Opera has this goed opgelost: één uniforme sidebar with a plug-in system. Alle features registreren zich daarin. Configureerbaar, drag-to-reorder, enable/disable.
 
 ---
 
-## Current Tandem Layout
+## Current Zerant Layout
 
 ```
 <body> (flex column)
@@ -141,7 +141,7 @@ interface SidebarConfig {
 
 | File | Change | Function |
 |---------|-----------|---------|
-| `src/api/server.ts` | `sidebarManager` add | `TandemAPIOptions`, `class TandemAPI` |
+| `src/api/server.ts` | `sidebarManager` add | `ZerantAPIOptions`, `class ZerantAPI` |
 | `src/main.ts` | Manager instantiëren + cleanup | `startAPI()`, `app.on('will-quit')` |
 | `shell/index.html` | Sidebar HTML add | `<!-- Main layout -->` section |
 | `shell/css/main.css` | Sidebar CSS | `.main-layout` section |
@@ -170,7 +170,7 @@ interface SidebarConfig {
 
 **Active indicator (zoals Opera):**
 - Gekleurde afgeronde vierkant (rounded square) if achtergrond achter the actieve icon
-- Kleur: accent color or Tandem (#4ecca3) or icon-own color for messengers
+- Kleur: accent color or Zerant (#4ecca3) or icon-own color for messengers
 - NIET border-left — that is te subtiel
 
 **Icon stijlen (zoals Opera):**
@@ -242,7 +242,7 @@ hidden (0px)  →  narrow (48px, icons)  →  wide (48px + label, ~180px)
 ### Keyboard shortcut
 
 Shortcut for toggle hidden↔narrow: **Cmd+Shift+B** (⌘⇧B)
-(Cmd+B is already Bookmarks toggle in the meeste browsers — ⌘⇧B is vrij in Tandem)
+(Cmd+B is already Bookmarks toggle in the meeste browsers — ⌘⇧B is vrij in Zerant)
 
 ## Open Questions for Robin
 

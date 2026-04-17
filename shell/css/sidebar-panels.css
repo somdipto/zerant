@@ -317,13 +317,13 @@
     }
 
 /* ── Custom Modal (replaces native prompt/confirm — Electron blocks those) ── */
-.tandem-modal-overlay {
+.zerant-modal-overlay {
   position: fixed; inset: 0; z-index: 99999;
   background: rgba(0,0,0,0.6);
   display: flex; align-items: center; justify-content: center;
 }
-.tandem-modal-overlay.hidden { display: none; }
-.tandem-modal {
+.zerant-modal-overlay.hidden { display: none; }
+.zerant-modal {
   background: #1e1e1e;
   border: 1px solid #333;
   border-radius: 12px;
@@ -332,13 +332,13 @@
   max-width: 420px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.6);
 }
-.tandem-modal h3 {
+.zerant-modal h3 {
   margin: 0 0 16px;
   font-size: 15px;
   color: #eee;
   font-weight: 600;
 }
-.tandem-modal input[type="text"] {
+.zerant-modal input[type="text"] {
   width: 100%;
   box-sizing: border-box;
   background: #2a2a2a;
@@ -350,17 +350,17 @@
   margin-bottom: 10px;
   outline: none;
 }
-.tandem-modal input[type="text"]:focus { border-color: #555; }
-.tandem-modal p {
+.zerant-modal input[type="text"]:focus { border-color: #555; }
+.zerant-modal p {
   margin: 0 0 16px;
   font-size: 13px;
   color: #bbb;
   line-height: 1.5;
 }
-.tandem-modal-buttons {
+.zerant-modal-buttons {
   display: flex; gap: 8px; justify-content: flex-end;
 }
-.tandem-modal-buttons button {
+.zerant-modal-buttons button {
   padding: 8px 18px;
   border-radius: 8px;
   border: none;
@@ -368,21 +368,21 @@
   cursor: pointer;
   font-weight: 500;
 }
-.tandem-modal-btn-cancel {
+.zerant-modal-btn-cancel {
   background: #2a2a2a;
   color: #aaa;
 }
-.tandem-modal-btn-cancel:hover { background: #333; }
-.tandem-modal-btn-ok {
+.zerant-modal-btn-cancel:hover { background: #333; }
+.zerant-modal-btn-ok {
   background: #3a7bd5;
   color: #fff;
 }
-.tandem-modal-btn-ok:hover { background: #4a8be5; }
-.tandem-modal-btn-danger {
+.zerant-modal-btn-ok:hover { background: #4a8be5; }
+.zerant-modal-btn-danger {
   background: #c0392b;
   color: #fff;
 }
-.tandem-modal-btn-danger:hover { background: #e74c3c; }
+.zerant-modal-btn-danger:hover { background: #e74c3c; }
 
 /* === TAB DRAG TO WORKSPACE — drop zone highlight === */
 .workspace-icon.ws-drop-active .workspace-icon-inner {
@@ -392,7 +392,7 @@
 }
 
 /* === CUSTOM CONTEXT MENU (tab right-click) === */
-.tandem-ctx-menu {
+.zerant-ctx-menu {
   position: fixed;
   z-index: 99998;
   background: #1e1e1e;
@@ -405,7 +405,7 @@
   color: #eee;
   user-select: none;
 }
-.tandem-ctx-menu-item {
+.zerant-ctx-menu-item {
   padding: 7px 14px;
   cursor: pointer;
   display: flex;
@@ -415,26 +415,26 @@
   position: relative;
   white-space: nowrap;
 }
-.tandem-ctx-menu-item:hover {
+.zerant-ctx-menu-item:hover {
   background: rgba(255,255,255,0.08);
 }
-.tandem-ctx-menu-item .ctx-arrow {
+.zerant-ctx-menu-item .ctx-arrow {
   font-size: 10px;
   color: #888;
   margin-left: auto;
 }
-.tandem-ctx-menu-item .ctx-icon {
+.zerant-ctx-menu-item .ctx-icon {
   width: 16px;
   height: 16px;
   opacity: 0.7;
   flex-shrink: 0;
 }
-.tandem-ctx-separator {
+.zerant-ctx-separator {
   height: 1px;
   background: rgba(255,255,255,0.1);
   margin: 4px 0;
 }
-.tandem-ctx-submenu {
+.zerant-ctx-submenu {
   position: absolute;
   top: -6px;
   left: 100%;
@@ -446,10 +446,10 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   display: none;
 }
-.tandem-ctx-menu-item:hover > .tandem-ctx-submenu {
+.zerant-ctx-menu-item:hover > .zerant-ctx-submenu {
   display: block;
 }
-.tandem-ctx-submenu-item {
+.zerant-ctx-submenu-item {
   padding: 7px 14px;
   cursor: pointer;
   display: flex;
@@ -458,36 +458,36 @@
   transition: background 0.1s;
   white-space: nowrap;
 }
-.tandem-ctx-submenu-item:hover {
+.zerant-ctx-submenu-item:hover {
   background: rgba(255,255,255,0.08);
 }
-.tandem-ctx-submenu-item .ws-ctx-icon {
+.zerant-ctx-submenu-item .ws-ctx-icon {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
 }
-.tandem-ctx-submenu-item .ws-ctx-icon svg {
+.zerant-ctx-submenu-item .ws-ctx-icon svg {
   width: 16px;
   height: 16px;
   color: #fff;
 }
-.tandem-ctx-submenu.flip-left {
+.zerant-ctx-submenu.flip-left {
   left: auto;
   right: 100%;
 }
 
 /* Emoji picker grid inside context menu submenu */
-.tandem-emoji-grid {
+.zerant-emoji-grid {
   min-width: 240px;
   max-width: 260px;
 }
-.tandem-emoji-picker {
+.zerant-emoji-picker {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 2px;
   padding: 6px 8px;
 }
-.tandem-emoji-btn {
+.zerant-emoji-btn {
   font-size: 16px;
   width: 22px;
   height: 22px;
@@ -498,7 +498,7 @@
   border-radius: 4px;
   transition: background 0.1s;
 }
-.tandem-emoji-btn:hover {
+.zerant-emoji-btn:hover {
   background: rgba(255,255,255,0.15);
 }
 

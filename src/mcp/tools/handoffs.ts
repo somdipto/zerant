@@ -14,8 +14,8 @@ const handoffStatusSchema = z.enum([
 
 export function registerHandoffTools(server: McpServer): void {
   server.tool(
-    'tandem_handoff_create',
-    'Create an explicit human↔agent handoff that appears in Tandem for the user to review, approve, or resume.',
+    'zerant_handoff_create',
+    'Create an explicit human↔agent handoff that appears in Zerant for the user to review, approve, or resume.',
     coerceShape({
       status: handoffStatusSchema.describe('Handoff state: needs_human, blocked, waiting_approval, ready_to_resume, completed_review, or resolved'),
       title: z.string().describe('Short handoff title shown to the human'),
@@ -52,7 +52,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_list',
+    'zerant_handoff_list',
     'List handoffs that are open or recently updated. Use this to see what needs human attention.',
     coerceShape({
       openOnly: z.boolean().optional().default(true).describe('Only return open/actionable handoffs (default: true)'),
@@ -73,7 +73,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_get',
+    'zerant_handoff_get',
     'Get the full details for a specific handoff.',
     {
       id: z.string().describe('The handoff ID'),
@@ -85,7 +85,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_update',
+    'zerant_handoff_update',
     'Update a handoff status or message when the agent is unblocked, waiting again, ready to resume, or done for review.',
     coerceShape({
       id: z.string().describe('The handoff ID'),
@@ -104,7 +104,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_resolve',
+    'zerant_handoff_resolve',
     'Mark a handoff as resolved so it leaves the open handoff inbox.',
     {
       id: z.string().describe('The handoff ID'),
@@ -122,7 +122,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_ready',
+    'zerant_handoff_ready',
     'Mark a human-blocked handoff as ready to resume so the linked task moves into a resumable state.',
     {
       id: z.string().describe('The handoff ID'),
@@ -140,7 +140,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_resume',
+    'zerant_handoff_resume',
     'Resume the linked agent task from a ready handoff and resolve the handoff in the inbox.',
     {
       id: z.string().describe('The handoff ID'),
@@ -158,7 +158,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_approve',
+    'zerant_handoff_approve',
     'Approve a waiting-approval handoff and let the linked task step continue.',
     {
       id: z.string().describe('The handoff ID'),
@@ -176,7 +176,7 @@ export function registerHandoffTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_handoff_reject',
+    'zerant_handoff_reject',
     'Reject a waiting-approval handoff and keep the linked task paused.',
     {
       id: z.string().describe('The handoff ID'),

@@ -11,7 +11,7 @@
 TOKEN=$(cat ~/.tandem/api-token)
 ```
 
-- [ ] `curl http://localhost:8765/status` — Tandem draait
+- [ ] `curl http://localhost:8765/status` — Zerant draait
 - [ ] `curl -H "Authorization: Bearer $TOKEN" http://localhost:8765/devtools/status` — CDP attached
 - [ ] `npx tsc` — zero errors
 - [ ] `git status` — clean
@@ -31,7 +31,7 @@ TOKEN=$(cat ~/.tandem/api-token)
 - [x] `getSnapshot()` — CDP `Accessibility.getFullAXTree()` via `devtools.sendCommand()` _(2026-02-20, session 1.1)_
 - [x] `assignRefs()` — @e1, @e2, ... toewijzen (stabiel per page, reset bij navigatie) _(2026-02-20, session 1.1)_
 - [x] `formatTree()` — output if text (same stijl if agent-browser) _(2026-02-20, session 1.1)_
-- [x] **Manager Wiring:** TandemAPIOptions + main.ts startAPI() + will-quit handler _(2026-02-20, session 1.1)_
+- [x] **Manager Wiring:** ZerantAPIOptions + main.ts startAPI() + will-quit handler _(2026-02-20, session 1.1)_
 - [x] `GET /snapshot` endpoint in server.ts (SNAPSHOT section, for WINGMAN STREAM) _(2026-02-20, session 1.1)_
 - [x] `GET /snapshot?interactive=true` — filter op buttons/inputs/links _(2026-02-20, session 1.1)_
 - [x] `npx tsc` — zero errors _(2026-02-20, session 1.1)_
@@ -65,7 +65,7 @@ TOKEN=$(cat ~/.tandem/api-token)
 
 - [x] `src/network/types.ts` — interfaces (MockRule) _(2026-02-21, session 2.1)_
 - [x] `src/network/mocker.ts` — NetworkMocker class (with CDP subscriber for Fetch.requestPaused) _(2026-02-21, session 2.1)_
-- [x] **Manager Wiring:** TandemAPIOptions + main.ts startAPI() + will-quit handler _(2026-02-21, session 2.1)_
+- [x] **Manager Wiring:** ZerantAPIOptions + main.ts startAPI() + will-quit handler _(2026-02-21, session 2.1)_
 - [x] CDP: `Fetch.enable` via `devtools.sendCommand()` bij first mock, `Fetch.disable` bij mock-clear _(2026-02-21, session 2.1)_
 - [x] `handleRequestPaused()` — match URL pattern, fulfillRequest/failRequest/continueRequest _(2026-02-21, session 2.1)_
 - [x] Glob matching for URL patterns (bijv. `**/api/**`) _(2026-02-21, session 2.1)_
@@ -118,7 +118,7 @@ TOKEN=$(cat ~/.tandem/api-token)
 
 - [x] `src/sessions/types.ts` — interfaces (Session, SessionState) _(2026-02-21, session 3.2)_
 - [x] `src/sessions/manager.ts` — SessionManager class _(2026-02-21, session 3.2)_
-- [x] **Manager Wiring:** TandemAPIOptions + main.ts startAPI() + will-quit handler _(2026-02-21, session 3.2)_
+- [x] **Manager Wiring:** ZerantAPIOptions + main.ts startAPI() + will-quit handler _(2026-02-21, session 3.2)_
 - [x] `create(name)` — new Electron partition (`persist:session-{name}`) _(2026-02-21, session 3.2)_
 - [x] `list()` — alle sessions + welke actief _(2026-02-21, session 3.2)_
 - [x] `setActive(name)` — actieve API session wisselen _(2026-02-21, session 3.2)_
@@ -140,11 +140,11 @@ TOKEN=$(cat ~/.tandem/api-token)
 - [x] `save()`: `session.fromPartition(partition).cookies.get({})` → JSON → disk _(2026-02-21, session 3.3)_
 - [x] `load()`: disk → JSON → `session.fromPartition(partition).cookies.set()` per cookie _(2026-02-21, session 3.3)_
 - [x] AES-256-GCM encryptie (optional, via env `TANDEM_SESSION_KEY`) _(2026-02-21, session 3.3)_
-- [x] **Manager Wiring:** Voeg `stateManager` toe about TandemAPIOptions + startAPI() _(2026-02-21, session 3.3)_
+- [x] **Manager Wiring:** Voeg `stateManager` toe about ZerantAPIOptions + startAPI() _(2026-02-21, session 3.3)_
 - [x] `POST /sessions/state/save {"name":"twitter"}` _(2026-02-21, session 3.3)_
 - [x] `POST /sessions/state/load {"name":"twitter"}` _(2026-02-21, session 3.3)_
 - [x] `GET /sessions/state/list` _(2026-02-21, session 3.3)_
-- [x] `getSessionPartition()` helper methode in TandemAPI class _(2026-02-21, session 3.3)_
+- [x] `getSessionPartition()` helper methode in ZerantAPI class _(2026-02-21, session 3.3)_
 - [x] `X-Session` header op existing endpoints (navigate, click, page-content, etc.) _(2026-02-21, session 3.3)_
 - [x] `npx tsc` — zero errors _(2026-02-21, session 3.3)_
 - [x] Test: state save → session destroyen → state laden → cookies terug _(2026-02-21, session 3.3)_
@@ -182,7 +182,7 @@ TOKEN=$(cat ~/.tandem/api-token)
 - [x] Test: `tandem snapshot -i` → interactive tree _(2026-02-21, session 4.1)_
 - [x] Test: `tandem click @e2` → click via ref _(2026-02-21, session 4.1)_
 - [x] Test: `tandem --session agent1 open x.com` → in agent1 session _(2026-02-21, session 4.1)_
-- [ ] Commit: `feat: tandem CLI wrapper (@hydro13/tandem-cli)`
+- [ ] Commit: `feat: tandem CLI wrapper (@zerant/zerant-cli)`
 
 ---
 

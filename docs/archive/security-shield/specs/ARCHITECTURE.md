@@ -1,8 +1,8 @@
 # Security Shield — Technical Architecture
 
-## Tandem Context
+## Zerant Context
 
-Tandem is an Electron browser (TypeScript + Express API on localhost:8765). It has:
+Zerant is an Electron browser (TypeScript + Express API on localhost:8765). It has:
 
 - Multi-tab browsing via BrowserView/webContents
 - CDP DevTools bridge (attach to any tab, full Chrome DevTools Protocol access)

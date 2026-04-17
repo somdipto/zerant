@@ -11,7 +11,7 @@
 `src/api/server.ts` is ~1700 lines / ~3500 lines with all 160+ routes in a single `setupRoutes()` method. This file:
 - Does not fit in a single AI context window
 - Makes every route change require navigating a massive file
-- Has a 35-parameter constructor (`TandemAPIOptions`)
+- Has a 35-parameter constructor (`ZerantAPIOptions`)
 - Contains a circular dependency (`import { wingmanAlert } from '../main'`)
 
 ## Design
@@ -50,14 +50,14 @@ export interface RouteContext {
   win: Electron.BrowserWindow;
   tabManager: TabManager;
   panelManager: PanelManager;
-  // ... all current managers from TandemAPIOptions
+  // ... all current managers from ZerantAPIOptions
   // + the 3 internally-created managers:
   contentExtractor: ContentExtractor;
   workflowEngine: WorkflowEngine;
   loginManager: LoginManager;
 }
 
-// Shared helpers (currently private methods on TandemAPI)
+// Shared helpers (currently private methods on ZerantAPI)
 export async function getActiveWC(ctx: RouteContext): Promise<WebContents | null>;
 export async function execInActiveTab(ctx: RouteContext, code: string): Promise<any>;
 export function getSessionPartition(ctx: RouteContext, req: Request): string;
@@ -96,12 +96,12 @@ export function registerTabRoutes(router: Router, ctx: RouteContext): void {
 
 ```typescript
 // src/api/server.ts (after refactor)
-export class TandemAPI {
+export class ZerantAPI {
   private app: express.Application;
   private server: http.Server | null = null;
   private ctx: RouteContext;
 
-  constructor(opts: TandemAPIOptions) {
+  constructor(opts: ZerantAPIOptions) {
     this.ctx = this.buildContext(opts);
     this.app = express();
 
@@ -291,16 +291,16 @@ export class TandemAPI {
 
 1. **All URL paths remain identical** — zero breaking changes for API consumers
 2. **Auth middleware stays in server.ts** — single location for security
-3. **`TandemAPIOptions` interface stays** — refactoring that is Improvement #8
+3. **`ZerantAPIOptions` interface stays** — refactoring that is Improvement #8
 4. **`wingmanAlert` circular dep stays** — that is Improvement #4
 5. **Security routes stay in SecurityManager** — already separately registered
-6. **`start()`, `stop()`, `getHttpServer()` stay on TandemAPI class**
+6. **`start()`, `stop()`, `getHttpServer()` stay on ZerantAPI class**
 
 ## Known Issues to Fix During Implementation
 
 1. **Duplicate `/tabs/source` route** — defined at both line 970 and line 1734. Keep one, remove the other.
 2. **`liveMode` state** — currently a closure variable inside `setupRoutes()`. Move to a simple object/field in RouteContext or in the misc routes module.
-3. **`contentExtractor`, `workflowEngine`, `loginManager`** — currently instantiated inside the TandemAPI constructor (not injected). Move creation to RouteContext builder or keep in server.ts.
+3. **`contentExtractor`, `workflowEngine`, `loginManager`** — currently instantiated inside the ZerantAPI constructor (not injected). Move creation to RouteContext builder or keep in server.ts.
 
 ## Testing Plan
 

@@ -1,32 +1,32 @@
 import { describe, it, expect, vi } from 'vitest';
 import path from 'path';
 import os from 'os';
-import { tandemDir, ensureDir } from '../paths';
+import { zerantDir, ensureDir } from '../paths';
 
-describe('tandemDir()', () => {
-  it('returns ~/.tandem with no arguments', () => {
-    expect(tandemDir()).toBe(path.join(os.homedir(), '.tandem'));
+describe('zerantDir()', () => {
+  it('returns ~/.zerant with no arguments', () => {
+    expect(zerantDir()).toBe(path.join(os.homedir(), '.zerant'));
   });
 
   it('appends a single subpath', () => {
-    expect(tandemDir('extensions')).toBe(path.join(os.homedir(), '.tandem', 'extensions'));
+    expect(zerantDir('extensions')).toBe(path.join(os.homedir(), '.zerant', 'extensions'));
   });
 
   it('appends multiple subpath segments', () => {
-    expect(tandemDir('security', 'blocklists')).toBe(
-      path.join(os.homedir(), '.tandem', 'security', 'blocklists')
+    expect(zerantDir('security', 'blocklists')).toBe(
+      path.join(os.homedir(), '.zerant', 'security', 'blocklists')
     );
   });
 
   it('handles file names in subpath', () => {
-    expect(tandemDir('api-token')).toBe(path.join(os.homedir(), '.tandem', 'api-token'));
+    expect(zerantDir('api-token')).toBe(path.join(os.homedir(), '.zerant', 'api-token'));
   });
 });
 
 describe('ensureDir()', () => {
   it('returns the directory path', () => {
     // Use a real temp dir to test — no mock needed
-    const tmpDir = path.join(os.tmpdir(), `tandem-test-${Date.now()}`);
+    const tmpDir = path.join(os.tmpdir(), `zerant-test-${Date.now()}`);
     const result = ensureDir(tmpDir);
     expect(result).toBe(tmpDir);
     // Clean up
@@ -36,7 +36,7 @@ describe('ensureDir()', () => {
 
   it('creates directory when it does not exist', () => {
     const fs = require('fs');
-    const tmpDir = path.join(os.tmpdir(), `tandem-test-${Date.now()}`);
+    const tmpDir = path.join(os.tmpdir(), `zerant-test-${Date.now()}`);
     expect(fs.existsSync(tmpDir)).toBe(false);
     ensureDir(tmpDir);
     expect(fs.existsSync(tmpDir)).toBe(true);
@@ -45,7 +45,7 @@ describe('ensureDir()', () => {
 
   it('is idempotent — safe to call on existing directory', () => {
     const fs = require('fs');
-    const tmpDir = path.join(os.tmpdir(), `tandem-test-${Date.now()}`);
+    const tmpDir = path.join(os.tmpdir(), `zerant-test-${Date.now()}`);
     ensureDir(tmpDir);
     ensureDir(tmpDir); // should not throw
     expect(fs.existsSync(tmpDir)).toBe(true);

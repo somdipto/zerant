@@ -1,35 +1,35 @@
-# Sponsor Tandem Browser
+# Sponsor Zerant Browser
 
-Tandem Browser is building the browser layer for real human-AI collaboration.
+Zerant Browser is building the browser layer for real human-AI collaboration.
 It is built and maintained full-time by one person, and your sponsorship directly funds the work that keeps that possible.
 
 If your company cares about secure browser agents, MCP-native workflows, or local-first AI infrastructure, this is a project worth supporting early.
 
-## Why Tandem Matters
+## Why Zerant Matters
 
 Most AI browser tooling still falls into the same trap.
 Either it scrapes pages blindly, or it relies on custom wrappers for individual sites. That works until the site changes, the wrapper breaks, or the workflow becomes too real for a toy abstraction.
 
-Tandem takes a different path.
+Zerant takes a different path.
 It gives AI access to a real browser, the same one a human actually uses. Real tabs, real sessions, real cookies, real workflows. The human and the AI work in the same context, with strong security boundaries between the web and the agent layer.
 
 This matters because browser-based AI is going to become infrastructure.
-As models improve, the value of Tandem compounds with them. The intelligence comes from the model. Tandem provides the browser layer it can safely act through.
+As models improve, the value of Zerant compounds with them. The intelligence comes from the model. Zerant provides the browser layer it can safely act through.
 
 ## Why Sponsor Now
 
-Tandem is already real.
+Zerant is already real.
 It is open source, actively developed, used daily, and already showing visible traction.
 
 Sponsoring now helps keep the project moving while the category is still being defined.
 That means faster product development, stronger security maintenance, better cross-platform support, better docs, and a healthier contributor and community loop.
 
 This is exactly the stage where independent infrastructure either compounds or stalls.
-Supporting Tandem now helps keep the browser layer for human-AI collaboration open, local-first, and shaped by real users instead of closed vendors.
+Supporting Zerant now helps keep the browser layer for human-AI collaboration open, local-first, and shaped by real users instead of closed vendors.
 
 ## What Your Sponsorship Funds
 
-There is no VC, no ads, and no large team behind Tandem.
+There is no VC, no ads, and no large team behind Zerant.
 Sponsorship goes directly into the work that keeps the project viable:
 
 - **Product development** — new browser features, MCP tools, HTTP API improvements, UX polish
@@ -47,7 +47,7 @@ If your company is exploring:
 - human-in-the-loop agent systems
 - real authenticated browser automation without wrapper hell
 
-then Tandem is a project worth watching, testing, and supporting.
+then Zerant is a project worth watching, testing, and supporting.
 
 Sponsorship helps keep independent infrastructure alive instead of forcing this category to be defined only by closed vendors and fragile automation stacks.
 
@@ -68,7 +68,7 @@ Sponsorship helps keep independent infrastructure alive instead of forcing this 
 |---|----------|------------|----------|
 | **Monthly** | $5 | $14 | $29 |
 | Sponsor badge on your GitHub profile | ✓ | ✓ | ✓ |
-| Name on the Tandem sponsors page | ✓ | ✓ | ✓ |
+| Name on the Zerant sponsors page | ✓ | ✓ | ✓ |
 | Early access to release notes | | ✓ | ✓ |
 | Vote on feature priorities | | | ✓ |
 | Listed as Champion on README | | | ✓ |
@@ -79,7 +79,7 @@ Sponsorship helps keep independent infrastructure alive instead of forcing this 
 |---|---------|----------|------------|
 | **Monthly** | $49 | $149 | $499 |
 | Company name on sponsors page | ✓ | ✓ | ✓ |
-| Logo on the Tandem website | | ✓ | ✓ |
+| Logo on the Zerant website | | ✓ | ✓ |
 | Logo on the GitHub README | | ✓ | ✓ |
 | Priority issue responses | | ✓ | ✓ |
 | Direct access to the maintainer | | | ✓ |
@@ -90,22 +90,22 @@ Sponsorship helps keep independent infrastructure alive instead of forcing this 
 
 Not ready for a monthly commitment?
 One-time sponsorships of any amount are welcome and appreciated.
-Every contribution helps keep Tandem moving.
+Every contribution helps keep Zerant moving.
 
 ## How Sponsoring Works
 
-Tandem uses [GitHub Sponsors](https://github.com/sponsors/hydro13).
+Zerant uses [GitHub Sponsors](https://github.com/sponsors/hydro13).
 GitHub handles the payments, and 100% goes to the maintainer.
 
 - Want to support the project as an individual? Pick any monthly tier or make a one-time contribution.
 - Want to support it as a company? The business tiers are the cleanest fit.
 - Want to understand the product first? Start with [tandembrowser.org](https://tandembrowser.org) and the [README](README.md).
 
-**[→ Sponsor Tandem Browser on GitHub](https://github.com/sponsors/hydro13)**
+**[→ Sponsor Zerant Browser on GitHub](https://github.com/sponsors/hydro13)**
 
 ## What Sponsors Help Make Possible
 
-Recent Tandem milestones include:
+Recent Zerant milestones include:
 
 - MCP server with deep browser control surface
 - 8-layer security architecture for agent browsing
@@ -126,4 +126,4 @@ Reach out directly:
 
 ---
 
-*Tandem Browser is MIT licensed and will remain open source. Sponsorship keeps the project moving: product development, security maintenance, platform support, docs, and community support.*
+*Zerant Browser is MIT licensed and will remain open source. Sponsorship keeps the project moving: product development, security maintenance, platform support, docs, and community support.*

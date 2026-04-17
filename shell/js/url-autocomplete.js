@@ -105,7 +105,7 @@
     abortController = new AbortController();
 
     try {
-      const token = window.__TANDEM_TOKEN__ || '';
+      const token = window.__ZERANT_TOKEN__ || '';
       const res = await fetch(
         `${API_BASE}/history/search?q=${encodeURIComponent(query)}`,
         {

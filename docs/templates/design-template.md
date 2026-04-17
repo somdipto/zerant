@@ -13,7 +13,7 @@
 Reference the gap analysis if relevant.]
 
 **Opera has:** [description of Opera's implementation]
-**Tandem currently has:** [what we currently have or are missing]
+**Zerant currently has:** [what we currently have or are missing]
 **Gap:** [the difference]
 
 ---
@@ -22,7 +22,7 @@ Reference the gap analysis if relevant.]
 
 [Tell the story from Robin's perspective]
 
-> Robin opens Tandem. He clicks on [X]. [Y] appears.
+> Robin opens Zerant. He clicks on [X]. [Y] appears.
 > He can now do [Z] without [pain point].
 
 ---
@@ -46,7 +46,7 @@ Reference the gap analysis if relevant.]
 
 | File | Change | Function |
 |---------|-----------|---------|
-| `src/api/server.ts` | Extend `TandemAPIOptions` | `class TandemAPI` |
+| `src/api/server.ts` | Extend `ZerantAPIOptions` | `class ZerantAPI` |
 | `src/main.ts` | Instantiate + register manager | `startAPI()` |
 | `shell/index.html` | Add UI | `// === [SECTION] ===` |
 

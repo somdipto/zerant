@@ -21,8 +21,8 @@ describe('MCP history tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  describe('tandem_history_list', () => {
-    const handler = getHandler(tools, 'tandem_history_list');
+  describe('zerant_history_list', () => {
+    const handler = getHandler(tools, 'zerant_history_list');
 
     it('returns formatted history entries', async () => {
       mockApiCall.mockResolvedValueOnce({
@@ -44,8 +44,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_history_clear', () => {
-    const handler = getHandler(tools, 'tandem_history_clear');
+  describe('zerant_history_clear', () => {
+    const handler = getHandler(tools, 'zerant_history_clear');
 
     it('clears history', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -56,8 +56,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_search_history', () => {
-    const handler = getHandler(tools, 'tandem_search_history');
+  describe('zerant_search_history', () => {
+    const handler = getHandler(tools, 'zerant_search_history');
 
     it('returns search results', async () => {
       mockApiCall.mockResolvedValueOnce({
@@ -68,8 +68,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_activity_log', () => {
-    const handler = getHandler(tools, 'tandem_activity_log');
+  describe('zerant_activity_log', () => {
+    const handler = getHandler(tools, 'zerant_activity_log');
 
     it('returns activity entries', async () => {
       mockApiCall.mockResolvedValueOnce({
@@ -80,8 +80,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_site_memory_list', () => {
-    const handler = getHandler(tools, 'tandem_site_memory_list');
+  describe('zerant_site_memory_list', () => {
+    const handler = getHandler(tools, 'zerant_site_memory_list');
 
     it('lists remembered sites', async () => {
       mockApiCall.mockResolvedValueOnce({ sites: [{ domain: 'github.com' }] });
@@ -90,8 +90,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_site_memory_get', () => {
-    const handler = getHandler(tools, 'tandem_site_memory_get');
+  describe('zerant_site_memory_get', () => {
+    const handler = getHandler(tools, 'zerant_site_memory_get');
 
     it('gets memory for domain', async () => {
       mockApiCall.mockResolvedValueOnce({ notes: [] });
@@ -100,8 +100,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_site_memory_search', () => {
-    const handler = getHandler(tools, 'tandem_site_memory_search');
+  describe('zerant_site_memory_search', () => {
+    const handler = getHandler(tools, 'zerant_site_memory_search');
 
     it('searches site memory', async () => {
       mockApiCall.mockResolvedValueOnce({ results: [] });
@@ -110,8 +110,8 @@ describe('MCP history tools', () => {
     });
   });
 
-  describe('tandem_site_memory_diff', () => {
-    const handler = getHandler(tools, 'tandem_site_memory_diff');
+  describe('zerant_site_memory_diff', () => {
+    const handler = getHandler(tools, 'zerant_site_memory_diff');
 
     it('gets memory diff', async () => {
       mockApiCall.mockResolvedValueOnce({ changes: [] });

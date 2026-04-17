@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import type { ConfigManager } from '../config/manager';
 import { wingmanAlert } from '../notifications/alert';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { IpcChannels } from '../shared/ipc-channels';
 
@@ -23,7 +23,7 @@ export interface ChatMessage {
   from: 'user' | 'wingman' | 'claude';
   text: string;
   timestamp: number;
-  image?: string;  // relative filename in ~/.tandem/chat-images/
+  image?: string;  // relative filename in ~/.zerant/chat-images/
 }
 
 export interface AddChatMessageOptions {
@@ -37,7 +37,7 @@ export interface AddChatMessageOptions {
  * PanelManager — Manages the Wingman side panel.
  *
  * Tracks activity events from Electron webview events (NOT injected into webview).
- * Stores chat messages persistently in ~/.tandem/chat-history.json.
+ * Stores chat messages persistently in ~/.zerant/chat-history.json.
  * Supports typing indicator for the AI wingman.
  */
 export class PanelManager {
@@ -61,9 +61,9 @@ export class PanelManager {
   constructor(win: BrowserWindow, configManager?: ConfigManager) {
     this.win = win;
     this.configManager = configManager;
-    ensureDir(tandemDir());
-    this.chatHistoryPath = tandemDir('chat-history.json');
-    this.chatImagesDir = ensureDir(tandemDir('chat-images'));
+    ensureDir(zerantDir());
+    this.chatHistoryPath = zerantDir('chat-history.json');
+    this.chatImagesDir = ensureDir(zerantDir('chat-images'));
     this.loadChatHistory();
   }
 
@@ -254,7 +254,7 @@ export class PanelManager {
           ...(config.webhook.secret ? { 'Authorization': `Bearer ${config.webhook.secret}` } : {}),
         },
         body: JSON.stringify({
-          text: `[Tandem Chat] User: ${msg.text}${msg.image ? ' [image attached]' : ''}`,
+          text: `[Zerant Chat] User: ${msg.text}${msg.image ? ' [image attached]' : ''}`,
           mode: 'now',
         }),
         signal: AbortSignal.timeout(5000),

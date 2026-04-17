@@ -266,7 +266,7 @@
   - DNR overlap detection (declarativeNetRequest vs NetworkShield)
   - Native messaging dependency detection
   - Broad content script injection detection (audit logging, no ScriptGuard whitelist needed — extensions bypass CDP)
-  - Keyboard shortcut conflict detection (extension commands vs Tandem shortcuts)
+  - Keyboard shortcut conflict detection (extension commands vs Zerant shortcuts)
 - [x] **10a.2** Integrate with Extension Manager
   - Run conflict detection on install
   - Include conflicts in list response

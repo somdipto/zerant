@@ -9,9 +9,9 @@
 
 ## 1. Goal
 
-Allow a paired remote agent (connected over Tailscale) to use Tandem's full MCP tool surface — the same 250+ tools available to local agents via stdio — over the network.
+Allow a paired remote agent (connected over Tailscale) to use Zerant's full MCP tool surface — the same 250+ tools available to local agents via stdio — over the network.
 
-The result: a remote Claude Code instance (or any MCP-capable agent) can add Tandem as an MCP server and get the same experience as a local agent, with no degradation in tool coverage.
+The result: a remote Claude Code instance (or any MCP-capable agent) can add Zerant as an MCP server and get the same experience as a local agent, with no degradation in tool coverage.
 
 ---
 
@@ -24,7 +24,7 @@ The result: a remote Claude Code instance (or any MCP-capable agent) can add Tan
 - **No new auth mechanism.** Reuse binding tokens from Phase 1.
 - **No MCP-over-WebSocket.** The MCP SDK's Streamable HTTP transport already supports long-lived SSE streams for server-initiated messages. WebSocket adds complexity without benefit.
 - **No changes to the existing stdio MCP path.** Local agents continue using stdio exactly as before.
-- **No generic "remote browser infrastructure."** This serves Tandem's shared human-AI workspace model.
+- **No generic "remote browser infrastructure."** This serves Zerant's shared human-AI workspace model.
 
 ---
 
@@ -32,7 +32,7 @@ The result: a remote Claude Code instance (or any MCP-capable agent) can add Tan
 
 ### Design A: Streamable HTTP MCP on the existing Express server
 
-**Approach:** Mount a `/mcp` route on Tandem's existing Express server. Use the MCP SDK's `StreamableHTTPServerTransport` to handle MCP-over-HTTP. Register the same `McpServer` instance with the same 250+ tools. Auth flows through the existing Bearer token middleware — both local api-tokens and `tdm_ast_*` binding tokens work unchanged.
+**Approach:** Mount a `/mcp` route on Zerant's existing Express server. Use the MCP SDK's `StreamableHTTPServerTransport` to handle MCP-over-HTTP. Register the same `McpServer` instance with the same 250+ tools. Auth flows through the existing Bearer token middleware — both local api-tokens and `tdm_ast_*` binding tokens work unchanged.
 
 **How auth works:** Existing Express auth middleware runs before the MCP route. Bearer token (local or binding) validated exactly as for any other API route. The `StreamableHTTPServerTransport.handleRequest(req, res)` receives an already-authorized request.
 
@@ -84,7 +84,7 @@ The result: a remote Claude Code instance (or any MCP-capable agent) can add Tan
 
 **Approach:** Don't change the MCP server. Remote agents use `tailscale ssh <tandem-host> node /path/to/dist/mcp/server.js` as their MCP stdio command. Tailscale SSH tunnels the stdio streams.
 
-**How auth works:** Tailscale SSH ACLs control who can SSH. Once connected, the MCP process reads the local `~/.tandem/api-token` from the Tandem host's filesystem. No binding tokens involved.
+**How auth works:** Tailscale SSH ACLs control who can SSH. Once connected, the MCP process reads the local `~/.tandem/api-token` from the Zerant host's filesystem. No binding tokens involved.
 
 **How transport works:** Tailscale SSH creates an encrypted tunnel. Stdio streams flow through it. From the MCP server's perspective, it's running locally.
 
@@ -92,20 +92,20 @@ The result: a remote Claude Code instance (or any MCP-capable agent) can add Tan
 - Requires Tailscale SSH to be enabled (additional Tailscale configuration burden)
 - Bypasses the binding token model entirely — SSH access = full access
 - No pause/revoke granularity — can only revoke at Tailscale ACL level
-- Shell access to the Tandem host is a broader privilege than API access
-- The MCP process runs as the Tandem host's user, with access to the full filesystem
+- Shell access to the Zerant host is a broader privilege than API access
+- The MCP process runs as the Zerant host's user, with access to the full filesystem
 
-**Complexity:** Low on Tandem's side (zero code changes). High on the user's side (Tailscale SSH setup, ACLs, path management, Node.js must be available on the host).
+**Complexity:** Low on Zerant's side (zero code changes). High on the user's side (Tailscale SSH setup, ACLs, path management, Node.js must be available on the host).
 
-**Risk:** Medium. Bypasses Tandem's own auth model. Requires SSH-level trust which is a much broader grant than API access. Not aligned with Phase 1's pairing model.
+**Risk:** Medium. Bypasses Zerant's own auth model. Requires SSH-level trust which is a much broader grant than API access. Not aligned with Phase 1's pairing model.
 
 **Edge cases:**
 - SSH session drops (MCP server dies, no session recovery)
 - Node.js version mismatch on remote host
 - Path to dist/mcp/server.js varies by installation
-- No visibility in Tandem UI (no binding, no "Connected Agents" display)
+- No visibility in Zerant UI (no binding, no "Connected Agents" display)
 - Cannot distinguish multiple remote agents
-- User must manage Tailscale SSH ACLs separately from Tandem pairing
+- User must manage Tailscale SSH ACLs separately from Zerant pairing
 
 ---
 
@@ -134,7 +134,7 @@ Design A is the clear winner because:
 4. **The user story stays simple.** Pair your agent (same flow as Phase 1), configure it as an MCP server pointing at `http://100.x.y.z:8765/mcp`, done.
 5. **Local and remote are parallel paths, not layered.** Local agents use stdio. Remote agents use Streamable HTTP. Both hit the same McpServer tool registrations. Neither is a wrapper around the other.
 
-Design B is over-engineered — it adds a fragile custom bridge to preserve stdio as the "real" transport, when the SDK already provides a native HTTP transport. Design C bypasses Tandem's auth model entirely and requires SSH-level trust, which contradicts the pairing philosophy.
+Design B is over-engineered — it adds a fragile custom bridge to preserve stdio as the "real" transport, when the SDK already provides a native HTTP transport. Design C bypasses Zerant's auth model entirely and requires SSH-level trust, which contradicts the pairing philosophy.
 
 ---
 
@@ -168,7 +168,7 @@ However, there's an optimization opportunity: since the HTTP MCP server runs **i
 **No new auth mechanism.** The existing Bearer token flow handles everything:
 
 1. Remote agent pairs via Phase 1 flow → receives `tdm_ast_*` binding token
-2. Agent configures Tandem as MCP server: `http://100.x.y.z:8765/mcp`
+2. Agent configures Zerant as MCP server: `http://100.x.y.z:8765/mcp`
 3. MCP client sends `Authorization: Bearer tdm_ast_...` header with every request
 4. Express auth middleware validates token → allows request → MCP transport handles it
 5. Pause/revoke binding → MCP requests rejected (401) → agent loses MCP access
@@ -265,7 +265,7 @@ If your agent supports MCP over Streamable HTTP, connect to:
     POST http://<tandem-address>:8765/mcp
     Authorization: Bearer <your-binding-token>
 
-This gives you access to all 250+ Tandem tools via MCP protocol.
+This gives you access to all 250+ Zerant tools via MCP protocol.
 Pair first using the setup code flow, then use the binding token.
 ```
 
@@ -439,12 +439,12 @@ Update `/agent/version`, `/agent/manifest`, `/agent`, and `/pairing/exchange` re
 Add MCP connection instructions and "Copy MCP config" button to the Connected Agents settings panel.
 
 **Files:** `shell/settings.html`
-**Tests:** Manual verification in running Tandem.
+**Tests:** Manual verification in running Zerant.
 
 ### Step 8: End-to-end testing
 Test with a real remote Claude Code instance over Tailscale:
 - Pair via setup code
-- Configure Tandem as Streamable HTTP MCP server
+- Configure Zerant as Streamable HTTP MCP server
 - Run tool calls
 - Verify resource notifications
 - Test pause/revoke → MCP disconnection

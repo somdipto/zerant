@@ -20,19 +20,19 @@ function renderGooglePhotosAuthPage(opts: { ok: boolean; title: string; message:
     <p id="status-message"></p>
     <p id="status-detail"></p>
     <script>
-      const tandemAuthPayload = ${JSON.stringify({ type: 'tandem-google-photos-auth', ok: opts.ok })};
-      const tandemStatusMessage = ${JSON.stringify(opts.message)};
-      const tandemStatusDetail = ${JSON.stringify(opts.detail ?? '')};
+      const zerantAuthPayload = ${JSON.stringify({ type: 'zerant-google-photos-auth', ok: opts.ok })};
+      const zerantStatusMessage = ${JSON.stringify(opts.message)};
+      const zerantStatusDetail = ${JSON.stringify(opts.detail ?? '')};
       const statusEl = document.getElementById('status-message');
       const detailEl = document.getElementById('status-detail');
       if (statusEl) {
-        statusEl.textContent = tandemStatusMessage;
+        statusEl.textContent = zerantStatusMessage;
       }
       if (detailEl) {
-        detailEl.textContent = tandemStatusDetail;
+        detailEl.textContent = zerantStatusDetail;
       }
       if (window.opener) {
-        window.opener.postMessage(tandemAuthPayload, '*');
+        window.opener.postMessage(zerantAuthPayload, '*');
       }
       if (${opts.ok ? 'true' : 'false'}) {
         window.close();
@@ -43,7 +43,7 @@ function renderGooglePhotosAuthPage(opts: { ok: boolean; title: string; message:
 }
 
 function getScreenshotCurrentUrl(ctx: RouteContext): string {
-  return ctx.tabManager.getActiveTab()?.url || 'tandem://window';
+  return ctx.tabManager.getActiveTab()?.url || 'zerant://window';
 }
 
 function parseScreenshotRegion(body: unknown): ScreenshotRegion | null {
@@ -408,14 +408,14 @@ export function registerMediaRoutes(router: Router, ctx: RouteContext): void {
       res.type('html').send(renderGooglePhotosAuthPage({
         ok: true,
         title: 'Google Photos connected',
-        message: 'You can close this window and return to Tandem.',
+        message: 'You can close this window and return to Zerant.',
       }));
     } catch (e) {
       const message = getErrorMessage(e, 'Google Photos authorization failed');
       res.status(400).type('html').send(renderGooglePhotosAuthPage({
         ok: false,
         title: 'Google Photos connection failed',
-        message: 'Google Photos authorization failed. Review Tandem logs for details.',
+        message: 'Google Photos authorization failed. Review Zerant logs for details.',
         detail: message,
       }));
     }

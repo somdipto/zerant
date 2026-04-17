@@ -9,23 +9,23 @@ describe('MCP api client helpers', () => {
   });
 
   it('defaults to wingman when no MCP source env is configured', () => {
-    delete process.env.TANDEM_SOURCE;
-    delete process.env.TANDEM_MCP_SOURCE;
-    delete process.env.TANDEM_ACTOR_SOURCE;
+    delete process.env.ZERANT_SOURCE;
+    delete process.env.ZERANT_MCP_SOURCE;
+    delete process.env.ZERANT_ACTOR_SOURCE;
 
     expect(getMcpSource()).toBe('wingman');
   });
 
-  it('prefers TANDEM_SOURCE when configured', () => {
-    process.env.TANDEM_SOURCE = 'claude';
-    process.env.TANDEM_MCP_SOURCE = 'openclaw';
+  it('prefers ZERANT_SOURCE when configured', () => {
+    process.env.ZERANT_SOURCE = 'claude';
+    process.env.ZERANT_MCP_SOURCE = 'openclaw';
 
     expect(getMcpSource()).toBe('claude');
   });
 
-  it('falls back to TANDEM_MCP_SOURCE and normalizes whitespace', () => {
-    delete process.env.TANDEM_SOURCE;
-    process.env.TANDEM_MCP_SOURCE = '  codex  ';
+  it('falls back to ZERANT_MCP_SOURCE and normalizes whitespace', () => {
+    delete process.env.ZERANT_SOURCE;
+    process.env.ZERANT_MCP_SOURCE = '  codex  ';
 
     expect(getMcpSource()).toBe('codex');
   });

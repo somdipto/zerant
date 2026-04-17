@@ -25,8 +25,8 @@ vi.mock('fs', async () => {
 
 import { GooglePhotosManager } from '../google-photos';
 
-const configPath = path.join(os.homedir(), '.tandem', 'google-photos.json');
-const authPath = path.join(os.homedir(), '.tandem', 'google-photos-auth.json');
+const configPath = path.join(os.homedir(), '.zerant', 'google-photos.json');
+const authPath = path.join(os.homedir(), '.zerant', 'google-photos-auth.json');
 
 describe('GooglePhotosManager', () => {
   const configManager = {

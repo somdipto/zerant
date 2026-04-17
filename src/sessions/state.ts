@@ -1,13 +1,13 @@
 import { session } from 'electron';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { assertSinglePathSegment, resolvePathWithinRoot } from '../utils/security';
 
 /**
  * StateManager — saves and restores Electron session cookies to/from disk.
  *
- * Persistence: ~/.tandem/sessions/{name}.json (or .enc if encrypted)
+ * Persistence: ~/.zerant/sessions/{name}.json (or .enc if encrypted)
  */
 export class StateManager {
 
@@ -18,7 +18,7 @@ export class StateManager {
   // === 2. Constructor ===
 
   constructor() {
-    this.stateDir = tandemDir('sessions');
+    this.stateDir = zerantDir('sessions');
     if (!fs.existsSync(this.stateDir)) {
       fs.mkdirSync(this.stateDir, { recursive: true });
     }
@@ -38,7 +38,7 @@ export class StateManager {
     let content = JSON.stringify(data, null, 2);
     let filePath: string;
 
-    const encKey = process.env.TANDEM_SESSION_KEY;
+    const encKey = process.env.ZERANT_SESSION_KEY;
     if (encKey) {
       content = this.encrypt(content, encKey);
       data.encrypted = true;
@@ -66,9 +66,9 @@ export class StateManager {
 
     let content = fs.readFileSync(filePath, 'utf-8');
     if (encrypted) {
-      const encKey = process.env.TANDEM_SESSION_KEY;
+      const encKey = process.env.ZERANT_SESSION_KEY;
       if (!encKey) {
-        throw new Error('TANDEM_SESSION_KEY required to load encrypted state');
+        throw new Error('ZERANT_SESSION_KEY required to load encrypted state');
       }
       content = this.decrypt(content, encKey);
     }

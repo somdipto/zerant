@@ -71,11 +71,11 @@ describe('Extension Routes', () => {
     it('returns loaded and available extensions with counts', async () => {
       vi.mocked(ctx.extensionManager.list).mockReturnValue({
         loaded: [
-          { id: 'ext1', name: 'Ext One', path: '/home/.tandem/extensions/abcdefghijklmnopabcdefghijklmnop' },
+          { id: 'ext1', name: 'Ext One', path: '/home/.zerant/extensions/abcdefghijklmnopabcdefghijklmnop' },
         ],
         available: [
-          { path: '/home/.tandem/extensions/abcdefghijklmnopabcdefghijklmnop' },
-          { path: '/home/.tandem/extensions/pppppppppppppppppppppppppppppppp' },
+          { path: '/home/.zerant/extensions/abcdefghijklmnopabcdefghijklmnop' },
+          { path: '/home/.zerant/extensions/pppppppppppppppppppppppppppppppp' },
         ],
       } as any);
       vi.mocked(ctx.extensionManager.getConflictsForExtension).mockReturnValue([
@@ -118,14 +118,14 @@ describe('Extension Routes', () => {
     it('loads an extension by path', async () => {
       const res = await request(app)
         .post('/extensions/load')
-        .send({ path: '/home/.tandem/extensions/my-ext' });
+        .send({ path: '/home/.zerant/extensions/my-ext' });
 
       expect(res.status).toBe(200);
       expect(res.body.ok).toBe(true);
       expect(res.body.extension).toBeDefined();
       expect(ctx.extensionLoader.loadExtension).toHaveBeenCalledWith(
         ctx.win.webContents.session,
-        '/home/.tandem/extensions/my-ext',
+        '/home/.zerant/extensions/my-ext',
       );
     });
 
@@ -284,7 +284,7 @@ describe('Extension Routes', () => {
 
     it('uninstalls by Electron ID (loaded extension)', async () => {
       vi.mocked(ctx.extensionManager.list).mockReturnValue({
-        loaded: [{ id: validId, path: '/home/.tandem/extensions/diskfoldername' }],
+        loaded: [{ id: validId, path: '/home/.zerant/extensions/diskfoldername' }],
         available: [],
       } as any);
 
@@ -302,7 +302,7 @@ describe('Extension Routes', () => {
     it('uninstalls by disk/CWS ID (available extension)', async () => {
       vi.mocked(ctx.extensionManager.list).mockReturnValue({
         loaded: [],
-        available: [{ path: `/home/.tandem/extensions/${validId}` }],
+        available: [{ path: `/home/.zerant/extensions/${validId}` }],
       } as any);
 
       vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -473,7 +473,7 @@ describe('Extension Routes', () => {
     it('returns gallery response', async () => {
       vi.mocked(ctx.extensionManager.list).mockReturnValue({
         loaded: [],
-        available: [{ path: '/home/.tandem/extensions/ext1' }],
+        available: [{ path: '/home/.zerant/extensions/ext1' }],
       } as any);
 
       const res = await request(app).get('/extensions/gallery');

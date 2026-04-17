@@ -2,14 +2,14 @@
 
 > **Date:** 2026-02-28
 > **Status:** In progress
-> **Goal:** Twee websites next to elkaar bekijken in één Tandem window with draggable divider
+> **Goal:** Twee websites next to elkaar bekijken in één Zerant window with draggable divider
 > **Order:** Phase 1 → 2 (elke phase is één session)
 
 ---
 
 ## Why this feature?
 
-Power users willen twee page's next to elkaar zien — docs + app, vergelijken, video + notes. Opera has this if Split Screen with drag-down gesture. Tandem has currently only single-webview, dus elke multi-pane workflow requires nu twee vensters. Dit is the #4 prioriteit in the gap analyse (docs/research/gap-analysis.md).
+Power users willen twee page's next to elkaar zien — docs + app, vergelijken, video + notes. Opera has this if Split Screen with drag-down gesture. Zerant has currently only single-webview, dus elke multi-pane workflow requires nu twee vensters. Dit is the #4 prioriteit in the gap analyse (docs/research/gap-analysis.md).
 
 ---
 
@@ -40,7 +40,7 @@ POST /split/open {tabId1, tabId2, layout:'vertical'}
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registratie | `startAPI()`, `createWindow()` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 | `src/registry.ts` | ManagerRegistry interface | `interface ManagerRegistry` |
 
 ### Additional reading per phase

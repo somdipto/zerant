@@ -28,12 +28,12 @@ describe('registerAllTools', () => {
     expect(tools.size).toBeGreaterThan(200);
 
     // Spot-check a few tools from different families
-    expect(tools.has('tandem_navigate')).toBe(true);
-    expect(tools.has('tandem_list_tabs')).toBe(true);
-    expect(tools.has('tandem_screenshot')).toBe(true);
-    expect(tools.has('tandem_read_page')).toBe(true);
-    expect(tools.has('tandem_bookmarks_list')).toBe(true);
-    expect(tools.has('tandem_clipboard_read')).toBe(true);
+    expect(tools.has('zerant_navigate')).toBe(true);
+    expect(tools.has('zerant_list_tabs')).toBe(true);
+    expect(tools.has('zerant_screenshot')).toBe(true);
+    expect(tools.has('zerant_read_page')).toBe(true);
+    expect(tools.has('zerant_bookmarks_list')).toBe(true);
+    expect(tools.has('zerant_clipboard_read')).toBe(true);
   });
 });
 
@@ -70,7 +70,7 @@ describe('registerAllResources', () => {
 
     const result = await resources.get('page-current')!.handler() as any;
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/page-content');
-    expect(result.contents[0].uri).toBe('tandem://page/current');
+    expect(result.contents[0].uri).toBe('zerant://page/current');
     expect(result.contents[0].text).toContain('Test Page');
     expect(result.contents[0].text).toContain('https://example.com');
   });
@@ -85,7 +85,7 @@ describe('registerAllResources', () => {
 
     const result = await resources.get('tabs-list')!.handler() as any;
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/active-tab/context');
-    expect(result.contents[0].uri).toBe('tandem://tabs/list');
+    expect(result.contents[0].uri).toBe('zerant://tabs/list');
     expect(result.contents[0].text).toContain('Tab 1');
     expect(result.contents[0].text).toContain('Tab 2');
     expect(result.contents[0].text).toContain('workspace: WS1');
@@ -100,7 +100,7 @@ describe('registerAllResources', () => {
 
     const result = await resources.get('chat-history')!.handler() as any;
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/chat?limit=50');
-    expect(result.contents[0].uri).toBe('tandem://chat/history');
+    expect(result.contents[0].uri).toBe('zerant://chat/history');
     expect(result.contents[0].text).toContain('user: hello');
   });
 
@@ -113,7 +113,7 @@ describe('registerAllResources', () => {
 
     const result = await resources.get('handoffs-open')!.handler() as any;
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/handoffs?openOnly=true');
-    expect(result.contents[0].uri).toBe('tandem://handoffs/open');
+    expect(result.contents[0].uri).toBe('zerant://handoffs/open');
     expect(result.contents[0].text).toContain('Need help');
     expect(result.contents[0].text).toContain('reason=stuck');
   });
@@ -128,7 +128,7 @@ describe('registerAllResources', () => {
       .mockResolvedValueOnce({ events: [] });                 // /events/recent
 
     const result = await resources.get('context')!.handler() as any;
-    expect(result.contents[0].uri).toBe('tandem://context');
+    expect(result.contents[0].uri).toBe('zerant://context');
     expect(result.contents[0].text).toContain('Active workspace: Dev');
     expect(result.contents[0].text).toContain('Active tab: Docs');
     expect(result.contents[0].text).toContain('User is browsing');

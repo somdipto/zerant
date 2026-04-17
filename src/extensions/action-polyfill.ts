@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { API_PORT } from '../utils/constants';
 import { createLogger } from '../utils/logger';
 
@@ -11,7 +11,7 @@ function buildExtensionHeadersLiteral(cwsId: string, includeJsonContentType: boo
   if (includeJsonContentType) {
     headers['Content-Type'] = 'application/json';
   }
-  headers['X-Tandem-Extension-Id'] = cwsId;
+  headers['X-Zerant-Extension-Id'] = cwsId;
   return JSON.stringify(headers);
 }
 
@@ -25,8 +25,8 @@ function stripInjectedPolyfillArtifacts(source: string): {
   let strippedArtifacts = 0;
 
   const blockPatterns = [
-    /\/\* Tandem chrome\.action polyfill v[\s\S]*?\/\* Tandem:polyfill:end \*\/\s*/g,
-    /\/\* Tandem chrome\.action polyfill v[\s\S]*?var chrome; var browser(?:; var TANDEM_PORT = \d+(?:; var __tandemExtensionHeaders)?)?; \/\/ jshint ignore:line\s*/g
+    /\/\* Zerant chrome\.action polyfill v[\s\S]*?\/\* Zerant:polyfill:end \*\/\s*/g,
+    /\/\* Zerant chrome\.action polyfill v[\s\S]*?var chrome; var browser(?:; var ZERANT_PORT = \d+(?:; var __zerantExtensionHeaders)?)?; \/\/ jshint ignore:line\s*/g
   ];
 
   for (const pattern of blockPatterns) {
@@ -38,9 +38,9 @@ function stripInjectedPolyfillArtifacts(source: string): {
   }
 
   const orphanPatterns = [
-    /^\s*var chrome; var browser(?:; var TANDEM_PORT = \d+(?:; var __tandemExtensionHeaders)?)?; \/\/ jshint ignore:line\s*$/gm,
-    /^\s*var TANDEM_PORT; TANDEM_PORT = \d+; \/\/ used by P\$\(\) patch below\s*$/gm,
-    /^\s*\/\* Tandem:polyfill:end \*\/\s*$/gm
+    /^\s*var chrome; var browser(?:; var ZERANT_PORT = \d+(?:; var __zerantExtensionHeaders)?)?; \/\/ jshint ignore:line\s*$/gm,
+    /^\s*var ZERANT_PORT; ZERANT_PORT = \d+; \/\/ used by P\$\(\) patch below\s*$/gm,
+    /^\s*\/\* Zerant:polyfill:end \*\/\s*$/gm
   ];
 
   for (const pattern of orphanPatterns) {
@@ -88,7 +88,7 @@ function replacePatchVariants(existing: string, replacement: string, variants: s
  * - Only activates if chrome.action is missing or incomplete at runtime
  * - Proxies to chrome.browserAction where Electron provides it
  * - Creates safe stubs for all remaining methods
- * - Posts setBadgeText / setIcon updates to the Tandem API so badge state
+ * - Posts setBadgeText / setIcon updates to the Zerant API so badge state
  *   can be picked up by the toolbar (best-effort, silent on failure)
  */
 function generatePolyfillScript(cwsId: string, apiPort: number): string {
@@ -109,21 +109,21 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
   //   3. Rest of the module runs with chrome/browser = our proxy
   //   4. proxy.get('action') → returns our polyfill object
   return `
-/* Tandem chrome.action polyfill v11 — module-scope var shadow */
+/* Zerant chrome.action polyfill v11 — module-scope var shadow */
 ;(function() {
   var __tc = (typeof globalThis !== 'undefined' && globalThis.chrome) || (typeof self !== 'undefined' && self.chrome) || {};
   var CWS_ID = '${cwsId}';
   var API_PORT = ${apiPort};
-  var __tandemNotificationStore = {};
-  var __tandemSessionStorage = {};
+  var __zerantNotificationStore = {};
+  var __zerantSessionStorage = {};
 
-  function __tandemExtensionId() {
+  function __zerantExtensionId() {
     return (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) ? chrome.runtime.id : CWS_ID;
   }
 
-  function __tandemExtensionHeaders(extraHeaders) {
+  function __zerantExtensionHeaders(extraHeaders) {
     var headers = extraHeaders ? Object.assign({}, extraHeaders) : {};
-    headers['X-Tandem-Extension-Id'] = __tandemExtensionId();
+    headers['X-Zerant-Extension-Id'] = __zerantExtensionId();
     return headers;
   }
 
@@ -147,9 +147,9 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
   }
 
   function notifyToolbar(_endpoint, _body) {
-    // No-op: fetch to Tandem API is blocked by extension CSP (connect-src does not
+    // No-op: fetch to Zerant API is blocked by extension CSP (connect-src does not
     // include http://127.0.0.1:8765). Generating a CSP violation error in console.
-    // Icon/badge state from 1Password is not critical for Tandem functionality.
+    // Icon/badge state from 1Password is not critical for Zerant functionality.
   }
 
   var ba = (__tc.browserAction) || null;
@@ -242,30 +242,30 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
         onClosed:        makeEvent(),
         create:  function(id, opts, cb) {
           if (typeof id === 'object') { cb = opts; opts = id; id = ''; }
-          var finalId = id || ('tandem-notification-' + Date.now() + '-' + Math.floor(Math.random() * 100000));
-          __tandemNotificationStore[finalId] = opts || {};
+          var finalId = id || ('zerant-notification-' + Date.now() + '-' + Math.floor(Math.random() * 100000));
+          __zerantNotificationStore[finalId] = opts || {};
           if (typeof cb === 'function') cb(finalId);
           return Promise.resolve(finalId);
         },
         getAll:  function(cb) {
           var entries = {};
-          for (var key in __tandemNotificationStore) {
-            if (Object.prototype.hasOwnProperty.call(__tandemNotificationStore, key)) {
-              entries[key] = __tandemNotificationStore[key];
+          for (var key in __zerantNotificationStore) {
+            if (Object.prototype.hasOwnProperty.call(__zerantNotificationStore, key)) {
+              entries[key] = __zerantNotificationStore[key];
             }
           }
           if (typeof cb === 'function') cb(entries);
           return Promise.resolve(entries);
         },
         clear:   function(id, cb) {
-          var existed = Object.prototype.hasOwnProperty.call(__tandemNotificationStore, id);
-          delete __tandemNotificationStore[id];
+          var existed = Object.prototype.hasOwnProperty.call(__zerantNotificationStore, id);
+          delete __zerantNotificationStore[id];
           if (typeof cb === 'function') cb(existed);
           return Promise.resolve(existed);
         },
         update:  function(id, opts, cb) {
-          var existed = Object.prototype.hasOwnProperty.call(__tandemNotificationStore, id);
-          __tandemNotificationStore[id] = Object.assign({}, __tandemNotificationStore[id] || {}, opts || {});
+          var existed = Object.prototype.hasOwnProperty.call(__zerantNotificationStore, id);
+          __zerantNotificationStore[id] = Object.assign({}, __zerantNotificationStore[id] || {}, opts || {});
           if (typeof cb === 'function') cb(true);
           return Promise.resolve(existed || true);
         }
@@ -276,21 +276,21 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
    * extension service worker context, but 1Password uses it while calculating
    * effective policies and other ephemeral runtime state.
    */
-  function __tandemStorageNormalizeKeys(keys) {
+  function __zerantStorageNormalizeKeys(keys) {
     if (keys === null || keys === undefined) return null;
     if (Array.isArray(keys)) return keys;
     if (typeof keys === 'string') return [keys];
     if (typeof keys === 'object') return Object.keys(keys);
     return [];
   }
-  function __tandemStorageBuildResult(keys) {
-    if (keys === null) return Object.assign({}, __tandemSessionStorage);
+  function __zerantStorageBuildResult(keys) {
+    if (keys === null) return Object.assign({}, __zerantSessionStorage);
     var result = {};
     if (Array.isArray(keys)) {
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (Object.prototype.hasOwnProperty.call(__tandemSessionStorage, key)) {
-          result[key] = __tandemSessionStorage[key];
+        if (Object.prototype.hasOwnProperty.call(__zerantSessionStorage, key)) {
+          result[key] = __zerantSessionStorage[key];
         }
       }
       return result;
@@ -298,8 +298,8 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
     if (typeof keys === 'object') {
       for (var fallbackKey in keys) {
         if (!Object.prototype.hasOwnProperty.call(keys, fallbackKey)) continue;
-        result[fallbackKey] = Object.prototype.hasOwnProperty.call(__tandemSessionStorage, fallbackKey)
-          ? __tandemSessionStorage[fallbackKey]
+        result[fallbackKey] = Object.prototype.hasOwnProperty.call(__zerantSessionStorage, fallbackKey)
+          ? __zerantSessionStorage[fallbackKey]
           : keys[fallbackKey];
       }
       return result;
@@ -324,9 +324,9 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
   if (!storageObj.session) {
     storageObj.session = {
       get: function(keys, cb) {
-        var normalized = __tandemStorageNormalizeKeys(keys);
+        var normalized = __zerantStorageNormalizeKeys(keys);
         var lookup = normalized === null ? null : (Array.isArray(keys) || typeof keys === 'object' ? keys : normalized);
-        var result = __tandemStorageBuildResult(lookup);
+        var result = __zerantStorageBuildResult(lookup);
         if (typeof cb === 'function') cb(result);
         return Promise.resolve(result);
       },
@@ -335,8 +335,8 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
         var changes = {};
         for (var key in items) {
           if (!Object.prototype.hasOwnProperty.call(items, key)) continue;
-          changes[key] = { oldValue: __tandemSessionStorage[key], newValue: items[key] };
-          __tandemSessionStorage[key] = items[key];
+          changes[key] = { oldValue: __zerantSessionStorage[key], newValue: items[key] };
+          __zerantSessionStorage[key] = items[key];
         }
         if (typeof storageObj.onChanged._fire === 'function' && Object.keys(changes).length > 0) {
           storageObj.onChanged._fire(changes, 'session');
@@ -345,13 +345,13 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
         return Promise.resolve();
       },
       remove: function(keys, cb) {
-        var normalized = __tandemStorageNormalizeKeys(keys) || [];
+        var normalized = __zerantStorageNormalizeKeys(keys) || [];
         var changes = {};
         for (var i = 0; i < normalized.length; i++) {
           var key = normalized[i];
-          if (!Object.prototype.hasOwnProperty.call(__tandemSessionStorage, key)) continue;
-          changes[key] = { oldValue: __tandemSessionStorage[key], newValue: undefined };
-          delete __tandemSessionStorage[key];
+          if (!Object.prototype.hasOwnProperty.call(__zerantSessionStorage, key)) continue;
+          changes[key] = { oldValue: __zerantSessionStorage[key], newValue: undefined };
+          delete __zerantSessionStorage[key];
         }
         if (typeof storageObj.onChanged._fire === 'function' && Object.keys(changes).length > 0) {
           storageObj.onChanged._fire(changes, 'session');
@@ -361,11 +361,11 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
       },
       clear: function(cb) {
         var changes = {};
-        for (var key in __tandemSessionStorage) {
-          if (!Object.prototype.hasOwnProperty.call(__tandemSessionStorage, key)) continue;
-          changes[key] = { oldValue: __tandemSessionStorage[key], newValue: undefined };
+        for (var key in __zerantSessionStorage) {
+          if (!Object.prototype.hasOwnProperty.call(__zerantSessionStorage, key)) continue;
+          changes[key] = { oldValue: __zerantSessionStorage[key], newValue: undefined };
         }
-        __tandemSessionStorage = {};
+        __zerantSessionStorage = {};
         if (typeof storageObj.onChanged._fire === 'function' && Object.keys(changes).length > 0) {
           storageObj.onChanged._fire(changes, 'session');
         }
@@ -381,7 +381,7 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
    * Electron 40 does not support chrome.runtime.connectNative() or
    * chrome.runtime.sendNativeMessage() for extensions loaded via
    * session.extensions.loadExtension(). We proxy these calls through
-   * Tandem's local HTTP/WebSocket API instead.
+   * Zerant's local HTTP/WebSocket API instead.
    *
    * The extension's manifest.json has been patched (at startup, before
    * session.extensions.loadExtension()) to add http://127.0.0.1:${API_PORT}
@@ -394,7 +394,7 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
   function __nmSendNativeMessage(host, message, callback) {
     fetch(NM_HTTP, {
       method: 'POST',
-      headers: __tandemExtensionHeaders({ 'Content-Type': 'application/json' }),
+      headers: __zerantExtensionHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ host: host, message: message })
     })
     .then(function(r) { return r.json(); })
@@ -458,21 +458,21 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
   /*
    * webNavigation bridge: Electron does not expose chrome.webNavigation to extensions,
    * but 1Password needs getAllFrames()/getFrame() for autofill frame detection.
-   * Bridge those calls through Tandem's local API using WebFrameMain frame data.
+   * Bridge those calls through Zerant's local API using WebFrameMain frame data.
    */
-  function __tandemFetchFrames(tabId) {
+  function __zerantFetchFrames(tabId) {
     return fetch('http://127.0.0.1:' + API_PORT + '/extensions/web-navigation/frames?tabId=' + encodeURIComponent(String(tabId)), {
-      headers: __tandemExtensionHeaders()
+      headers: __zerantExtensionHeaders()
     })
       .then(function(r) { return r.json(); })
       .then(function(d) { return d && Array.isArray(d.frames) ? d.frames : []; })
       .catch(function() { return []; });
   }
-  function __tandemFetchFrame(tabId, frameId) {
+  function __zerantFetchFrame(tabId, frameId) {
     return fetch(
       'http://127.0.0.1:' + API_PORT + '/extensions/web-navigation/frame?tabId=' +
       encodeURIComponent(String(tabId)) + '&frameId=' + encodeURIComponent(String(frameId)),
-      { headers: __tandemExtensionHeaders() }
+      { headers: __zerantExtensionHeaders() }
     )
       .then(function(r) { return r.json(); })
       .then(function(d) { return d && d.frame ? d.frame : null; })
@@ -481,14 +481,14 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
   var webNavStub = __tc.webNavigation || {
     getAllFrames: function(opts, cb) {
       var tabId = opts && opts.tabId;
-      var p = __tandemFetchFrames(tabId);
+      var p = __zerantFetchFrames(tabId);
       if (cb) p.then(cb);
       return p;
     },
     getFrame: function(opts, cb) {
       var tabId = opts && opts.tabId;
       var frameId = opts && opts.frameId;
-      var p = __tandemFetchFrame(tabId, frameId);
+      var p = __zerantFetchFrame(tabId, frameId);
       if (cb) p.then(cb);
       return p;
     },
@@ -512,7 +512,7 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
     if (createData && createData.type === 'popup' && createData.url) {
       var urls = Array.isArray(createData.url) ? createData.url : [createData.url];
       var firstUrl = urls[0];
-      console.log('[Tandem] windows.create popup->tab:', firstUrl);
+      console.log('[Zerant] windows.create popup->tab:', firstUrl);
       return __tc.tabs.create({url: firstUrl, active: true}, function(tab) {
         if (typeof callback === 'function') callback({id: tab ? tab.windowId : -1, tabs: tab ? [tab] : []});
       });
@@ -531,7 +531,7 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
 
   /*
    * tabs.query fallback: when Electron returns no active tab (webviews are not
-   * surfaced to the extension API as Chrome tabs), fall back to the Tandem API.
+   * surfaced to the extension API as Chrome tabs), fall back to the Zerant API.
    * GET http://127.0.0.1:${API_PORT}/extensions/active-tab returns the active
    * webview as a Chrome tab using its webContentsId as the tab id — the same id
    * Electron uses for chrome.tabs.sendMessage routing to content scripts.
@@ -540,7 +540,7 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
     ? __tc.tabs.query.bind(__tc.tabs) : null;
   var _tabsSendMessageOrig = __tc && __tc.tabs && __tc.tabs.sendMessage
     ? __tc.tabs.sendMessage.bind(__tc.tabs) : null;
-  function __tandemCopyMessageOptions(options, stripFrameTarget) {
+  function __zerantCopyMessageOptions(options, stripFrameTarget) {
     if (!options || typeof options !== 'object') return undefined;
     var next = {};
     for (var key in options) {
@@ -551,13 +551,13 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
     }
     return Object.keys(next).length > 0 ? next : undefined;
   }
-  function __tandemShouldRetryUsoMessage(message, options, errorMessage) {
+  function __zerantShouldRetryUsoMessage(message, options, errorMessage) {
     if (!errorMessage) return false;
     if (!message || typeof message !== 'object' || typeof message.name !== 'string') return false;
     if (message.name.indexOf('uso-') !== 0) return false;
     return !!(options && typeof options === 'object' && (options.frameId !== undefined || options.documentId !== undefined));
   }
-  function __tandemSendMessageCall(tabId, message, options, callback) {
+  function __zerantSendMessageCall(tabId, message, options, callback) {
     if (!_tabsSendMessageOrig) {
       if (typeof callback === 'function') callback(undefined);
       return Promise.resolve(undefined);
@@ -576,26 +576,26 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
       callback = options;
       options = undefined;
     }
-    var primaryOptions = __tandemCopyMessageOptions(options, false);
-    var retryOptions = __tandemCopyMessageOptions(options, true);
+    var primaryOptions = __zerantCopyMessageOptions(options, false);
+    var retryOptions = __zerantCopyMessageOptions(options, true);
 
     if (typeof callback === 'function') {
-      return __tandemSendMessageCall(tabId, message, primaryOptions, function(response) {
+      return __zerantSendMessageCall(tabId, message, primaryOptions, function(response) {
         var err = __tc && __tc.runtime && __tc.runtime.lastError ? __tc.runtime.lastError.message : '';
-        if (__tandemShouldRetryUsoMessage(message, options, err)) {
-          return __tandemSendMessageCall(tabId, message, retryOptions, callback);
+        if (__zerantShouldRetryUsoMessage(message, options, err)) {
+          return __zerantSendMessageCall(tabId, message, retryOptions, callback);
         }
         callback(response);
       });
     }
 
     try {
-      var result = __tandemSendMessageCall(tabId, message, primaryOptions);
+      var result = __zerantSendMessageCall(tabId, message, primaryOptions);
       if (result && typeof result.then === 'function') {
         return result.catch(function(err) {
           var errMsg = err && err.message ? err.message : String(err || '');
-          if (__tandemShouldRetryUsoMessage(message, options, errMsg)) {
-            return __tandemSendMessageCall(tabId, message, retryOptions);
+          if (__zerantShouldRetryUsoMessage(message, options, errMsg)) {
+            return __zerantSendMessageCall(tabId, message, retryOptions);
           }
           throw err;
         });
@@ -603,8 +603,8 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
       return result;
     } catch (err) {
       var errMsg = err && err.message ? err.message : String(err || '');
-      if (__tandemShouldRetryUsoMessage(message, options, errMsg)) {
-        return __tandemSendMessageCall(tabId, message, retryOptions);
+      if (__zerantShouldRetryUsoMessage(message, options, errMsg)) {
+        return __zerantSendMessageCall(tabId, message, retryOptions);
       }
       throw err;
     }
@@ -614,10 +614,10 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
     if (!isActiveQuery) {
       return _tabsQueryOrig ? _tabsQueryOrig(queryInfo, callback) : (callback ? callback([]) : Promise.resolve([]));
     }
-    // Try original first; fall back to Tandem API if empty
+    // Try original first; fall back to Zerant API if empty
     var fromApi = function() {
       return fetch('http://127.0.0.1:' + API_PORT + '/extensions/active-tab', {
-        headers: __tandemExtensionHeaders()
+        headers: __zerantExtensionHeaders()
       })
         .then(function(r) { return r.json(); })
         .then(function(d) { return d && d.tab ? [d.tab] : []; })
@@ -680,12 +680,12 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
    */
   chrome = proxy;
   try { browser = proxy; } catch(e) {}
-  console.log('[Tandem] chrome.action polyfill v11 active for ${cwsId}');
+  console.log('[Zerant] chrome.action polyfill v11 active for ${cwsId}');
 })();
 /* Module-scope declarations — hoisted above the IIFE, shadow the globals */
 /* eslint-disable no-var */
-var chrome; var browser; var TANDEM_PORT = ${apiPort}; // jshint ignore:line
-/* Tandem:polyfill:end */
+var chrome; var browser; var ZERANT_PORT = ${apiPort}; // jshint ignore:line
+/* Zerant:polyfill:end */
 `;
 }
 
@@ -701,7 +701,7 @@ var chrome; var browser; var TANDEM_PORT = ${apiPort}; // jshint ignore:line
  *   "Service worker registration failed. Status code: 15"
  *
  * Architecture:
- * 1. injectPolyfills() scans ~/.tandem/extensions/ for all MV3 extensions
+ * 1. injectPolyfills() scans ~/.zerant/extensions/ for all MV3 extensions
  *    that have a background service worker
  * 2. Prepends a polyfill script to each service worker file on disk
  *    (same strategy as IdentityPolyfill — Electron reads the file at load time)
@@ -730,7 +730,7 @@ export class ActionPolyfill {
    * @returns List of extension folder names that were patched
    */
   injectPolyfills(): string[] {
-    const extensionsDir = tandemDir('extensions');
+    const extensionsDir = zerantDir('extensions');
     if (!fs.existsSync(extensionsDir)) return [];
 
     const patched: string[] = [];
@@ -757,7 +757,7 @@ export class ActionPolyfill {
 
         const cwsId = dir.name;
         const polyfillCode = generatePolyfillScript(cwsId, this.apiPort);
-        const marker = '/* Tandem chrome.action polyfill v11';
+        const marker = '/* Zerant chrome.action polyfill v11';
 
         let existing = fs.readFileSync(swPath, 'utf-8');
 
@@ -919,12 +919,12 @@ export class ActionPolyfill {
         // Patch 9: P$() — async function that queries the active Chrome tab.
         // browser.tabs.query({active:true,currentWindow:true}) returns empty in Electron
         // because webviews are not surfaced as extension tabs. Replace P$() with a direct
-        // fetch to the Tandem API that returns the active webview as a Chrome tab object.
-        // TANDEM_PORT is declared at module scope by the polyfill (var TANDEM_PORT = N).
+        // fetch to the Zerant API that returns the active webview as a Chrome tab object.
+        // ZERANT_PORT is declared at module scope by the polyfill (var ZERANT_PORT = N).
         const pDollarOrig = 'async function P$(){let A=new Promise(e=>{browser.tabs.query({active:!0,currentWindow:!0}).then(j=>{if(j===void 0||j.length===0){e(void 0);return}e(j[0])})});return wt()?Ja.withTimeout(A,500,k`tab-manager:activeNativeTab`):A}';
-        const pDollarLegacyPatch = 'async function P$(){try{var _r=await fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/active-tab");var _d=await _r.json();if(_d&&_d.tab)return _d.tab;}catch(_e){console.error("[Tandem] P$ fetch failed:",_e);}return undefined;}';
-        const pDollarHelperPatch = 'async function P$(){try{var _r=await fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/active-tab",{headers:__tandemExtensionHeaders()});var _d=await _r.json();if(_d&&_d.tab)return _d.tab;}catch(_e){console.error("[Tandem] P$ fetch failed:",_e);}return undefined;}';
-        const pDollarPatch = `async function P$(){try{var _r=await fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/active-tab",{headers:${extensionHeadersLiteral}});var _d=await _r.json();if(_d&&_d.tab)return _d.tab;}catch(_e){console.error("[Tandem] P$ fetch failed:",_e);}return undefined;}`;
+        const pDollarLegacyPatch = 'async function P$(){try{var _r=await fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/active-tab");var _d=await _r.json();if(_d&&_d.tab)return _d.tab;}catch(_e){console.error("[Zerant] P$ fetch failed:",_e);}return undefined;}';
+        const pDollarHelperPatch = 'async function P$(){try{var _r=await fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/active-tab",{headers:__zerantExtensionHeaders()});var _d=await _r.json();if(_d&&_d.tab)return _d.tab;}catch(_e){console.error("[Zerant] P$ fetch failed:",_e);}return undefined;}';
+        const pDollarPatch = `async function P$(){try{var _r=await fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/active-tab",{headers:${extensionHeadersLiteral}});var _d=await _r.json();if(_d&&_d.tab)return _d.tab;}catch(_e){console.error("[Zerant] P$ fetch failed:",_e);}return undefined;}`;
         const pDollarResult = replacePatchVariants(existing, pDollarPatch, [
           pDollarOrig,
           pDollarLegacyPatch,
@@ -969,9 +969,9 @@ export class ActionPolyfill {
         // Replaces the anonymous catch{} with catch(_te){} that forwards the error.
         // Dre catch: '...Unable to generate item details')||logger.report(["Unable to generate item details'
         const dreCatchOrig = '}catch{return console.error("[Background]","Unable to generate item details")';
-        const dreCatchLegacyPatch = `}catch(_te){try{fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/log",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source:"Dre-catch",msg:_te?.message||String(_te),stack:(_te?.stack||"").slice(0,500)})});}catch{}return console.error("[Background]","Unable to generate item details")`;
-        const dreCatchHelperPatch = `}catch(_te){try{fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/log",{method:"POST",headers:__tandemExtensionHeaders({"Content-Type":"application/json"}),body:JSON.stringify({source:"Dre-catch",msg:_te?.message||String(_te),stack:(_te?.stack||"").slice(0,500)})});}catch{}return console.error("[Background]","Unable to generate item details")`;
-        const dreCatchPatch = `}catch(_te){try{fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/log",{method:"POST",headers:${telemetryHeadersLiteral},body:JSON.stringify({source:"Dre-catch",msg:_te?.message||String(_te),stack:(_te?.stack||"").slice(0,500)})});}catch{}return console.error("[Background]","Unable to generate item details")`;
+        const dreCatchLegacyPatch = `}catch(_te){try{fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/log",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source:"Dre-catch",msg:_te?.message||String(_te),stack:(_te?.stack||"").slice(0,500)})});}catch{}return console.error("[Background]","Unable to generate item details")`;
+        const dreCatchHelperPatch = `}catch(_te){try{fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/log",{method:"POST",headers:__zerantExtensionHeaders({"Content-Type":"application/json"}),body:JSON.stringify({source:"Dre-catch",msg:_te?.message||String(_te),stack:(_te?.stack||"").slice(0,500)})});}catch{}return console.error("[Background]","Unable to generate item details")`;
+        const dreCatchPatch = `}catch(_te){try{fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/log",{method:"POST",headers:${telemetryHeadersLiteral},body:JSON.stringify({source:"Dre-catch",msg:_te?.message||String(_te),stack:(_te?.stack||"").slice(0,500)})});}catch{}return console.error("[Background]","Unable to generate item details")`;
         const dreCatchResult = replacePatchVariants(existing, dreCatchPatch, [
           dreCatchOrig,
           dreCatchLegacyPatch,
@@ -985,9 +985,9 @@ export class ActionPolyfill {
         // Bte: wrap registration P("get-settings-configuration",Bte) with a logging wrapper.
         // Replaces the handler registration so exceptions POST to /extensions/log before rethrowing.
         const bteRegOrig  = 'P("get-settings-configuration",Bte)';
-        const bteRegLegacyPatch = 'P("get-settings-configuration",async function(..._bteA){try{return await Bte(..._bteA)}catch(_bte){try{fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/log",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source:"Bte-catch",msg:_bte?.message||String(_bte),stack:(_bte?.stack||"").slice(0,500)})});}catch{}throw _bte;}})';
-        const bteRegHelperPatch = 'P("get-settings-configuration",async function(..._bteA){try{return await Bte(..._bteA)}catch(_bte){try{fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/log",{method:"POST",headers:__tandemExtensionHeaders({"Content-Type":"application/json"}),body:JSON.stringify({source:"Bte-catch",msg:_bte?.message||String(_bte),stack:(_bte?.stack||"").slice(0,500)})});}catch{}throw _bte;}})';
-        const bteRegPatch = `P("get-settings-configuration",async function(..._bteA){try{return await Bte(..._bteA)}catch(_bte){try{fetch("http://127.0.0.1:"+TANDEM_PORT+"/extensions/log",{method:"POST",headers:${telemetryHeadersLiteral},body:JSON.stringify({source:"Bte-catch",msg:_bte?.message||String(_bte),stack:(_bte?.stack||"").slice(0,500)})});}catch{}throw _bte;}})`;
+        const bteRegLegacyPatch = 'P("get-settings-configuration",async function(..._bteA){try{return await Bte(..._bteA)}catch(_bte){try{fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/log",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source:"Bte-catch",msg:_bte?.message||String(_bte),stack:(_bte?.stack||"").slice(0,500)})});}catch{}throw _bte;}})';
+        const bteRegHelperPatch = 'P("get-settings-configuration",async function(..._bteA){try{return await Bte(..._bteA)}catch(_bte){try{fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/log",{method:"POST",headers:__zerantExtensionHeaders({"Content-Type":"application/json"}),body:JSON.stringify({source:"Bte-catch",msg:_bte?.message||String(_bte),stack:(_bte?.stack||"").slice(0,500)})});}catch{}throw _bte;}})';
+        const bteRegPatch = `P("get-settings-configuration",async function(..._bteA){try{return await Bte(..._bteA)}catch(_bte){try{fetch("http://127.0.0.1:"+ZERANT_PORT+"/extensions/log",{method:"POST",headers:${telemetryHeadersLiteral},body:JSON.stringify({source:"Bte-catch",msg:_bte?.message||String(_bte),stack:(_bte?.stack||"").slice(0,500)})});}catch{}throw _bte;}})`;
         const bteRegResult = replacePatchVariants(existing, bteRegPatch, [
           bteRegOrig,
           bteRegLegacyPatch,
@@ -1000,10 +1000,10 @@ export class ActionPolyfill {
 
         // Patch 12: Kfj() — called inside GmA.getItemDetails() to check if the popup is
         // a "new window" popup. browser.windows.getCurrent() is undefined in Electron's
-        // Service Worker context and throws. Since Tandem never opens 1Password in a
+        // Service Worker context and throws. Since Zerant never opens 1Password in a
         // detached popup window, always return false (not a popup).
         const kfjOrig  = 'async function Kfj(){return(await browser.windows.getCurrent()).type==="popup"}';
-        const kfjPatch = 'async function Kfj(){return false/* tandem-patch: windows.getCurrent() not available in SW */}';
+        const kfjPatch = 'async function Kfj(){return false/* zerant-patch: windows.getCurrent() not available in SW */}';
         if (existing.includes(kfjOrig) && !existing.includes(kfjPatch)) {
           existing = existing.replace(kfjOrig, kfjPatch);
           log.info(`🩹 Patched Kfj() isInNewWindow for ${manifest.name || cwsId}`);

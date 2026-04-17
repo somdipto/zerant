@@ -1,7 +1,7 @@
-# Tandem Browser — AI Implementatie: START HERE
+# Zerant Browser — AI Implementatie: START HERE
 
 > **Last update:** 12 februari 2026
-> **Architectuur:** Claude Max Pro → Cowork/Claude Code → MCP → Tandem API
+> **Architectuur:** Claude Max Pro → Cowork/Claude Code → MCP → Zerant API
 > **No API key nodig** — Claude works via MCP, not via directe API calls.
 
 ---
@@ -9,7 +9,7 @@
 ## Architecture in 30 seconds
 
 ```
-Robin spreekt/typt ──→ Cowork/Claude Code ──→ MCP Server ──→ Tandem API (:8765)
+Robin spreekt/typt ──→ Cowork/Claude Code ──→ MCP Server ──→ Zerant API (:8765)
                                                     ↕
 Robin sees resultaat ←── Kees Panel ←── OpenClaw Gateway (:18789)
                                                     +
@@ -17,9 +17,9 @@ Robin sees resultaat ←── Kees Panel ←── OpenClaw Gateway (:18789)
 ```
 
 - **Robin** has a Claude Max Pro account ($200/maand). No API key.
-- **Claude** works UITSLUITEND via Cowork or Claude Code → MCP tools → Tandem HTTP API.
+- **Claude** works UITSLUITEND via Cowork or Claude Code → MCP tools → Zerant HTTP API.
 - **OpenClaw (Kees)** draait local, WebSocket to `:18789`.
-- **Tandem API** draait op `:8765`, auth via Bearer token out `~/.tandem/api-token`.
+- **Zerant API** draait op `:8765`, auth via Bearer token out `~/.tandem/api-token`.
 
 ---
 
@@ -45,7 +45,7 @@ The folder `archief/` contains the **oude** phase docs (fase-1 t/m fase-7, ROADM
 ## Quick Status Check
 
 ```bash
-# Tandem draait?
+# Zerant draait?
 curl http://localhost:8765/status
 
 # TypeScript clean?
@@ -76,7 +76,7 @@ git status
 ## Codebase Overzicht
 
 ```
-tandem-browser/
+zerant-browser/
 ├── shell/
 │   ├── index.html          # Hoofd UI (tabs, chat/Kees panel, bookmarks)
 │   │                       # ⚠️ Contains 200+ rules inline WebSocket code (regel 1681-1894)
@@ -120,7 +120,7 @@ tandem-browser/
 
 ## Key Info
 
-- **Repo:** https://github.com/hydro13/tandem-browser (private)
+- **Repo:** https://github.com/hydro13/zerant-browser (private)
 - **Owner:** Robin Waslander (hydro13)
 - **Account:** Claude Max Pro ($200/maand) — no API key
 - **Taal:** Nederlands (docs, chat), Engels (code, variabelen)

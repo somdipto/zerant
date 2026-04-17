@@ -32,7 +32,7 @@
 - Na save: ster is ★ (oranje), bar refresht
 
 **HTML:** new `<div id="bookmark-popup">` add in `shell/index.html`
-**CSS:** new blok in `shell/css/main.css` — frosted glass stijl (passend bij rest or Tandem)
+**CSS:** new blok in `shell/css/main.css` — frosted glass stijl (passend bij rest or Zerant)
 **Auth:** fetch calls krijgen `Authorization: Bearer ${TOKEN}` header (fix meteen)
 
 ---

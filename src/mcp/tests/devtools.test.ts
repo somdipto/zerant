@@ -23,9 +23,9 @@ describe('MCP devtools tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_devtools_console ───────────────────────────────────────
-  describe('tandem_devtools_console', () => {
-    const handler = getHandler(tools, 'tandem_devtools_console');
+  // ── zerant_devtools_console ───────────────────────────────────────
+  describe('zerant_devtools_console', () => {
+    const handler = getHandler(tools, 'zerant_devtools_console');
 
     it('returns console entries as JSON', async () => {
       const data = { entries: [{ level: 'log', text: 'hello' }] };
@@ -49,9 +49,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_console_errors ────────────────────────────────
-  describe('tandem_devtools_console_errors', () => {
-    const handler = getHandler(tools, 'tandem_devtools_console_errors');
+  // ── zerant_devtools_console_errors ────────────────────────────────
+  describe('zerant_devtools_console_errors', () => {
+    const handler = getHandler(tools, 'zerant_devtools_console_errors');
 
     it('returns errors from console', async () => {
       mockApiCall.mockResolvedValueOnce({ entries: [] });
@@ -69,9 +69,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_console_clear ─────────────────────────────────
-  describe('tandem_devtools_console_clear', () => {
-    const handler = getHandler(tools, 'tandem_devtools_console_clear');
+  // ── zerant_devtools_console_clear ─────────────────────────────────
+  describe('zerant_devtools_console_clear', () => {
+    const handler = getHandler(tools, 'zerant_devtools_console_clear');
 
     it('clears console buffer', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -88,9 +88,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_network ───────────────────────────────────────
-  describe('tandem_devtools_network', () => {
-    const handler = getHandler(tools, 'tandem_devtools_network');
+  // ── zerant_devtools_network ───────────────────────────────────────
+  describe('zerant_devtools_network', () => {
+    const handler = getHandler(tools, 'zerant_devtools_network');
 
     it('returns network entries as JSON', async () => {
       const data = { entries: [{ url: 'https://api.com/data', method: 'GET' }] };
@@ -120,9 +120,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_network_body ──────────────────────────────────
-  describe('tandem_devtools_network_body', () => {
-    const handler = getHandler(tools, 'tandem_devtools_network_body');
+  // ── zerant_devtools_network_body ──────────────────────────────────
+  describe('zerant_devtools_network_body', () => {
+    const handler = getHandler(tools, 'zerant_devtools_network_body');
 
     it('returns body for a specific request', async () => {
       mockApiCall.mockResolvedValueOnce({ body: '{"data": true}' });
@@ -133,9 +133,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_network_clear ─────────────────────────────────
-  describe('tandem_devtools_network_clear', () => {
-    const handler = getHandler(tools, 'tandem_devtools_network_clear');
+  // ── zerant_devtools_network_clear ─────────────────────────────────
+  describe('zerant_devtools_network_clear', () => {
+    const handler = getHandler(tools, 'zerant_devtools_network_clear');
 
     it('clears network log', async () => {
       mockApiCall.mockResolvedValueOnce({ ok: true });
@@ -152,9 +152,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_evaluate ──────────────────────────────────────
-  describe('tandem_devtools_evaluate', () => {
-    const handler = getHandler(tools, 'tandem_devtools_evaluate');
+  // ── zerant_devtools_evaluate ──────────────────────────────────────
+  describe('zerant_devtools_evaluate', () => {
+    const handler = getHandler(tools, 'zerant_devtools_evaluate');
 
     it('evaluates JS expression', async () => {
       mockApiCall.mockResolvedValueOnce({ result: { value: 42 } });
@@ -176,9 +176,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_dom_query ─────────────────────────────────────
-  describe('tandem_devtools_dom_query', () => {
-    const handler = getHandler(tools, 'tandem_devtools_dom_query');
+  // ── zerant_devtools_dom_query ─────────────────────────────────────
+  describe('zerant_devtools_dom_query', () => {
+    const handler = getHandler(tools, 'zerant_devtools_dom_query');
 
     it('queries DOM by CSS selector', async () => {
       mockApiCall.mockResolvedValueOnce({ nodes: [{ tag: 'div' }] });
@@ -189,9 +189,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_dom_xpath ──────────────────────────────────────
-  describe('tandem_devtools_dom_xpath', () => {
-    const handler = getHandler(tools, 'tandem_devtools_dom_xpath');
+  // ── zerant_devtools_dom_xpath ──────────────────────────────────────
+  describe('zerant_devtools_dom_xpath', () => {
+    const handler = getHandler(tools, 'zerant_devtools_dom_xpath');
 
     it('queries DOM by XPath', async () => {
       mockApiCall.mockResolvedValueOnce({ nodes: [] });
@@ -201,9 +201,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_screenshot_element ─────────────────────────────
-  describe('tandem_devtools_screenshot_element', () => {
-    const handler = getHandler(tools, 'tandem_devtools_screenshot_element');
+  // ── zerant_devtools_screenshot_element ─────────────────────────────
+  describe('zerant_devtools_screenshot_element', () => {
+    const handler = getHandler(tools, 'zerant_devtools_screenshot_element');
 
     it('returns an image response', async () => {
       mockApiCall.mockResolvedValueOnce('iVBORw0KGgo=');
@@ -220,9 +220,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_cdp ───────────────────────────────────────────
-  describe('tandem_devtools_cdp', () => {
-    const handler = getHandler(tools, 'tandem_devtools_cdp');
+  // ── zerant_devtools_cdp ───────────────────────────────────────────
+  describe('zerant_devtools_cdp', () => {
+    const handler = getHandler(tools, 'zerant_devtools_cdp');
 
     it('sends a raw CDP command', async () => {
       mockApiCall.mockResolvedValueOnce({ result: {} });
@@ -238,9 +238,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_status ────────────────────────────────────────
-  describe('tandem_devtools_status', () => {
-    const handler = getHandler(tools, 'tandem_devtools_status');
+  // ── zerant_devtools_status ────────────────────────────────────────
+  describe('zerant_devtools_status', () => {
+    const handler = getHandler(tools, 'zerant_devtools_status');
 
     it('returns devtools status', async () => {
       mockApiCall.mockResolvedValueOnce({ connected: true });
@@ -250,9 +250,9 @@ describe('MCP devtools tools', () => {
     });
   });
 
-  // ── tandem_devtools_toggle ────────────────────────────────────────
-  describe('tandem_devtools_toggle', () => {
-    const handler = getHandler(tools, 'tandem_devtools_toggle');
+  // ── zerant_devtools_toggle ────────────────────────────────────────
+  describe('zerant_devtools_toggle', () => {
+    const handler = getHandler(tools, 'zerant_devtools_toggle');
 
     it('toggles devtools', async () => {
       mockApiCall.mockResolvedValueOnce({ open: true });
@@ -265,7 +265,7 @@ describe('MCP devtools tools', () => {
   describe('tab-aware forwarding', () => {
     it('forwards tabId for network body lookups', async () => {
       mockApiCall.mockResolvedValueOnce({});
-      const handler = getHandler(tools, 'tandem_devtools_network_body');
+      const handler = getHandler(tools, 'zerant_devtools_network_body');
 
       await handler({ requestId: 'req-1', tabId: 'tab-7' });
 
@@ -281,8 +281,8 @@ describe('MCP devtools tools', () => {
     it('forwards tabId for status and raw CDP calls', async () => {
       mockApiCall.mockResolvedValueOnce({});
       mockApiCall.mockResolvedValueOnce({});
-      const statusHandler = getHandler(tools, 'tandem_devtools_status');
-      const cdpHandler = getHandler(tools, 'tandem_devtools_cdp');
+      const statusHandler = getHandler(tools, 'zerant_devtools_status');
+      const cdpHandler = getHandler(tools, 'zerant_devtools_cdp');
 
       await statusHandler({ tabId: 'tab-8' });
       await cdpHandler({ method: 'Page.reload', tabId: 'tab-8' });

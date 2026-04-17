@@ -1,4 +1,4 @@
-# Tandem Browser — AI Implementatie Roadmap
+# Zerant Browser — AI Implementatie Roadmap
 
 ## Overzicht Fases
 
@@ -19,13 +19,13 @@
 ## Phase 1: MCP Server
 
 ### Goal
-Claude Code and Cowork can via MCP tools the Tandem Browser bedienen. Dit is the snelste weg to werkende AI-integratie.
+Claude Code and Cowork can via MCP tools the Zerant Browser bedienen. Dit is the snelste weg to werkende AI-integratie.
 
 ### Sessie 1.1: Basis MCP Server + Navigatie Tools
 
 **Pre-checks:**
 - [ ] `npm install @modelcontextprotocol/sdk` succesvol
-- [ ] Tandem API draait op :8765 (`curl http://localhost:8765/status`)
+- [ ] Zerant API draait op :8765 (`curl http://localhost:8765/status`)
 - [ ] API token beschikbaar in `~/.tandem/api-token`
 
 **Taken:**
@@ -37,7 +37,7 @@ Claude Code and Cowork can via MCP tools the Tandem Browser bedienen. Dit is the
    - `tandem_reload()`
    - `tandem_read_page()` — geeft title, URL, text
    - `tandem_screenshot()` — geeft base64 image
-3. Maak `src/mcp/api-client.ts` — HTTP client for Tandem API
+3. Maak `src/mcp/api-client.ts` — HTTP client for Zerant API
 4. Voeg npm script toe: `"mcp": "node dist/mcp/server.js"`
 5. Test with Claude Code MCP configuration
 
@@ -194,7 +194,7 @@ Claude API direct integreren if chat backend in the Kees panel. Without IDE, wit
 - [ ] Begrijp Anthropic Messages API with tool use
 
 **Context for this session:**
-Claude is a ChatBackend that the Anthropic Messages API aanroept. Claude gets tools that the Tandem API aanroepen, zodat Claude the browser can bedienen vanuit the chat panel.
+Claude is a ChatBackend that the Anthropic Messages API aanroept. Claude gets tools that the Zerant API aanroepen, zodat Claude the browser can bedienen vanuit the chat panel.
 
 **Taken:**
 1. Maak `ClaudeBackend` class that `ChatBackend` implementeert
@@ -267,7 +267,7 @@ AI gets real-time updates or wat Robin doet in the browser. Not only on-demand, 
 - [ ] Existing `activity-webview-event` IPC works
 
 **Context for this session:**
-Tandem stuurt already activity events intern (navigatie, loading, etc.). We must this events beschikbaar maken for externe consumers (MCP, Claude backend, etc.).
+Zerant stuurt already activity events intern (navigatie, loading, etc.). We must this events beschikbaar maken for externe consumers (MCP, Claude backend, etc.).
 
 **Taken:**
 1. Maak `EventStreamManager` class

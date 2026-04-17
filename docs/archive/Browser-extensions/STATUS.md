@@ -191,7 +191,7 @@
   - [x] Clicking icon opens popup with full chrome.* API access (BrowserWindow with persist:tandem session)
   - [x] Popup closes on click-outside (blur event) or Escape (no separate handler needed — blur handles it)
   - [x] Badge text updates — infrastructure in place (badge polling timer + badge state folder). Electron 40 Extension objects don't expose runtime badge state from main process; extensions set badges via chrome.action.setBadgeText() in service workers. Badge display works when set via setBadge() method.
-  - [x] Right-click context menu: Extension name (label), Options (if options_page/options_ui), Pin/Unpin to Toolbar, Remove from Tandem (with confirm dialog)
+  - [x] Right-click context menu: Extension name (label), Options (if options_page/options_ui), Pin/Unpin to Toolbar, Remove from Zerant (with confirm dialog)
   - [x] Overflow dropdown for >6 extensions (puzzle piece 🧩 button opens dropdown with remaining extensions)
   - [x] Pin state persists across restarts (saved to ~/.tandem/extensions/toolbar-state.json)
   - [x] Toolbar refreshes on install/uninstall (extension-toolbar-refresh IPC event sent from API routes + extension-toolbar-update IPC event from ExtensionToolbar)
@@ -284,7 +284,7 @@
   - `ExtensionManager.getIdentityPolyfill()` exposes it for the API endpoint
   - `POST /extensions/identity/auth` endpoint does NOT require auth token (called by extension service workers)
   - The polyfill only patches extensions that: (1) declare `identity` permission, (2) are MV3, (3) have a `background.service_worker` entry
-  - Polyfill injection is idempotent — checks for marker comment `/* Tandem chrome.identity polyfill` before patching
+  - Polyfill injection is idempotent — checks for marker comment `/* Zerant chrome.identity polyfill` before patching
   - `chromiumapp.org` protocol handler intercepts ALL HTTPS requests in the session and uses `net.fetch(request)` for pass-through — this is necessary because `session.protocol.handle` replaces the default handler
   - Extensions that need `chrome.identity` but lack `host_permissions` for localhost may need a different communication channel (not encountered yet)
   - No new npm dependencies added
@@ -383,7 +383,7 @@
   - [x] Extensions with `declarativeNetRequest` detected and flagged — detection rule checks both `declarativeNetRequest`/`declarativeNetRequestWithHostAccess` permissions and `declarative_net_request` manifest key. uBlock Origin MV2 does NOT have DNR (uses `webRequestBlocking` instead) so no dnr-overlap is flagged for the installed version — this is correct behavior.
   - [x] Extensions with `nativeMessaging` detected and flagged — Grammarly detected with `nativeMessaging` permission
   - [x] Broad content script injection patterns detected — uBlock Origin (`http://*/*`, `https://*/*`), Dark Reader (`<all_urls>`), Grammarly (`<all_urls>`) all flagged. Patterns logged to console for security auditing.
-  - [x] Keyboard shortcut conflicts with Tandem shortcuts detected — detection compares extension `commands` manifest entries against 29 Tandem shortcuts. Normalizes Chrome shortcut syntax (Command/MacCtrl/Cmd → Ctrl).
+  - [x] Keyboard shortcut conflicts with Zerant shortcuts detected — detection compares extension `commands` manifest entries against 29 Zerant shortcuts. Normalizes Chrome shortcut syntax (Command/MacCtrl/Cmd → Ctrl).
   - [x] Conflict severity matches Phase 1 DNR test results — DNR severity set to `warning` (Phase 1 showed Guardian still fires with 2 onBeforeRequest consumers). No `critical` conflicts.
   - [x] `GET /extensions/list` includes conflicts per extension — each loaded extension has a `conflicts` array
   - [x] `GET /extensions/conflicts` returns all conflicts + summary — tested: 4 conflicts (0 info, 4 warnings, 0 critical)
@@ -404,7 +404,7 @@
   - Install result (`POST /extensions/install`) includes `conflicts` field when conflicts detected
   - `ExtensionManager.loadInSession(session)` loads all extensions into a given Electron session — NOT wired into SessionManager. Future integration point: call after setting up security stack for isolated sessions.
   - DNR severity is `'warning'` based on Phase 1 test (Guardian still fires). Phase 10b should re-evaluate if deeper testing reveals Guardian misses specific blocked requests.
-  - The `TANDEM_SHORTCUTS` constant in `conflict-detector.ts` contains 29 shortcuts — update if new Tandem shortcuts are added
+  - The `TANDEM_SHORTCUTS` constant in `conflict-detector.ts` contains 29 shortcuts — update if new Zerant shortcuts are added
   - Gallery `securityConflict` field (static) and ConflictDetector (dynamic) may differ for MV2 vs MV3 versions — the dynamic detector is more precise
   - No new npm dependencies added
   - No new state files created

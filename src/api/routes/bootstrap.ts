@@ -1,7 +1,7 @@
 /**
- * Bootstrap/discovery routes — agent-facing surface for a running Tandem instance.
+ * Bootstrap/discovery routes — agent-facing surface for a running Zerant instance.
  *
- * These routes let any agent discover what this Tandem instance supports,
+ * These routes let any agent discover what this Zerant instance supports,
  * how to pair, and what version-matched capabilities are available.
  * The bootstrap surface is public (no auth required) because it contains
  * no sensitive data — only version info, pairing instructions, and capability families.
@@ -11,7 +11,7 @@ import type { Router, Request, Response } from 'express';
 import { app } from 'electron';
 import type { RouteContext } from '../context';
 
-/** Capability families exposed by Tandem, grouped for agent discovery. */
+/** Capability families exposed by Zerant, grouped for agent discovery. */
 const CAPABILITY_FAMILIES = [
   'browser',
   'tabs',
@@ -54,7 +54,7 @@ export function registerBootstrapRoutes(router: Router, _ctx: RouteContext): voi
   router.get('/agent', (req: Request, res: Response) => {
     const version = getVersion();
     const baseUrl = getBaseUrl(req);
-    res.type('text/markdown').send(`# Tandem Browser — Agent Bootstrap
+    res.type('text/markdown').send(`# Zerant Browser — Agent Bootstrap
 
 **Version:** ${version}
 **Base URL:** \`${baseUrl}\`
@@ -62,8 +62,8 @@ export function registerBootstrapRoutes(router: Router, _ctx: RouteContext): voi
 
 ## How to connect
 
-### On the same machine as Tandem
-Read the local API token from \`~/.tandem/api-token\` and use it as:
+### On the same machine as Zerant
+Read the local API token from \`~/.zerant/api-token\` and use it as:
 \`\`\`
 Authorization: Bearer <token>
 \`\`\`
@@ -72,23 +72,23 @@ Authorization: Bearer <token>
 Remote connections are supported only over a private Tailscale network.
 Both machines must be members of the same tailnet.
 
-1. The Tandem user generates a one-time setup code in Settings
+1. The Zerant user generates a one-time setup code in Settings
 2. Exchange the code for a durable token:
    \`POST ${baseUrl}/pairing/exchange\`
    with body: \`{ "code": "TDM-XXXX-XXXX", "machineId": "...", "machineName": "...", "agentLabel": "...", "agentType": "..." }\`
 3. Use the returned token as: \`Authorization: Bearer <token>\`
 4. The token is permanent until the user revokes it
 
-Tandem is never exposed to the public internet.
+Zerant is never exposed to the public internet.
 
-## Using Tandem after connecting
+## Using Zerant after connecting
 
 Once you have a Bearer token (from local api-token or from pairing), use the HTTP API:
 \`\`\`
 Authorization: Bearer <your-token>
 \`\`\`
 
-All Tandem capabilities are available as HTTP endpoints. Key starting points:
+All Zerant capabilities are available as HTTP endpoints. Key starting points:
 
 ### Browser status and navigation
 - \`GET ${baseUrl}/status\` — browser ready state, active tab, viewport
@@ -116,13 +116,13 @@ All Tandem capabilities are available as HTTP endpoints. Key starting points:
 Add \`X-Tab-Id: <tabId>\` header to target a specific tab instead of the active one.
 
 ## MCP access
-Tandem provides an MCP server with 250+ tools.
+Zerant provides an MCP server with 250+ tools.
 
 ### Local agents (same machine) — stdio transport
 \`\`\`json
 {
   "mcpServers": {
-    "tandem": {
+    "zerant": {
       "command": "node",
       "args": ["<path-to-tandem>/dist/mcp/server.js"]
     }
@@ -135,7 +135,7 @@ Pair first using the setup code flow above, then configure your MCP client:
 \`\`\`json
 {
   "mcpServers": {
-    "tandem": {
+    "zerant": {
       "type": "streamable-http",
       "url": "${baseUrl}/mcp",
       "headers": {
@@ -166,7 +166,7 @@ See \`GET ${baseUrl}/agent/manifest\` for the full list of 300+ endpoints.
 
   router.get('/agent/version', (_req: Request, res: Response) => {
     res.json({
-      name: 'tandem-browser',
+      name: 'zerant-browser',
       version: getVersion(),
       capabilityFamilies: CAPABILITY_FAMILIES,
       transports: {
@@ -194,7 +194,7 @@ See \`GET ${baseUrl}/agent/manifest\` for the full list of 300+ endpoints.
     const version = getVersion();
     const baseUrl = getBaseUrl(req);
     res.json({
-      name: 'tandem-browser',
+      name: 'zerant-browser',
       version,
       baseUrl,
       transports: {
@@ -428,7 +428,7 @@ See \`GET ${baseUrl}/agent/manifest\` for the full list of 300+ endpoints.
           extensionNativeMessageWs: { method: 'WS', path: '/extensions/native-message/ws', description: 'Extension native messaging WebSocket (requires chrome-extension:// origin)' },
         },
         remoteNotes: {
-          _note: 'Some endpoints return local filesystem paths in response bodies (e.g. screenshot save path). These operations execute on the Tandem host and succeed remotely, but the returned path is only meaningful on the Tandem machine. Use GET /screenshot (without ?save) to receive screenshot data directly.',
+          _note: 'Some endpoints return local filesystem paths in response bodies (e.g. screenshot save path). These operations execute on the Zerant host and succeed remotely, but the returned path is only meaningful on the Zerant machine. Use GET /screenshot (without ?save) to receive screenshot data directly.',
         },
       },
     });
@@ -441,9 +441,9 @@ See \`GET ${baseUrl}/agent/manifest\` for the full list of 300+ endpoints.
   router.get('/skill', (req: Request, res: Response) => {
     const version = getVersion();
     const baseUrl = getBaseUrl(req);
-    res.type('text/markdown').send(`# Tandem Browser Skill — v${version}
+    res.type('text/markdown').send(`# Zerant Browser Skill — v${version}
 
-Tandem Browser is a live human-AI browser. Use its API at \`${baseUrl}\`
+Zerant Browser is a live human-AI browser. Use its API at \`${baseUrl}\`
 to inspect, browse, and interact with the user's real browser context.
 
 ## Key principles
@@ -457,7 +457,7 @@ to inspect, browse, and interact with the user's real browser context.
 All requests require: \`Authorization: Bearer <your-token>\`
 
 ## Quick start workflow
-1. \`GET ${baseUrl}/status\` — check Tandem is ready, see active tab
+1. \`GET ${baseUrl}/status\` — check Zerant is ready, see active tab
 2. \`GET ${baseUrl}/snapshot\` — get accessibility tree with clickable refs
 3. \`POST ${baseUrl}/snapshot/click\` with \`{ "ref": "@e1" }\` — click an element
 4. \`POST ${baseUrl}/snapshot/fill\` with \`{ "ref": "@e2", "value": "text" }\` — type into an input

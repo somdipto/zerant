@@ -4,7 +4,7 @@ import { apiCall } from '../api-client.js';
 
 export function registerAuthTools(server: McpServer): void {
   server.tool(
-    'tandem_auth_states',
+    'zerant_auth_states',
     'Get all detected authentication states across visited domains. Shows login status for each domain the browser has tracked.',
     async () => {
       const data = await apiCall('GET', '/auth/states');
@@ -13,7 +13,7 @@ export function registerAuthTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_auth_state',
+    'zerant_auth_state',
     'Get the detected authentication state for a specific domain.',
     {
       domain: z.string().describe('Domain to check auth state for (e.g. "github.com")'),
@@ -25,7 +25,7 @@ export function registerAuthTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_auth_check',
+    'zerant_auth_check',
     'Check the authentication state of the current page. Analyzes the active tab to detect login forms, logged-in indicators, and auth cookies.',
     async () => {
       const data = await apiCall('POST', '/auth/check');
@@ -34,7 +34,7 @@ export function registerAuthTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_auth_is_login_page',
+    'zerant_auth_is_login_page',
     'Check if the current page is a login page. Uses heuristics to detect login forms and authentication UI.',
     async () => {
       const data = await apiCall('GET', '/auth/is-login-page');
@@ -43,7 +43,7 @@ export function registerAuthTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_auth_update',
+    'zerant_auth_update',
     'Manually update the authentication state for a domain.',
     {
       domain: z.string().describe('Domain to update auth state for (e.g. "github.com")'),
@@ -59,7 +59,7 @@ export function registerAuthTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_auth_delete',
+    'zerant_auth_delete',
     'Delete the stored authentication state for a domain. This is irreversible.',
     {
       domain: z.string().describe('Domain to delete auth state for (e.g. "github.com")'),

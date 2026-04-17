@@ -13,10 +13,10 @@ import { createExtensionsApi } from './extensions';
 import { createWorkspacesApi } from './workspaces';
 import { createWindowApi } from './window';
 
-contextBridge.exposeInMainWorld('__TANDEM_TOKEN__', '');
-contextBridge.exposeInMainWorld('__TANDEM_VERSION__', process.env.npm_package_version || '');
+contextBridge.exposeInMainWorld('__ZERANT_TOKEN__', '');
+contextBridge.exposeInMainWorld('__ZERANT_VERSION__', process.env.npm_package_version || '');
 
-contextBridge.exposeInMainWorld('tandem', {
+contextBridge.exposeInMainWorld('zerant', {
   getApiToken: () => ipcRenderer.invoke(IpcChannels.GET_API_TOKEN),
   ...createNavigationApi(),
   ...createContentApi(),

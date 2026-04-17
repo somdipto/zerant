@@ -1,4 +1,4 @@
-# Tandem Browser — Codebase Structure Report
+# Zerant Browser — Codebase Structure Report
 
 **Date:** 2026-02-26
 **Scope:** Full codebase analysis (~28,750 lines TS, 81 files, 170+ API endpoints)
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Tandem Browser has a strong architectural vision (two-layer stealth architecture, manager pattern, centralized network pipeline). However, organic phase-by-phase growth has created several structural issues that make AI-assisted development harder and debugging slower. The two biggest problems are:
+Zerant Browser has a strong architectural vision (two-layer stealth architecture, manager pattern, centralized network pipeline). However, organic phase-by-phase growth has created several structural issues that make AI-assisted development harder and debugging slower. The two biggest problems are:
 
 1. **God files** — `api/server.ts` (1700+ lines) and `main.ts` (1016 lines) contain too much logic and are the bottleneck for almost every change
 2. **Missing shared utilities** — Common patterns repeat 5-10 times across the codebase, leading to inconsistency
@@ -31,7 +31,7 @@ Tandem Browser has a strong architectural vision (two-layer stealth architecture
 ### `src/api/server.ts` (~1700 lines)
 
 **What it does (too much):**
-- 40+ imports, 35-parameter constructor (`TandemAPIOptions`)
+- 40+ imports, 35-parameter constructor (`ZerantAPIOptions`)
 - All 170+ HTTP routes in one file
 - Circular dependency: line 9 imports `wingmanAlert` from `../main`
 - Does not fit in a single AI context window
@@ -73,7 +73,7 @@ src/
 ### Current Pattern
 
 ```typescript
-export interface TandemAPIOptions {
+export interface ZerantAPIOptions {
   win: BrowserWindow;
   tabManager: TabManager;
   panelManager: PanelManager;
@@ -85,7 +85,7 @@ Every new manager requires changes at 4 locations:
 1. Import in `main.ts`
 2. Variable declaration in `main.ts`
 3. Instantiation in `startAPI()`
-4. Addition to `TandemAPIOptions` interface + private field in `TandemAPI`
+4. Addition to `ZerantAPIOptions` interface + private field in `ZerantAPI`
 
 ### Recommendation: Simple Registry
 
@@ -165,7 +165,7 @@ const ipcChannels = ['tab-update', 'tab-register', ...]; // manual!
 
 ```
 src/utils/
-├── paths.ts       → getTandemDir(), getSecurityDir(), getDataPath()
+├── paths.ts       → getZerantDir(), getSecurityDir(), getDataPath()
 ├── url.ts         → extractDomain(), isValidUrl(), normalizeUrl()
 ├── errors.ts      → logError(), wrapAsync()
 └── constants.ts   → IPC_CHANNELS, API_PORT, etc.
@@ -212,7 +212,7 @@ Only 2 test files exist:
 
 ### Not Tested
 - TabManager, SessionManager, SecurityManager
-- RequestDispatcher, TandemAPI (170+ routes)
+- RequestDispatcher, ZerantAPI (170+ routes)
 - DevToolsManager, WorkflowEngine
 - All IPC handlers
 - The `activity-webview-event` handler (most complex business logic)

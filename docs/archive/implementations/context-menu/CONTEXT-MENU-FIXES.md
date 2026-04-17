@@ -72,7 +72,7 @@ Read these files first:
 
 Fix these 6 issues:
 
-**H1: Selection text not sanitized in "Ask Kees" items (menu-builder.ts, addTandemItems)**
+**H1: Selection text not sanitized in "Ask Kees" items (menu-builder.ts, addZerantItems)**
 The selectionText is injected directly into a template string:
 `What can you tell me about this: "${text}"`
 If the selection contains quotes, backticks, or special chars, this breaks the chat input.
@@ -111,7 +111,7 @@ menu.append(new MenuItem({
 }));
 ```
 
-**K3: "Screenshot this Area" is dead code (menu-builder.ts, addTandemItems)**
+**K3: "Screenshot this Area" is dead code (menu-builder.ts, addZerantItems)**
 The menu item sends 'start-screenshot-mode' to the renderer, but this IPC channel does not exist in preload.ts and has no listener in shell/index.html. The item does nothing when clicked.
 Fix: Replace with the existing quickScreenshot functionality:
 ```typescript
@@ -163,12 +163,12 @@ Do NOT run `npm start` or `npm run dev`.
 
 ```
 Read these files first:
-- src/context-menu/menu-builder.ts (addTandemItems method)
+- src/context-menu/menu-builder.ts (addZerantItems method)
 - src/panel/manager.ts
 - src/api/server.ts (search for "/chat" route and "page-content" route)
 - shell/index.html (search for "onKeesChatInject" and "chat-send")
 
-This run improves the Kees AI integration in the context menu. Kees is an AI wingman that communicates via the Tandem API at localhost:8765.
+This run improves the Kees AI integration in the context menu. Kees is an AI wingman that communicates via the Zerant API at localhost:8765.
 
 **K2: "Summarize Page with Kees" sends no page content**
 Currently, clicking "Summarize Page with Kees" injects the text "Please summarize the current page for me." into the chat. But Kees (the AI on the other end or the /chat API) has no way to know what page the user is viewing unless he separately calls /page-content.

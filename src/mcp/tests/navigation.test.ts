@@ -23,9 +23,9 @@ describe('MCP navigation tools', () => {
     vi.clearAllMocks();
   });
 
-  // ── tandem_navigate ───────────────────────────────────────────────
-  describe('tandem_navigate', () => {
-    const handler = getHandler(tools, 'tandem_navigate');
+  // ── zerant_navigate ───────────────────────────────────────────────
+  describe('zerant_navigate', () => {
+    const handler = getHandler(tools, 'zerant_navigate');
 
     it('navigates to a URL', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -46,9 +46,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_go_back ────────────────────────────────────────────────
-  describe('tandem_go_back', () => {
-    const handler = getHandler(tools, 'tandem_go_back');
+  // ── zerant_go_back ────────────────────────────────────────────────
+  describe('zerant_go_back', () => {
+    const handler = getHandler(tools, 'zerant_go_back');
 
     it('calls history.back()', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -60,9 +60,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_go_forward ─────────────────────────────────────────────
-  describe('tandem_go_forward', () => {
-    const handler = getHandler(tools, 'tandem_go_forward');
+  // ── zerant_go_forward ─────────────────────────────────────────────
+  describe('zerant_go_forward', () => {
+    const handler = getHandler(tools, 'zerant_go_forward');
 
     it('calls history.forward()', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -73,9 +73,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_reload ─────────────────────────────────────────────────
-  describe('tandem_reload', () => {
-    const handler = getHandler(tools, 'tandem_reload');
+  // ── zerant_reload ─────────────────────────────────────────────────
+  describe('zerant_reload', () => {
+    const handler = getHandler(tools, 'zerant_reload');
 
     it('reloads the page', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -86,9 +86,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_click ──────────────────────────────────────────────────
-  describe('tandem_click', () => {
-    const handler = getHandler(tools, 'tandem_click');
+  // ── zerant_click ──────────────────────────────────────────────────
+  describe('zerant_click', () => {
+    const handler = getHandler(tools, 'zerant_click');
 
     it('clicks an element by selector', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-1' }, completion: { mode: 'confirmed' } });
@@ -100,9 +100,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_type ───────────────────────────────────────────────────
-  describe('tandem_type', () => {
-    const handler = getHandler(tools, 'tandem_type');
+  // ── zerant_type ───────────────────────────────────────────────────
+  describe('zerant_type', () => {
+    const handler = getHandler(tools, 'zerant_type');
 
     it('types text into an input', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-2' }, completion: { mode: 'confirmed' } });
@@ -118,9 +118,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_scroll ─────────────────────────────────────────────────
-  describe('tandem_scroll', () => {
-    const handler = getHandler(tools, 'tandem_scroll');
+  // ── zerant_scroll ─────────────────────────────────────────────────
+  describe('zerant_scroll', () => {
+    const handler = getHandler(tools, 'zerant_scroll');
 
     it('scrolls down by pixels', async () => {
       mockApiCall.mockResolvedValueOnce({});
@@ -139,9 +139,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_press_key ──────────────────────────────────────────────
-  describe('tandem_press_key', () => {
-    const handler = getHandler(tools, 'tandem_press_key');
+  // ── zerant_press_key ──────────────────────────────────────────────
+  describe('zerant_press_key', () => {
+    const handler = getHandler(tools, 'zerant_press_key');
 
     it('presses a key without modifiers', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-3' }, completion: { mode: 'dispatched' } });
@@ -161,9 +161,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_wait_for_load ──────────────────────────────────────────
-  describe('tandem_wait_for_load', () => {
-    const handler = getHandler(tools, 'tandem_wait_for_load');
+  // ── zerant_wait_for_load ──────────────────────────────────────────
+  describe('zerant_wait_for_load', () => {
+    const handler = getHandler(tools, 'zerant_wait_for_load');
 
     it('reports success when page loads', async () => {
       mockApiCall.mockResolvedValueOnce({ timeout: false, scope: { tabId: 'tab-5' } });
@@ -190,9 +190,9 @@ describe('MCP navigation tools', () => {
     });
   });
 
-  // ── tandem_press_key_combo ────────────────────────────────────────
-  describe('tandem_press_key_combo', () => {
-    const handler = getHandler(tools, 'tandem_press_key_combo');
+  // ── zerant_press_key_combo ────────────────────────────────────────
+  describe('zerant_press_key_combo', () => {
+    const handler = getHandler(tools, 'zerant_press_key_combo');
 
     it('sends a key sequence and summarizes result', async () => {
       mockApiCall.mockResolvedValueOnce({ scope: { tabId: 'tab-10' }, completion: { mode: 'dispatched' } });
@@ -224,7 +224,7 @@ describe('MCP navigation tools', () => {
       });
       mockLogActivity.mockResolvedValueOnce(undefined);
 
-      const handler = getHandler(tools, 'tandem_click');
+      const handler = getHandler(tools, 'zerant_click');
       const result = await handler({ selector: '#btn' });
       expectTextContent(result, 'Caveat:');
     });

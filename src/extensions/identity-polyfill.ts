@@ -2,7 +2,7 @@ import type { Session} from 'electron';
 import { session as electronSession, BrowserWindow } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { API_PORT, DEFAULT_PARTITION } from '../utils/constants';
 import { createLogger } from '../utils/logger';
 
@@ -35,7 +35,7 @@ interface LaunchWebAuthFlowResult {
 function generatePolyfillScript(cwsId: string, apiPort: number): string {
   // Use single quotes and no template literals — this runs in the SW, not Node
   return `
-/* Tandem chrome.identity polyfill — injected at load time */
+/* Zerant chrome.identity polyfill — injected at load time */
 (function() {
   if (typeof chrome === 'undefined' || chrome.identity) return;
   var CWS_ID = '${cwsId}';
@@ -52,10 +52,10 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
           return;
         }
         if (!details.interactive) {
-          reject(new Error('Identity API: non-interactive auth is not supported in Tandem'));
+          reject(new Error('Identity API: non-interactive auth is not supported in Zerant'));
           return;
         }
-        /* Interactive flow: ask Tandem main process to open a BrowserWindow */
+        /* Interactive flow: ask Zerant main process to open a BrowserWindow */
         fetch('http://127.0.0.1:' + API_PORT + '/extensions/identity/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ function generatePolyfillScript(cwsId: string, apiPort: number): string {
       });
     }
   };
-  console.log('[Tandem] chrome.identity polyfill active for ' + CWS_ID);
+  console.log('[Zerant] chrome.identity polyfill active for ' + CWS_ID);
 })();
 `;
 }
@@ -119,7 +119,7 @@ export class IdentityPolyfill {
    * @returns List of extension IDs that were patched
    */
   injectPolyfills(): string[] {
-    const extensionsDir = tandemDir('extensions');
+    const extensionsDir = zerantDir('extensions');
     if (!fs.existsSync(extensionsDir)) return [];
 
     const patched: string[] = [];
@@ -151,7 +151,7 @@ export class IdentityPolyfill {
 
         const cwsId = dir.name; // Folder name is the CWS ID
         const polyfillCode = generatePolyfillScript(cwsId, this.apiPort);
-        const marker = '/* Tandem chrome.identity polyfill';
+        const marker = '/* Zerant chrome.identity polyfill';
 
         const existing = fs.readFileSync(swPath, 'utf-8');
 
@@ -194,10 +194,10 @@ export class IdentityPolyfill {
 
   /**
    * Handle a launchWebAuthFlow request from an extension's service worker.
-   * Opens a BrowserWindow with the persist:tandem session and monitors for
+   * Opens a BrowserWindow with the persist:zerant session and monitors for
    * the OAuth redirect to *.chromiumapp.org.
    *
-   * Security: BrowserWindow uses persist:tandem session so all security
+   * Security: BrowserWindow uses persist:zerant session so all security
    * stack protections (NetworkShield, OutboundGuard, etc.) are active.
    */
   async handleLaunchWebAuthFlow(req: LaunchWebAuthFlowRequest): Promise<LaunchWebAuthFlowResult> {
@@ -226,7 +226,7 @@ export class IdentityPolyfill {
         height: 700,
         show: true,
         webPreferences: {
-          session: ses,      // MUST be persist:tandem — Security Stack Rules
+          session: ses,      // MUST be persist:zerant — Security Stack Rules
           nodeIntegration: false,
           contextIsolation: true,
         },

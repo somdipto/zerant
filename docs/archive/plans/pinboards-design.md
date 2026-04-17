@@ -11,13 +11,13 @@
 
 Robin uses Opera's Pinboards daily to collect web content: links for research, images for inspiration, text fragments from articles, and YouTube videos for later. It is a visual moodboard — faster and more flexible than bookmarks, richer than a text note.
 
-Tandem mist this concept fully. Er are page notes (`POST /context/note`) and bookmarks with folders, but no visual board waar you vrij content op kunt gooien and organize.
+Zerant mist this concept fully. Er are page notes (`POST /context/note`) and bookmarks with folders, but no visual board waar you vrij content op kunt gooien and organize.
 
 **Opera has:** Virtuele "magneetborden" waar you links, images, text, screenshots and YouTube-embeds op sleept. Kanban-modus (To Do / In Progress / Done). Deelbaar via link (no login nodig for kijkers). Emoji-reacties. Toegankelijk via sidebar-icon, `opera://pinboards`, and right-click → "Save to Pinboard".
 
-**Tandem currently has:** `POST /context/note` for text notes per URL. Bookmarks with folders (`BookmarkManager`). Sessie-state save. No visual board, no card-layout, no Kanban.
+**Zerant currently has:** `POST /context/note` for text notes per URL. Bookmarks with folders (`BookmarkManager`). Sessie-state save. No visual board, no card-layout, no Kanban.
 
-**Gap:** Tandem mist a plek to webcontent visual te collect and organize. Bookmarks are plat and saai. Page notes zitten vast about één URL. Robin has a creatieve ruimte nodig — a digitaal pinboard.
+**Gap:** Zerant mist a plek to webcontent visual te collect and organize. Bookmarks are plat and saai. Page notes zitten vast about één URL. Robin has a creatieve ruimte nodig — a digitaal pinboard.
 
 ---
 
@@ -82,9 +82,9 @@ Opera biedt the full spectrum:
 
 ---
 
-## Tandem's Approach: Local-First
+## Zerant's Approach: Local-First
 
-Tandem's filosofie is **local, privacy-first, no cloud dependencies**. Pinboards volgen this pattern:
+Zerant's filosofie is **local, privacy-first, no cloud dependencies**. Pinboards volgen this pattern:
 
 - **Opslag:** `~/.tandem/pinboards/boards.json` — a JSON-file with alle boards and items
 - **No server nodig:** Alles is via the existing Express API (localhost:8765) bediend

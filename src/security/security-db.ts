@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import {
   BLOCKLIST_REFRESH_INTERVALS_MS,
   type BaselineEntry,
@@ -128,7 +128,7 @@ export class SecurityDB {
   private stmtMarkScriptHashAnalyzed!: Database.Statement;
 
   constructor() {
-    const dbDir = tandemDir('security');
+    const dbDir = zerantDir('security');
     fs.mkdirSync(dbDir, { recursive: true });
     this.db = new Database(path.join(dbDir, 'shield.db'));
     this.db.pragma('journal_mode = WAL');

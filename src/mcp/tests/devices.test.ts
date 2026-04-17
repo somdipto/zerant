@@ -21,29 +21,29 @@ describe('MCP device tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_device_profiles lists profiles', async () => {
+  it('zerant_device_profiles lists profiles', async () => {
     mockApiCall.mockResolvedValueOnce({ profiles: [] });
-    await getHandler(tools, 'tandem_device_profiles')({});
+    await getHandler(tools, 'zerant_device_profiles')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/device/profiles');
   });
 
-  it('tandem_device_status returns status', async () => {
+  it('zerant_device_status returns status', async () => {
     mockApiCall.mockResolvedValueOnce({ emulating: false });
-    await getHandler(tools, 'tandem_device_status')({});
+    await getHandler(tools, 'zerant_device_status')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/device/status');
   });
 
-  it('tandem_device_emulate emulates a device', async () => {
+  it('zerant_device_emulate emulates a device', async () => {
     mockApiCall.mockResolvedValueOnce({ emulating: true });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    await getHandler(tools, 'tandem_device_emulate')({ device: 'iPhone 15' });
+    await getHandler(tools, 'zerant_device_emulate')({ device: 'iPhone 15' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/device/emulate', expect.objectContaining({ device: 'iPhone 15' }));
   });
 
-  it('tandem_device_reset resets emulation', async () => {
+  it('zerant_device_reset resets emulation', async () => {
     mockApiCall.mockResolvedValueOnce({ emulating: false });
     mockLogActivity.mockResolvedValueOnce(undefined);
-    await getHandler(tools, 'tandem_device_reset')({});
+    await getHandler(tools, 'zerant_device_reset')({});
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/device/reset');
   });
 });

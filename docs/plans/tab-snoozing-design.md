@@ -12,14 +12,14 @@
 During intensive browsing, tabs pile up that are not actively used but still consume memory. Each open tab with webContents uses 50-200MB RAM. With 20+ tabs this adds up quickly.
 
 **Opera has:** Automatic tab suspending after X minutes of inactivity + manual snooze via right-click. Suspended tabs preserve their URL but free up RAM.
-**Tandem currently has:** Resource monitoring via `GET /security/monitor/resources` but no tab suspending.
+**Zerant currently has:** Resource monitoring via `GET /security/monitor/resources` but no tab suspending.
 **Gap:** No memory optimization for inactive tabs.
 
 ---
 
 ## User Experience
 
-> Robin has 25 tabs open after a research session. Tandem uses 3GB RAM.
+> Robin has 25 tabs open after a research session. Zerant uses 3GB RAM.
 > He right-clicks on a group of older tabs → "Snooze all" → they get a 💤 icon.
 > RAM drops to 1.2GB. Later he clicks a sleeping tab → it loads again.
 > Or: he snoozes a tab "until tomorrow" → it reminds him the next day.
@@ -54,7 +54,7 @@ TabSnoozingManager
 
 | File | Change | Function |
 |---------|-----------|---------|
-| `src/api/server.ts` | Extend `TandemAPIOptions` | `class TandemAPI` / `TandemAPIOptions` |
+| `src/api/server.ts` | Extend `ZerantAPIOptions` | `class ZerantAPI` / `ZerantAPIOptions` |
 | `src/main.ts` | Instantiate manager, start timer, cleanup | `startAPI()`, `app.on('will-quit')` |
 | `src/api/routes/tabs.ts` | New snooze endpoints | `function registerTabRoutes()` |
 | `shell/index.html` | 💤 visual + right-click menu | `// === CONTEXT MENU ===`, tab bar render |

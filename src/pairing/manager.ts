@@ -1,13 +1,13 @@
 /**
  * PairingManager — setup code generation, token exchange, and binding lifecycle.
  *
- * Implements the Tandem remote agent pairing model:
+ * Implements the Zerant remote agent pairing model:
  * - One-time setup codes (TDM-XXXX-XXXX, 5-minute TTL)
  * - Durable binding tokens (256-bit, hashed with SHA-256)
  * - Binding states: paired, paused, revoked
  * - Binding removal with audit trail retention
  *
- * Storage: ~/.tandem/pairing/bindings.json (persistent bindings)
+ * Storage: ~/.zerant/pairing/bindings.json (persistent bindings)
  *          In-memory map (ephemeral setup codes)
  */
 
@@ -15,7 +15,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { EventEmitter } from 'events';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('PairingManager');
@@ -150,7 +150,7 @@ export class PairingManager extends EventEmitter {
 
   constructor() {
     super();
-    this.storePath = path.join(tandemDir('pairing'), 'bindings.json');
+    this.storePath = path.join(zerantDir('pairing'), 'bindings.json');
   }
 
   // ─── Persistence ──────────────────────────────────

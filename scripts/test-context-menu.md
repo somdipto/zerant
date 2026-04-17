@@ -1,7 +1,7 @@
-# Context Menu Test Protocol — Tandem Browser
+# Context Menu Test Protocol — Zerant Browser
 
 ## Setup
-1. Start Tandem: `npm start`
+1. Start Zerant: `npm start`
 2. Open a test page with links, images, input fields
    Recommended: https://www.w3schools.com/html/html_links.asp
 

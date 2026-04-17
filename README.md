@@ -1,17 +1,17 @@
-# Tandem Browser
+# Zerant Browser
 
-[![Verify](https://github.com/hydro13/tandem-browser/actions/workflows/verify.yml/badge.svg)](https://github.com/hydro13/tandem-browser/actions/workflows/verify.yml)
-[![CodeQL](https://github.com/hydro13/tandem-browser/actions/workflows/codeql.yml/badge.svg)](https://github.com/hydro13/tandem-browser/actions/workflows/codeql.yml)
+[![Verify](https://github.com/hydro13/zerant-browser/actions/workflows/verify.yml/badge.svg)](https://github.com/hydro13/zerant-browser/actions/workflows/verify.yml)
+[![CodeQL](https://github.com/hydro13/zerant-browser/actions/workflows/codeql.yml/badge.svg)](https://github.com/hydro13/zerant-browser/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/github/package-json/v/hydro13/tandem-browser)](package.json)
-[![Coverage](https://codecov.io/gh/hydro13/tandem-browser/branch/main/graph/badge.svg)](https://codecov.io/gh/hydro13/tandem-browser)
-[![Ask a question](https://img.shields.io/badge/discussions-Q%26A-blue)](https://github.com/hydro13/tandem-browser/discussions/categories/q-a)
+[![Version](https://img.shields.io/github/package-json/v/hydro13/zerant-browser)](package.json)
+[![Coverage](https://codecov.io/gh/hydro13/zerant-browser/branch/main/graph/badge.svg)](https://codecov.io/gh/hydro13/zerant-browser)
+[![Ask a question](https://img.shields.io/badge/discussions-Q%26A-blue)](https://github.com/hydro13/zerant-browser/discussions/categories/q-a)
 
 **The human-AI symbiotic browser. A shared browser workspace for humans and multiple AI agents.**
 
-Tandem Browser is a local-first Electron browser where a human and one or more AI agents browse together. Agents can connect on the same machine or remotely over Tailscale, operate inside the same real browser context, and work across tabs, workspaces, and authenticated sessions while an 8-layer security model keeps web content from attacking the agent layer.
+Zerant Browser is a local-first Electron browser where a human and one or more AI agents browse together. Agents can connect on the same machine or remotely over Tailscale, operate inside the same real browser context, and work across tabs, workspaces, and authenticated sessions while an 8-layer security model keeps web content from attacking the agent layer.
 
-Tandem Browser is built for the web that already exists. It does not require sites to
+Zerant Browser is built for the web that already exists. It does not require sites to
 ship special agent integrations before a human and an AI can work together in
 the same real browser.
 
@@ -20,11 +20,11 @@ MCP client) or a **300+ endpoint HTTP API**. Those are connection layers, not
 the product story. The core idea is shared browser context, human oversight,
 and security around real browser work.
 
-Tandem Browser is the local-first browser layer for real human-AI collaboration, not a wrapper or an automation toy.
+Zerant Browser is the local-first browser layer for real human-AI collaboration, not a wrapper or an automation toy.
 
 ## What's new now
 
-Tandem Browser now supports:
+Zerant Browser now supports:
 
 - local MCP and local HTTP access
 - remote MCP over Tailscale
@@ -33,12 +33,12 @@ Tandem Browser now supports:
 - in-product pairing and onboarding through **Settings -> Connected Agents**
 
 Want the fastest path in?
-- **Try Tandem locally** -> [Quick Start](#quick-start)
+- **Try Zerant locally** -> [Quick Start](#quick-start)
 - **Read the docs and API surfaces** -> [docs/](docs/) and [docs/INDEX.md](docs/INDEX.md)
-- **Ask questions or share workflows** -> [GitHub Discussions](https://github.com/hydro13/tandem-browser/discussions)
+- **Ask questions or share workflows** -> [GitHub Discussions](https://github.com/hydro13/zerant-browser/discussions)
 - **Support development** -> [GitHub Sponsors](https://github.com/sponsors/hydro13)
 
-![Tandem Browser — homescreen](docs/screenshots/tandem-homescreen-hero.jpg)
+![Zerant Browser — homescreen](docs/screenshots/tandem-homescreen-hero.jpg)
 
 ## What Can An Agent Do?
 
@@ -66,7 +66,7 @@ Want the fastest path in?
 
 ## Why Not Just Use Playwright?
 
-Playwright gives you a headless browser that you control. Tandem Browser gives you
+Playwright gives you a headless browser that you control. Zerant Browser gives you
 the user's **real browser** — their tabs, their sessions, their cookies,
 their extensions. The agent doesn't start from scratch; it joins what's
 already there.
@@ -81,11 +81,11 @@ Plus:
 - **Human-in-the-loop**: captchas, risky actions, and ambiguous cases go
   back to the human
 
-## Tandem Browser vs WebMCP
+## Zerant Browser vs WebMCP
 
 WebMCP is an important new idea, but it solves a different layer of the stack.
 
-| | WebMCP | Tandem Browser |
+| | WebMCP | Zerant Browser |
 |---|---|---|
 | Primary scope | Makes individual websites more agent-ready | Makes the real browser a shared workspace for humans and agents |
 | Where it runs | Site/page level, via tools exposed by the site | Browser-wide, across tabs, sessions, workspaces, and existing sites |
@@ -94,14 +94,14 @@ WebMCP is an important new idea, but it solves a different layer of the stack.
 | Best fit | Sites that want to expose cleaner agent tooling | Users and teams that want humans and agents working together in the same browser |
 
 WebMCP helps websites become more agent-readable.
-Tandem Browser helps humans and agents work together in the real browser, across the web.
+Zerant Browser helps humans and agents work together in the real browser, across the web.
 
-These ideas can coexist. Tandem Browser is not anti-WebMCP. If more sites expose
-cleaner agent surfaces, great. But Tandem Browser's job is broader: shared human-AI
+These ideas can coexist. Zerant Browser is not anti-WebMCP. If more sites expose
+cleaner agent surfaces, great. But Zerant Browser's job is broader: shared human-AI
 browser work, local-first control, and governance around what the agent is
 doing.
 
-For the longer version, see [docs/tandem-browser-vs-webmcp.md](docs/tandem-browser-vs-webmcp.md).
+For the longer version, see [docs/zerant-browser-vs-webmcp.md](docs/zerant-browser-vs-webmcp.md).
 
 ## Why this matters
 
@@ -110,13 +110,13 @@ Most AI browser tooling still falls into one of two buckets:
 - browser automation in a separate session
 - AI features bolted onto a browser without true shared context
 
-Tandem Browser takes a different path. Humans and agents work in the same real browser, with the same tabs, sessions, cookies, and visibility, plus explicit handoffs and a serious security model around that collaboration.
+Zerant Browser takes a different path. Humans and agents work in the same real browser, with the same tabs, sessions, cookies, and visibility, plus explicit handoffs and a serious security model around that collaboration.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/hydro13/tandem-browser.git
-cd tandem-browser
+git clone https://github.com/hydro13/zerant-browser.git
+cd zerant-browser
 npm install
 npm start
 ```
@@ -127,32 +127,32 @@ macOS is the primary platform. Linux works. Windows is validated as a remote age
 
 Depending on what you want to do:
 
-- **Try Tandem locally** -> follow the Quick Start above
+- **Try Zerant locally** -> follow the Quick Start above
 - **Connect an agent** -> see [Connect Your AI Agent](#connect-your-ai-agent)
 - **Explore the API and docs** -> browse [docs/](docs/) and [docs/INDEX.md](docs/INDEX.md)
 - **See the product story and website** -> visit [tandembrowser.org](https://tandembrowser.org)
-- **Ask questions or share workflows** -> join [GitHub Discussions](https://github.com/hydro13/tandem-browser/discussions)
-- **Support development** -> sponsor Tandem on [GitHub Sponsors](https://github.com/sponsors/hydro13)
+- **Ask questions or share workflows** -> join [GitHub Discussions](https://github.com/hydro13/zerant-browser/discussions)
+- **Support development** -> sponsor Zerant on [GitHub Sponsors](https://github.com/sponsors/hydro13)
 
 ## Connect Your AI Agent
 
-Tandem supports AI agents running on the same machine or on a remote machine
+Zerant supports AI agents running on the same machine or on a remote machine
 over a private Tailscale network. Both can be active at the same time.
 
-The primary onboarding flow is now inside Tandem itself:
+The primary onboarding flow is now inside Zerant itself:
 
 1. Open **Settings -> Connected Agents**
 2. Choose **On this machine** or **On another machine**
-3. Let Tandem generate the connection instructions
+3. Let Zerant generate the connection instructions
 4. Paste those instructions into your AI agent
 
-Tandem handles the setup-code flow and publishes its own bootstrap/discovery
+Zerant handles the setup-code flow and publishes its own bootstrap/discovery
 surface for the agent at `/agent`, `/agent/manifest`, `/agent/version`, and
 `/skill`.
 
 ### On the same machine (MCP or HTTP)
 
-If your AI runs on the same machine as Tandem, the simplest path is:
+If your AI runs on the same machine as Zerant, the simplest path is:
 
 1. Open **Settings -> Connected Agents**
 2. Choose **On this machine**
@@ -166,13 +166,13 @@ Cursor, Windsurf, or any MCP client):
   "mcpServers": {
     "tandem": {
       "command": "node",
-      "args": ["/path/to/tandem-browser/dist/mcp/server.js"]
+      "args": ["/path/to/zerant-browser/dist/mcp/server.js"]
     }
   }
 }
 ```
 
-Start Tandem, and 250 tools are available immediately.
+Start Zerant, and 250 tools are available immediately.
 
 **HTTP API** — Use the local API token directly:
 
@@ -189,11 +189,11 @@ curl -sS http://127.0.0.1:8765/tabs/list \
 ### On another machine (Tailscale)
 
 Remote agents connect over a private Tailscale network. Both machines must be
-on the same tailnet. Tandem is never exposed to the public internet.
+on the same tailnet. Zerant is never exposed to the public internet.
 
 1. Open **Settings -> Connected Agents**
 2. Choose **On another machine**
-3. Tandem detects the Tailscale address and generates a ready-to-use instruction block
+3. Zerant detects the Tailscale address and generates a ready-to-use instruction block
 4. Paste that instruction block into your remote AI agent
 5. The AI reads `/agent`, exchanges the setup code for a permanent token, and connects
 
@@ -238,7 +238,7 @@ curl -sS http://<tandem-tailscale-ip>:8765/status \
 
 ### Discovery
 
-A running Tandem instance publishes its own version-matched discovery surface:
+A running Zerant instance publishes its own version-matched discovery surface:
 
 - `GET /agent` — human-readable bootstrap page
 - `GET /agent/manifest` — machine-readable endpoint manifest
@@ -249,7 +249,7 @@ return correct URLs whether accessed locally or over Tailscale.
 
 ## Security Model
 
-Tandem Browser treats security as core architecture, not an afterthought. When an AI
+Zerant Browser treats security as core architecture, not an afterthought. When an AI
 has access to your browser, every ad network, tracking pixel, and malicious
 domain is in the agent's attack surface.
 
@@ -269,7 +269,7 @@ the agent layer. That's not something you bolt onto Chrome after the fact.
 
 ## The Browser
 
-Beyond the agent layer, Tandem Browser is a full daily-driver browser:
+Beyond the agent layer, Zerant Browser is a full daily-driver browser:
 
 - **Left sidebar**: Telegram, WhatsApp, Discord, Slack, Gmail, Calendar,
   Instagram, X — all in isolated sessions alongside your browsing
@@ -302,7 +302,7 @@ All local-first. No cloud dependency.
 Public **developer preview** — real project, early public state, open for
 contributors, not yet a polished mass-user release.
 
-![Tandem Browser — browsing](docs/screenshots/tandem-browser-interaction.png)
+![Zerant Browser — browsing](docs/screenshots/zerant-browser-interaction.png)
 
 - Primary platform: macOS
 - Secondary platform: Linux
@@ -313,17 +313,17 @@ contributors, not yet a polished mass-user release.
 
 ## Community
 
-Have a question, idea, or want to show what you've built with Tandem Browser?
-Join [GitHub Discussions](https://github.com/hydro13/tandem-browser/discussions).
+Have a question, idea, or want to show what you've built with Zerant Browser?
+Join [GitHub Discussions](https://github.com/hydro13/zerant-browser/discussions).
 
 - **Q&A** — troubleshooting, "how do I…" questions
 - **Ideas** — feature proposals before they become issues
 - **Show and Tell** — your setups, workflows, and screenshots
 
 For bugs and concrete feature requests, open an
-[issue](https://github.com/hydro13/tandem-browser/issues).
+[issue](https://github.com/hydro13/zerant-browser/issues).
 
-If Tandem Browser is useful to you, or relevant to your company, sponsorship directly funds continued development and security work: [GitHub Sponsors](https://github.com/sponsors/hydro13).
+If Zerant Browser is useful to you, or relevant to your company, sponsorship directly funds continued development and security work: [GitHub Sponsors](https://github.com/sponsors/hydro13).
 
 ## Contributing
 
@@ -347,7 +347,7 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md) and [PROJECT.md](PROJECT.md).
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [skill/SKILL.md](skill/SKILL.md) | Agent instruction manual |
 | [SECURITY.md](SECURITY.md) | Vulnerability reporting |
-| [Discussions](https://github.com/hydro13/tandem-browser/discussions) | Community Q&A, ideas, show & tell |
+| [Discussions](https://github.com/hydro13/zerant-browser/discussions) | Community Q&A, ideas, show & tell |
 | [docs/](docs/) | Full documentation |
 
 ## License

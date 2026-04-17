@@ -4,7 +4,7 @@
 
 Two targeted security fixes. No new files needed — all changes are in existing files.
 
-**Fix 1:** `ws://127.0.0.1:18789/` (Tandem's own WebSocket) triggers a false positive `unknown-ws-endpoint` warning. Add a localhost exclusion in `analyzeWebSocket()`.
+**Fix 1:** `ws://127.0.0.1:18789/` (Zerant's own WebSocket) triggers a false positive `unknown-ws-endpoint` warning. Add a localhost exclusion in `analyzeWebSocket()`.
 
 **Fix 2:** HTTP redirects to malicious destinations bypass all security layers because `onBeforeRedirect` fires after Electron already follows the redirect. Switch to `onHeadersReceived` which fires before and supports `cancel: true`.
 
@@ -22,7 +22,7 @@ Two targeted security fixes. No new files needed — all changes are in existing
 In `analyzeWebSocket()`, after `const wsDomain = this.extractDomain(url)`, add a localhost check:
 
 ```typescript
-// Skip internal/Tandem WebSocket endpoints (e.g. ws://127.0.0.1:18789/)
+// Skip internal/Zerant WebSocket endpoints (e.g. ws://127.0.0.1:18789/)
 try {
   const wsUrl = new URL(url);
   if (wsUrl.hostname === 'localhost' || wsUrl.hostname === '127.0.0.1' || wsUrl.hostname === '::1') {
@@ -248,7 +248,7 @@ npx tsc --noEmit
 # → 0 errors
 
 # Test 1: WS false positive gone
-# Restart Tandem, wait 10 sec, then:
+# Restart Zerant, wait 10 sec, then:
 sqlite3 ~/.tandem/security/shield.db \
   "SELECT event_type, domain, severity FROM events WHERE domain='127.0.0.1' AND event_type='warned' ORDER BY timestamp DESC LIMIT 5;"
 # → Should show 0 new rows (the ws://127.0.0.1:18789/ is no longer flagged)
@@ -291,7 +291,7 @@ curl -s http://127.0.0.1:8765/security/status | python3 -m json.tool | head -10
 fix(security): real redirect blocking via onHeadersReceived + WS false positive
 
 - outbound-guard.ts: skip localhost/127.0.0.1/::1 in analyzeWebSocket()
-  (Tandem's own ws://127.0.0.1:18789/ no longer logs unknown-ws-endpoint)
+  (Zerant's own ws://127.0.0.1:18789/ no longer logs unknown-ws-endpoint)
 - dispatcher.ts: HeadersReceivedConsumer now supports cancel: true
   (onHeadersReceived can now cancel redirects before Electron follows them)
 - guardian.ts: Guardian:RedirectBlock consumer at priority 5

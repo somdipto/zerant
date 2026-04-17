@@ -1,13 +1,13 @@
-# Tandem Browser - Linux Versie TODO
+# Zerant Browser - Linux Versie TODO
 
 > Dit document is bedoeld for the Claude Code session op Linux that the macOS-specific code gaat aanpassen.
-> The repo staat op: https://github.com/hydro13/tandem-browser (private)
+> The repo staat op: https://github.com/hydro13/zerant-browser (private)
 
 ## First stappen op Linux
 
 ```bash
-git clone https://github.com/hydro13/tandem-browser.git
-cd tandem-browser
+git clone https://github.com/hydro13/zerant-browser.git
+cd zerant-browser
 npm install
 npm start   # Zal waarschijnlijk falen vanwege xattr — that is bug #1
 ```
@@ -226,5 +226,5 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 - [ ] Settings page shows no "Apple Photos" toggle
 - [ ] Voice input works (Ctrl+Shift+M)
 - [ ] Draw mode works (Ctrl+Shift+D)
-- [ ] Screenshots slaan op in ~/Pictures/Tandem
+- [ ] Screenshots slaan op in ~/Pictures/Zerant
 - [ ] App closes correct bij sluiten or alle vensters

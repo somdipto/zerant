@@ -106,7 +106,7 @@ globalShortcut.register('CmdOrCtrl+Shift+N', () => {
 });
 ```
 
-**Aanbeveling:** Usage the Menu-approach if Tandem already a applicatie-menu has. Dit is betrouwbaarder then `globalShortcut` (that can conflicteren with systeemshortcuts).
+**Aanbeveling:** Usage the Menu-approach if Zerant already a applicatie-menu has. Dit is betrouwbaarder then `globalShortcut` (that can conflicteren with systeemshortcuts).
 
 ### Step 3: API endpoint POST /window/private
 
@@ -232,7 +232,7 @@ webview.setAttribute('partition', partition);
 
 ### Stap 8: Beperkingen in private-modus
 
-**Wat:** In private-modus: no history save, no form memory, no site memory. Dit is afgehandeld doordat the in-memory partition no data to disk schrijft. Maar we must also expliciet voorkomen that Tandem's own systemen data loggen.
+**Wat:** In private-modus: no history save, no form memory, no site memory. Dit is afgehandeld doordat the in-memory partition no data to disk schrijft. Maar we must also expliciet voorkomen that Zerant's own systemen data loggen.
 
 **File:** `src/main.ts`
 
@@ -262,7 +262,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 # Verwacht: a new window opens with paarse titelbalk
 
 # Test 2: Verifieer that Cmd+Shift+N works
-# (handmatige test — druk Cmd+Shift+N in Tandem)
+# (handmatige test — druk Cmd+Shift+N in Zerant)
 # Verwacht: new window with paarse header and "🔒 Private" badge
 
 # Test 3: Browse in private-window
@@ -327,6 +327,6 @@ curl -H "Authorization: Bearer $TOKEN" \
 - [ ] `createWindow()` contains waarschijnlijk veel initialisatie-logica (stealth patches, event listeners, manager registratie) — the private-window has not alles hiervan nodig. Kopieer selectief, not blindelings.
 - [ ] The API server (`localhost:8765`) draait in the main process and is shared. The private-window can the same API use, but pas op: API calls vanuit the private-window mogen no tabs in the main window beïnvloeden. Overweeg a `windowId` parameter toe te voegen about tab-gerelateerde endpoints.
 - [ ] `crypto.randomUUID()` is beschikbaar in Node.js 19+ and Electron 40 — verifieer beschikbaarheid.
-- [ ] Stealth patches: if Tandem stealth patches toepast via `session.defaultSession`, must the same patches also op the private-session be toegepast. Check `webRequest` handlers, User-Agent overrides, etc.
+- [ ] Stealth patches: if Zerant stealth patches toepast via `session.defaultSession`, must the same patches also op the private-session be toegepast. Check `webRequest` handlers, User-Agent overrides, etc.
 - [ ] macOS `titleBarStyle: 'hiddenInset'` must in beide vensters hetzelfde are for consistent behavior or the traffic lights.
 - [ ] Bij the sluiten or the private-window must `session.clearStorageData()` be aangeroepen — but the `'closed'` event can te shows komen. Overweeg `'close'` (vóór sluiten) in plaats or `'closed'` (na sluiten).

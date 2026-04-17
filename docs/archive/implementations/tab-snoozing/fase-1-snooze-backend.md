@@ -20,7 +20,7 @@ After this phase: Wingman can tabs snoozen + waken via API. No UI yet.
 |---------|--------------------------|--------|
 | `AGENTS.md` | — (read fully) | Anti-detect rules + code stijl |
 | `src/main.ts` | `startAPI()`, `app.on('will-quit')` | Manager registreren + cleanup |
-| `src/api/server.ts` | `TandemAPIOptions`, `class TandemAPI` | New manager add |
+| `src/api/server.ts` | `ZerantAPIOptions`, `class ZerantAPI` | New manager add |
 | `src/api/routes/tabs.ts` | `registerTabRoutes()` | New endpoints hier add |
 | `src/tabs/manager.ts` | `TabManager`, `getActiveWebContents()`, `getTabById()` | Existing tab access patterns |
 | `src/utils/paths.ts` | `tandemDir()`, `ensureDir()` | Storage location helpers |
@@ -184,7 +184,7 @@ router.post('/tabs/snooze-inactive', async (req, res) => {
 
 ### Step 3: Manager Wiring
 
-**In `src/api/server.ts`** — voeg toe about `TandemAPIOptions` interface:
+**In `src/api/server.ts`** — voeg toe about `ZerantAPIOptions` interface:
 ```typescript
 snoozeManager: SnoozeManager;
 ```
@@ -194,7 +194,7 @@ snoozeManager: SnoozeManager;
 const snoozeManager = new SnoozeManager(tabManager!);
 snoozeManager.startAutoSnooze(30); // auto-snooze na 30 min inactiviteit
 
-// In new TandemAPI({...}):
+// In new ZerantAPI({...}):
 snoozeManager: snoozeManager!,
 ```
 

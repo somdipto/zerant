@@ -39,7 +39,7 @@ describe('Tab Routes', () => {
         'about:blank',
         undefined,
         'user',
-        'persist:tandem',
+        'persist:zerant',
         true,
         undefined,
       );
@@ -60,7 +60,7 @@ describe('Tab Routes', () => {
         'https://example.com',
         'g1',
         'user',
-        'persist:tandem',
+        'persist:zerant',
         false,
         undefined,
       );
@@ -75,7 +75,7 @@ describe('Tab Routes', () => {
         'about:blank',
         undefined,
         'wingman',
-        'persist:tandem',
+        'persist:zerant',
         true,
         undefined,
       );
@@ -94,7 +94,7 @@ describe('Tab Routes', () => {
         'about:blank',
         undefined,
         'codex',
-        'persist:tandem',
+        'persist:zerant',
         true,
         undefined,
       );
@@ -110,7 +110,7 @@ describe('Tab Routes', () => {
         'https://discord.com/channels/@me',
         undefined,
         'user',
-        'persist:tandem',
+        'persist:zerant',
         true,
         { inheritSessionFrom: 'tab-9' },
       );
@@ -155,7 +155,7 @@ describe('Tab Routes', () => {
         'https://example.com',
         undefined,
         'user',
-        'persist:tandem',
+        'persist:zerant',
         false,
         undefined,
       );

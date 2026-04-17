@@ -81,30 +81,30 @@ export function selectRegion() {
 }
 
 export async function captureScreenshotMode(mode) {
-  if (!window.tandem) return;
+  if (!window.zerant) return;
 
   if (mode === 'region') {
     const region = await selectRegion();
     if (!region) return;
     // Wait two frames so the overlay is fully painted away before capture
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    await window.tandem.captureScreenshot('region', region);
+    await window.zerant.captureScreenshot('region', region);
     return;
   }
 
-  await window.tandem.captureScreenshot(mode);
+  await window.zerant.captureScreenshot(mode);
 }
 
 /**
  * Wire the screenshot button. No renderer-bridge dependency today —
- * the menu is shown via window.tandem.showScreenshotMenu (IPC preload).
+ * the menu is shown via window.zerant.showScreenshotMenu (IPC preload).
  * Kept as a no-arg init to stay symmetric with other wingman/* init fns.
  */
 export function initScreenshot() {
   screenshotButton.addEventListener('click', (event) => {
     event.stopPropagation();
     const rect = screenshotButton.getBoundingClientRect();
-    void window.tandem?.showScreenshotMenu({
+    void window.zerant?.showScreenshotMenu({
       x: Math.round(rect.left),
       y: Math.round(rect.bottom + 6),
     });

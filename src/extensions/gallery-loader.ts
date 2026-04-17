@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { GalleryExtension, ExtensionCategory } from './gallery-defaults';
 import { GALLERY_DEFAULTS } from './gallery-defaults';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('GalleryLoader');
@@ -37,7 +37,7 @@ export interface GalleryResponse {
  * GalleryLoader — Two-layer gallery with extensible merge architecture.
  *
  * Layer 1: Built-in defaults from gallery-defaults.ts (shipped with the app)
- * Layer 2: User overrides from ~/.tandem/extensions/gallery.json (optional)
+ * Layer 2: User overrides from ~/.zerant/extensions/gallery.json (optional)
  *
  * Merge: user entries override defaults by ID, new user entries are appended.
  * Architecture allows adding a third layer (remote gallery) without code changes.
@@ -46,7 +46,7 @@ export class GalleryLoader {
   private extensionsDir: string;
 
   constructor() {
-    this.extensionsDir = tandemDir('extensions');
+    this.extensionsDir = zerantDir('extensions');
   }
 
   /**

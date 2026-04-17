@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { resolvePathWithinRoot, tryParseUrl } from '../utils/security';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ const SENSITIVE_TYPES = ['password'];
 /**
  * FormMemoryManager — Remembers every form the user fills in.
  *
- * Stores form data per domain in ~/.tandem/forms/{domain}.json.
+ * Stores form data per domain in ~/.zerant/forms/{domain}.json.
  * Sensitive fields (type=password) are AES-256-GCM encrypted.
  */
 export class FormMemoryManager {
@@ -48,7 +48,7 @@ export class FormMemoryManager {
   // === 2. Constructor ===
 
   constructor() {
-    const baseDir = tandemDir();
+    const baseDir = zerantDir();
     this.formsDir = path.join(baseDir, 'forms');
     this.configPath = path.join(baseDir, 'config.json');
 

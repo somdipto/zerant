@@ -30,7 +30,7 @@ describe('Bootstrap Routes', () => {
       const res = await request(app).get('/agent');
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toContain('text/markdown');
-      expect(res.text).toContain('Tandem Browser');
+      expect(res.text).toContain('Zerant Browser');
       expect(res.text).toContain('TDM-XXXX-XXXX');
     });
 
@@ -62,7 +62,7 @@ describe('Bootstrap Routes', () => {
     it('returns version and capability info', async () => {
       const res = await request(app).get('/agent/version');
       expect(res.status).toBe(200);
-      expect(res.body.name).toBe('tandem-browser');
+      expect(res.body.name).toBe('zerant-browser');
       expect(res.body.version).toBe('0.73.0');
       expect(res.body.capabilityFamilies).toContain('browser');
       expect(res.body.transports.http.available).toBe(true);
@@ -79,7 +79,7 @@ describe('Bootstrap Routes', () => {
     it('returns full manifest', async () => {
       const res = await request(app).get('/agent/manifest');
       expect(res.status).toBe(200);
-      expect(res.body.name).toBe('tandem-browser');
+      expect(res.body.name).toBe('zerant-browser');
       expect(res.body.pairing.setupCodeFormat).toBe('TDM-XXXX-XXXX');
       expect(res.body.pairing.exchangeEndpoint).toBe('/pairing/exchange');
       expect(res.body.endpoints.bootstrap).toBeDefined();
@@ -140,7 +140,7 @@ describe('Bootstrap Routes', () => {
       const res = await request(app).get('/skill');
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toContain('text/markdown');
-      expect(res.text).toContain('Tandem Browser Skill');
+      expect(res.text).toContain('Zerant Browser Skill');
       expect(res.text).toContain('snapshot');
     });
 

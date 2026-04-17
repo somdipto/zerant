@@ -1,20 +1,20 @@
-# Phase 1: MCP Server — Claude Code/Cowork ↔ Tandem Bridge
+# Phase 1: MCP Server — Claude Code/Cowork ↔ Zerant Bridge
 
 > 2-3 sessions | Dependency: only `@modelcontextprotocol/sdk`
-> Robin has Max Pro — Claude works via Cowork/Claude Code → MCP → Tandem API.
+> Robin has Max Pro — Claude works via Cowork/Claude Code → MCP → Zerant API.
 
 ---
 
 ## Goal
 
-Claude Code and Cowork can via MCP tools the Tandem Browser bedienen. MCP is DE primaire Claude-integratie — er is no directe API backend.
+Claude Code and Cowork can via MCP tools the Zerant Browser bedienen. MCP is DE primaire Claude-integratie — er is no directe API backend.
 
 ## Hoe the works
 
 ```
 Robin opens Cowork → Cowork leest MCP config → start tandem-mcp bridge
-tandem-mcp maakt HTTP calls to localhost:8765 → Tandem API antwoordt
-Tandem MOET draaien for MCP works.
+tandem-mcp maakt HTTP calls to localhost:8765 → Zerant API antwoordt
+Zerant MOET draaien for MCP works.
 ```
 
 ## Existing API (localhost:8765)
@@ -46,13 +46,13 @@ GET  /history/search    body: { query }
 ## Sessie 1.1: Basis MCP Server + Read/Navigatie Tools
 
 ### Pre-checks
-- [ ] Tandem draait op :8765 (`curl http://localhost:8765/status`)
+- [ ] Zerant draait op :8765 (`curl http://localhost:8765/status`)
 - [ ] `npm install @modelcontextprotocol/sdk` succesvol
 - [ ] API token exists (`cat ~/.tandem/api-token`)
 
 ### Files
 
-**`src/mcp/api-client.ts`** — HTTP wrapper for Tandem API:
+**`src/mcp/api-client.ts`** — HTTP wrapper for Zerant API:
 ```typescript
 import * as fs from 'fs';
 import * as path from 'path';
@@ -77,7 +77,7 @@ export async function apiCall(method: string, endpoint: string, body?: any) {
   });
 
   if (!response.ok) {
-    throw new Error(`Tandem API error: ${response.status} ${response.statusText}`);
+    throw new Error(`Zerant API error: ${response.status} ${response.statusText}`);
   }
 
   const contentType = response.headers.get('content-type');
@@ -114,7 +114,7 @@ export async function apiCall(method: string, endpoint: string, body?: any) {
    ```
 3. **Content truncatie:** `tandem_read_page()` stuurt markdown (not HTML), max 2000 woorden. Usage ContentExtractor.
 4. **Activity logging:** Elke tool call → `POST /chat` with `from: "claude"` zodat Robin the sees in the Kees panel.
-5. **Error if Tandem not draait:** `"Tandem Browser is not actief. Start Tandem with 'npm start' and probeer again."`
+5. **Error if Zerant not draait:** `"Zerant Browser is not actief. Start Zerant with 'npm start' and probeer again."`
 
 ### Package.json
 ```json
@@ -124,7 +124,7 @@ export async function apiCall(method: string, endpoint: string, body?: any) {
 ### Verificatie
 - [ ] MCP server start without errors
 - [ ] Cowork can `tandem_read_page()` aanroepen
-- [ ] Cowork can navigeren and page verandert in Tandem
+- [ ] Cowork can navigeren and page verandert in Zerant
 - [ ] Screenshot geeft zichtbare image
 - [ ] Tool calls verschijnen in Kees panel
 - [ ] `npx tsc` — zero errors
@@ -185,7 +185,7 @@ export async function apiCall(method: string, endpoint: string, body?: any) {
   "mcpServers": {
     "tandem": {
       "command": "node",
-      "args": ["/Users/robinwaslander/Documents/dev/tandem-browser/dist/mcp/server.js"]
+      "args": ["/Users/robinwaslander/Documents/dev/zerant-browser/dist/mcp/server.js"]
     }
   }
 }
@@ -212,6 +212,6 @@ Implementeer in `tandem_read_page`:
 
 1. **MCP SDK versie:** Pin `^1.26.0`, not `latest`
 2. **stdio transport:** stdout = protocol, stderr = debug logging
-3. **Tandem must draaien:** Geef duidelijke error if API not beschikbaar
+3. **Zerant must draaien:** Geef duidelijke error if API not beschikbaar
 4. **Screenshot formaat:** Usage MCP `image` content type
 5. **Async:** Alle API calls are async, MCP tools must this afhandelen

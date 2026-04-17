@@ -12,7 +12,7 @@ import type { UpdateCheckResult, UpdateResult, UpdateState, InstalledExtension }
 import { UpdateChecker } from './update-checker';
 import type { ExtensionConflict } from './conflict-detector';
 import { ConflictDetector } from './conflict-detector';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { API_PORT } from '../utils/constants';
 import { createLogger } from '../utils/logger';
 
@@ -136,7 +136,7 @@ export class ExtensionManager {
   // === 4. Public methods ===
 
   /**
-   * Initialize: load all existing extensions from ~/.tandem/extensions/.
+   * Initialize: load all existing extensions from ~/.zerant/extensions/.
    * Called once at app startup.
    */
   async init(session: Session): Promise<void> {
@@ -247,7 +247,7 @@ export class ExtensionManager {
     }
 
     // Remove from disk
-    const extensionsDir = tandemDir('extensions');
+    const extensionsDir = zerantDir('extensions');
     const extPath = path.join(extensionsDir, extensionId);
     if (fs.existsSync(extPath)) {
       try {
@@ -273,7 +273,7 @@ export class ExtensionManager {
       return resolved.metadata;
     }
 
-    const extensionsDir = tandemDir('extensions');
+    const extensionsDir = zerantDir('extensions');
     const extensionPath = path.join(extensionsDir, extensionId);
     return this.readExtensionMetadata(extensionPath, extensionId);
   }
@@ -311,7 +311,7 @@ export class ExtensionManager {
     if (trustLevel === 'unknown') {
       return this.buildDeniedDecision(extensionId, routePath, policy.scope, trustLevel, permissions,
         resolved.runtimeId, resolved.storageId, resolved.extensionName,
-        `Denied ${policy.scope} for ${auditLabel} because Tandem could not resolve extension metadata`);
+        `Denied ${policy.scope} for ${auditLabel} because Zerant could not resolve extension metadata`);
     }
 
     if (policy.minimumLevel === 'trusted' && trustLevel !== 'trusted') {
@@ -425,7 +425,7 @@ export class ExtensionManager {
 
   /** Analyze a single extension's manifest for conflicts */
   getConflictsForExtension(extensionId: string): ExtensionConflict[] {
-    const extensionsDir = tandemDir('extensions');
+    const extensionsDir = zerantDir('extensions');
     const manifestPath = path.join(extensionsDir, extensionId, 'manifest.json');
     return this.conflictDetector.analyzeManifest(manifestPath);
   }
@@ -456,7 +456,7 @@ export class ExtensionManager {
    * @returns Array of loaded extension names
    */
   async loadInSession(session: Session): Promise<string[]> {
-    const extensionsDir = tandemDir('extensions');
+    const extensionsDir = zerantDir('extensions');
     const loaded: string[] = [];
 
     try {

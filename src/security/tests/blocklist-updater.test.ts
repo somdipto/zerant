@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const mockedPaths = vi.hoisted(() => ({ root: '' }));
 
 vi.mock('../../utils/paths', () => ({
-  tandemDir: (...segments: string[]) => path.join(mockedPaths.root, ...segments),
+  zerantDir: (...segments: string[]) => path.join(mockedPaths.root, ...segments),
 }));
 
 import { BlocklistUpdater, BLOCKLIST_SOURCES, parseBlocklistContent } from '../blocklists/updater';
@@ -111,7 +111,7 @@ describe('BlocklistUpdater tiered refresh', () => {
   });
 
   it('updates only due sources and records failures per source', async () => {
-    mockedPaths.root = fs.mkdtempSync(path.join(os.tmpdir(), 'tandem-updater-'));
+    mockedPaths.root = fs.mkdtempSync(path.join(os.tmpdir(), 'zerant-updater-'));
 
     const shield = { reload: vi.fn() };
     const updater = new BlocklistUpdater(db as never, shield as never);
@@ -194,7 +194,7 @@ describe('BlocklistUpdater tiered refresh', () => {
   });
 
   it('reports source freshness based on the configured tier cadence', () => {
-    mockedPaths.root = fs.mkdtempSync(path.join(os.tmpdir(), 'tandem-updater-'));
+    mockedPaths.root = fs.mkdtempSync(path.join(os.tmpdir(), 'zerant-updater-'));
 
     const shield = { reload: vi.fn() };
     const updater = new BlocklistUpdater(db as never, shield as never);

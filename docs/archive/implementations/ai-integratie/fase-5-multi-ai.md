@@ -7,7 +7,7 @@
 
 ## Goal
 
-Multiple AI's simultaneously actief in Tandem. OpenClaw (Kees) and Claude werken parallel. Robin orchestrates wie wat doet.
+Multiple AI's simultaneously actief in Zerant. OpenClaw (Kees) and Claude werken parallel. Robin orchestrates wie wat doet.
 
 ---
 

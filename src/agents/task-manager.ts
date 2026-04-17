@@ -2,7 +2,7 @@
  * TaskManager — Agent Autonomy (Phase 4)
  *
  * Manages AI tasks, approval workflow, risk assessment, and emergency stop.
- * Tasks are persisted to ~/.tandem/tasks/ as JSON files.
+ * Tasks are persisted to ~/.zerant/tasks/ as JSON files.
  *
  * Risk levels:
  * - none: read, screenshot, scroll → auto-approve
@@ -13,7 +13,7 @@
 
 import fs from 'fs';
 import { EventEmitter } from 'events';
-import { tandemDir, ensureDir } from '../utils/paths';
+import { zerantDir, ensureDir } from '../utils/paths';
 import { assertSinglePathSegment, hostnameMatches, resolvePathWithinRoot, tryParseUrl } from '../utils/security';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -158,7 +158,7 @@ export class TaskManager extends EventEmitter {
 
   constructor() {
     super();
-    this.tasksDir = ensureDir(tandemDir('tasks'));
+    this.tasksDir = ensureDir(zerantDir('tasks'));
     this.autonomy = this.loadAutonomySettings();
     this.activityLog = this.loadActivityLog();
   }
@@ -580,7 +580,7 @@ export class TaskManager extends EventEmitter {
   // === 7. Private helpers ===
 
   private loadAutonomySettings(): AutonomySettings {
-    const settingsPath = tandemDir('autonomy-settings.json');
+    const settingsPath = zerantDir('autonomy-settings.json');
     try {
       if (fs.existsSync(settingsPath)) {
         const raw = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
@@ -591,7 +591,7 @@ export class TaskManager extends EventEmitter {
   }
 
   private saveAutonomySettings(): void {
-    const settingsPath = tandemDir('autonomy-settings.json');
+    const settingsPath = zerantDir('autonomy-settings.json');
     try {
       fs.writeFileSync(settingsPath, JSON.stringify(this.autonomy, null, 2));
     } catch { /* silent */ }
@@ -617,7 +617,7 @@ export class TaskManager extends EventEmitter {
   }
 
   private loadActivityLog(): TaskActivityEntry[] {
-    const logPath = tandemDir('activity-log.json');
+    const logPath = zerantDir('activity-log.json');
     try {
       if (fs.existsSync(logPath)) {
         const entries = JSON.parse(fs.readFileSync(logPath, 'utf-8'));
@@ -629,7 +629,7 @@ export class TaskManager extends EventEmitter {
   }
 
   private saveActivityLog(): void {
-    const logPath = tandemDir('activity-log.json');
+    const logPath = zerantDir('activity-log.json');
     try {
       // Keep last 500 entries
       const trimmed = this.activityLog.slice(-500);

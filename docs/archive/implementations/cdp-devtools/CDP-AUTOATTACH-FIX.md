@@ -154,7 +154,7 @@ Use Step 3 (pass webContents directly). It's more robust than timing hacks with 
 
 ## Testing
 
-1. Start Tandem — CDP should auto-attach (check `curl http://127.0.0.1:8765/devtools/status`)
+1. Start Zerant — CDP should auto-attach (check `curl http://127.0.0.1:8765/devtools/status`)
 2. Select text on the first page — should appear in activity-log
 3. Open new tab, navigate somewhere — CDP should re-attach
 4. Select text on the new tab — should appear in activity-log

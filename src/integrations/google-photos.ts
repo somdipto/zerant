@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { API_PORT } from '../utils/constants';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import type { ConfigManager } from '../config/manager';
 import { createLogger } from '../utils/logger';
 
@@ -85,7 +85,7 @@ export class GooglePhotosManager {
   // === 2. Constructor ===
   constructor(configManager: ConfigManager) {
     this.configManager = configManager;
-    const baseDir = tandemDir();
+    const baseDir = zerantDir();
     if (!fs.existsSync(baseDir)) {
       fs.mkdirSync(baseDir, { recursive: true });
     }
@@ -248,7 +248,7 @@ export class GooglePhotosManager {
       body: JSON.stringify({
         newMediaItems: [
           {
-            description: 'Uploaded from Tandem Browser',
+            description: 'Uploaded from Zerant Browser',
             simpleMediaItem: {
               uploadToken,
               fileName: filename,

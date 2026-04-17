@@ -1,7 +1,7 @@
 # CDP DevTools Bridge — Kees gets full DevTools toegang
 
 > **Status:** PLAN  
-> **Goal:** Kees (AI copiloot) gets via the Tandem API full toegang tot Chrome DevTools Protocol, zodat he console logs can read, network requests can inspecteren, DOM can queryen, performance can profilen, and storage can uitlezen — allemaal via HTTP endpoints.  
+> **Goal:** Kees (AI copiloot) gets via the Zerant API full toegang tot Chrome DevTools Protocol, zodat he console logs can read, network requests can inspecteren, DOM can queryen, performance can profilen, and storage can uitlezen — allemaal via HTTP endpoints.  
 > **Approach:** 3 runs, new module `src/devtools/`, geïntegreerd in API server
 
 ---
@@ -10,7 +10,7 @@
 
 ```
 ┌──────────────────────────────────────────────┐
-│                  Tandem API                    │
+│                  Zerant API                    │
 │              localhost:8765                     │
 │                                                │
 │  GET  /devtools/status                         │
@@ -33,7 +33,7 @@
            │
 ┌──────────▼───────────────────────────────────┐
 │              Active Tab WebContents            │
-│          (webview in Tandem Browser)           │
+│          (webview in Zerant Browser)           │
 └──────────────────────────────────────────────┘
 ```
 
@@ -69,12 +69,12 @@ CDP lifecycle management, console log buffering, raw CDP command proxy, and alle
 Read these files first for context on the project structure:
 - src/network/inspector.ts (example or an existing manager — follow this pattern)
 - src/tabs/manager.ts (you'll need TabManager to get active webContents)
-- src/api/server.ts lines 60-130 (TandemAPIOptions, TandemAPI class structure)
+- src/api/server.ts lines 60-130 (ZerantAPIOptions, ZerantAPI class structure)
 - src/api/server.ts lines 1400-1440 (existing /network/* routes as pattern)
 - src/main.ts lines 165-230 (manager initialization in startAPI)
 
 ## Context
-Tandem Browser is an Electron app with a <webview>-based tab system. Each tab has a webContents. Kees (an AI wingman) interacts via the REST API at localhost:8765. We're building a DevTools bridge so Kees can read console logs, inspect network traffic with response bodies, query the DOM, and execute arbitrary CDP commands — all via API endpoints.
+Zerant Browser is an Electron app with a <webview>-based tab system. Each tab has a webContents. Kees (an AI wingman) interacts via the REST API at localhost:8765. We're building a DevTools bridge so Kees can read console logs, inspect network traffic with response bodies, query the DOM, and execute arbitrary CDP commands — all via API endpoints.
 
 Electron's `webContents.debugger` API provides Chrome DevTools Protocol access:
 ```typescript
@@ -1045,16 +1045,16 @@ if (devToolsManager) devToolsManager.destroy();
 ```
 The DevTools being open will conflict with our CDP attach. Instead, add a toggle via API.
 
-### Integration: Add to TandemAPIOptions and TandemAPI
+### Integration: Add to ZerantAPIOptions and ZerantAPI
 
 In `src/api/server.ts`:
 
-1. Add to TandemAPIOptions interface:
+1. Add to ZerantAPIOptions interface:
 ```typescript
 devToolsManager: DevToolsManager;
 ```
 
-2. Add to TandemAPI class properties:
+2. Add to ZerantAPI class properties:
 ```typescript
 private devToolsManager: DevToolsManager;
 ```
@@ -1064,7 +1064,7 @@ private devToolsManager: DevToolsManager;
 this.devToolsManager = opts.devToolsManager;
 ```
 
-4. In startAPI() in main.ts, add to the TandemAPI constructor options:
+4. In startAPI() in main.ts, add to the ZerantAPI constructor options:
 ```typescript
 devToolsManager: devToolsManager!,
 ```
@@ -1275,7 +1275,7 @@ Run these verification steps after implementing everything:
 3. Verify that DevToolsManager is:
    - Declared in main.ts
    - Initialized in startAPI()
-   - Passed to TandemAPI constructor
+   - Passed to ZerantAPI constructor
    - Destroyed in will-quit handler
 4. Verify that ALL API routes use try/catch and return proper error responses
 5. Verify that the `webContents.debugger.attach()` call handles the "Already attached" case
@@ -1344,12 +1344,12 @@ Read these files:
 
 ## Task 1: Create a test script
 
-Create `scripts/test-devtools-api.sh` — a bash script that tests ALL /devtools/* endpoints via curl. This script is meant to be run while Tandem is running with a web page loaded.
+Create `scripts/test-devtools-api.sh` — a bash script that tests ALL /devtools/* endpoints via curl. This script is meant to be run while Zerant is running with a web page loaded.
 
 ```bash
 #!/bin/bash
-# DevTools API Test Script for Tandem Browser
-# Run this WHILE Tandem is running with a web page loaded
+# DevTools API Test Script for Zerant Browser
+# Run this WHILE Zerant is running with a web page loaded
 #
 # Usage: bash scripts/test-devtools-api.sh
 # Optional: TANDEM_PORT=8765 bash scripts/test-devtools-api.sh
@@ -1407,17 +1407,17 @@ check() {
 }
 
 echo "================================"
-echo " Tandem DevTools API Tests"
+echo " Zerant DevTools API Tests"
 echo " Target: $BASE"
 echo "================================"
 echo ""
 
-# Pre-check: is Tandem running?
-echo -n "Pre-check: Tandem API... "
+# Pre-check: is Zerant running?
+echo -n "Pre-check: Zerant API... "
 if curl -sf "$BASE/status" > /dev/null 2>&1; then
   echo -e "${GREEN}Running${NC}"
 else
-  echo -e "${RED}NOT RUNNING — start Tandem first!${NC}"
+  echo -e "${RED}NOT RUNNING — start Zerant first!${NC}"
   exit 1
 fi
 echo ""
@@ -1567,14 +1567,14 @@ Create `scripts/test-devtools-manual.md` with manual test scenarios:
 # DevTools API — Manual Test Protocol
 
 ## Setup
-1. Start Tandem: `npm start`
+1. Start Zerant: `npm start`
 2. Navigate to a content-rich page (e.g., https://news.ycombinator.com)
 3. Wait for page to fully load
 
 ## Test Scenarios
 
 ### T1: Console Capture Round-Trip
-1. Open Tandem, navigate to any page
+1. Open Zerant, navigate to any page
 2. `curl http://127.0.0.1:8765/devtools/console` — should return entries (may be empty)
 3. In the page, open browser console and type: `console.error("TEST_ERROR")`
    Or via API: `curl -X POST http://127.0.0.1:8765/devtools/evaluate -H 'Content-Type: application/json' -d '{"expression":"console.error(\"TEST_ERROR\")"}'`

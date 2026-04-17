@@ -1,8 +1,8 @@
 /**
  * ManagerRegistry — single source of truth for all shared manager instances.
  *
- * Replaces the 35+ param TandemAPIOptions object and the duplicate RouteContext interface.
- * Built once in main.ts, passed to TandemAPI, and used as RouteContext for route handlers.
+ * Replaces the 35+ param ZerantAPIOptions object and the duplicate RouteContext interface.
+ * Built once in main.ts, passed to ZerantAPI, and used as RouteContext for route handlers.
  */
 import type { TabManager } from './tabs/manager';
 import type { PanelManager } from './panel/manager';
@@ -65,7 +65,7 @@ export interface ManagerRegistry {
   voiceManager: VoiceManager;
   /** Passive user behavior tracking (clicks, scrolls, keyboard, navigation). See src/behavior/observer.ts */
   behaviorObserver: BehaviorObserver;
-  /** All configurable settings stored in ~/.tandem/config.json. See src/config/manager.ts */
+  /** All configurable settings stored in ~/.zerant/config.json. See src/config/manager.ts */
   configManager: ConfigManager;
   /** Per-domain site memory with structured data and change detection. See src/memory/site-memory.ts */
   siteMemory: SiteMemoryManager;
@@ -75,7 +75,7 @@ export interface ManagerRegistry {
   headlessManager: HeadlessManager;
   /** Per-domain form data memory with encrypted password storage. See src/memory/form-memory.ts */
   formMemory: FormMemoryManager;
-  /** Makes Tandem-read context available to external tools via API snapshots. See src/bridge/context-bridge.ts */
+  /** Makes Zerant-read context available to external tools via API snapshots. See src/bridge/context-bridge.ts */
   contextBridge: ContextBridge;
   /** Picture-in-Picture always-on-top mini window via localhost API. See src/pip/manager.ts */
   pipManager: PiPManager;
@@ -83,7 +83,7 @@ export interface ManagerRegistry {
   networkInspector: NetworkInspector;
   /** Imports and syncs bookmarks, history, and cookies from Chrome profiles. See src/import/chrome-importer.ts */
   chromeImporter: ChromeImporter;
-  /** Bookmark CRUD with folder support, stored in ~/.tandem/bookmarks.json. See src/bookmarks/manager.ts */
+  /** Bookmark CRUD with folder support, stored in ~/.zerant/bookmarks.json. See src/bookmarks/manager.ts */
   bookmarkManager: BookmarkManager;
   /** Auto-tracks page visits with search, max 10,000 entries FIFO. See src/history/manager.ts */
   historyManager: HistoryManager;

@@ -20,40 +20,40 @@ describe('MCP context tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_context_recent returns recent pages', async () => {
+  it('zerant_context_recent returns recent pages', async () => {
     mockApiCall.mockResolvedValueOnce({ pages: [] });
-    await getHandler(tools, 'tandem_context_recent')({});
+    await getHandler(tools, 'zerant_context_recent')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/context/recent');
   });
 
-  it('tandem_context_recent applies limit', async () => {
+  it('zerant_context_recent applies limit', async () => {
     mockApiCall.mockResolvedValueOnce({ pages: [] });
-    await getHandler(tools, 'tandem_context_recent')({ limit: 10 });
+    await getHandler(tools, 'zerant_context_recent')({ limit: 10 });
     const endpoint = mockApiCall.mock.calls[0][1] as string;
     expect(endpoint).toContain('limit=10');
   });
 
-  it('tandem_context_search searches context', async () => {
+  it('zerant_context_search searches context', async () => {
     mockApiCall.mockResolvedValueOnce({ results: [] });
-    await getHandler(tools, 'tandem_context_search')({ query: 'react' });
+    await getHandler(tools, 'zerant_context_search')({ query: 'react' });
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/context/search?q=react');
   });
 
-  it('tandem_context_page gets page context', async () => {
+  it('zerant_context_page gets page context', async () => {
     mockApiCall.mockResolvedValueOnce({ data: {} });
-    await getHandler(tools, 'tandem_context_page')({ url: 'https://a.com' });
+    await getHandler(tools, 'zerant_context_page')({ url: 'https://a.com' });
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/context/page?url=https%3A%2F%2Fa.com');
   });
 
-  it('tandem_context_summary returns summary', async () => {
+  it('zerant_context_summary returns summary', async () => {
     mockApiCall.mockResolvedValueOnce({ total: 50 });
-    await getHandler(tools, 'tandem_context_summary')({});
+    await getHandler(tools, 'zerant_context_summary')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/context/summary');
   });
 
-  it('tandem_context_note adds a note', async () => {
+  it('zerant_context_note adds a note', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
-    await getHandler(tools, 'tandem_context_note')({ url: 'https://a.com', note: 'important' });
+    await getHandler(tools, 'zerant_context_note')({ url: 'https://a.com', note: 'important' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/context/note', { url: 'https://a.com', note: 'important' });
   });
 });

@@ -101,8 +101,8 @@ vi.mock('os', async () => {
 });
 
 vi.mock('../../../utils/paths', () => ({
-  tandemDir: vi.fn((...sub: string[]) => {
-    const parts = ['/mock-home/.tandem', ...sub];
+  zerantDir: vi.fn((...sub: string[]) => {
+    const parts = ['/mock-home/.zerant', ...sub];
     return parts.join('/');
   }),
 }));
@@ -240,7 +240,7 @@ describe('Browser Routes', () => {
           title: 'Background',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
       ]);
       vi.mocked(ctx.devToolsManager.evaluateInTab).mockResolvedValueOnce({
@@ -310,7 +310,7 @@ describe('Browser Routes', () => {
           title: 'Background',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
       ]);
       vi.mocked(ctx.devToolsManager.evaluateInTab).mockResolvedValueOnce('<html><body>Background</body></html>');
@@ -391,7 +391,7 @@ describe('Browser Routes', () => {
           title: 'Background',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
       ]);
 
@@ -633,7 +633,7 @@ describe('Browser Routes', () => {
           title: 'Background',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
         {
           id: 'tab-body',
@@ -642,7 +642,7 @@ describe('Browser Routes', () => {
           title: 'Other',
           active: false,
           source: 'wingman',
-          partition: 'persist:tandem',
+          partition: 'persist:zerant',
         } as any,
       ]);
       vi.mocked(ctx.devToolsManager.evaluateInTab).mockResolvedValueOnce(42);
@@ -750,8 +750,8 @@ describe('Browser Routes', () => {
       expect(res.body.path).toBe(savePath);
     });
 
-    it('saves screenshot to allowed .tandem path', async () => {
-      const savePath = '/mock-home/.tandem/screenshots/shot.png';
+    it('saves screenshot to allowed .zerant path', async () => {
+      const savePath = '/mock-home/.zerant/screenshots/shot.png';
       const res = await request(app)
         .get('/screenshot')
         .query({ save: savePath });

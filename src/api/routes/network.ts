@@ -126,7 +126,7 @@ export function registerNetworkRoutes(router: Router, ctx: RouteContext): void {
       const suffix = domain ? `-${domain.replace(/[^a-zA-Z0-9.-]/g, '_')}` : '';
       const tabSuffix = target.tab?.id ? `-tab-${target.tab.id.replace(/[^a-zA-Z0-9.-]/g, '_')}` : '-tab-none';
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Disposition', `attachment; filename="tandem-network${tabSuffix}${suffix}-${stamp}.har"`);
+      res.setHeader('Content-Disposition', `attachment; filename="zerant-network${tabSuffix}${suffix}-${stamp}.har"`);
       res.json(har);
     } catch (e) {
       handleRouteError(res, e);

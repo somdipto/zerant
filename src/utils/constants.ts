@@ -1,18 +1,18 @@
 /**
- * Shared constants for Tandem Browser.
+ * Shared constants for Zerant Browser.
  *
  * Centralises magic numbers and strings that were previously scattered
  * across multiple source files so they can be changed in one place.
  */
 
-/** Port the Tandem REST/SSE API listens on */
+/** Port the Zerant REST/SSE API listens on */
 export const API_PORT = 8765;
 
 /** Port the webhook/OpenClaw relay listens on */
 export const WEBHOOK_PORT = 18789;
 
 /** Default Electron session partition used for the main browser */
-export const DEFAULT_PARTITION = 'persist:tandem';
+export const DEFAULT_PARTITION = 'persist:zerant';
 
 /**
  * URL sub-strings that identify OAuth / authentication popup flows.

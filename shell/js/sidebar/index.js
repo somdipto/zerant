@@ -3,8 +3,8 @@
  *
  * Loaded from: shell/index.html as <script type="module" src="js/sidebar/index.js">
  * window exports: ocSidebar (consumed by shell/js/shortcut-router.js:35 for the
- *   Cmd+B bookmarks shortcut), __tandemShowTabContextMenu (consumed by main.js
- *   via window.__tandemShowTabContextMenu, already set via window. inside the IIFE).
+ *   Cmd+B bookmarks shortcut), __zerantShowTabContextMenu (consumed by main.js
+ *   via window.__zerantShowTabContextMenu, already set via window. inside the IIFE).
  */
 
 import { ICONS, WORKSPACE_ICONS } from './constants.js';
@@ -663,7 +663,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
         card.addEventListener('click', (e) => {
           if (e.target.closest('.pb-card-actions')) return;
           const url = card.dataset.url;
-          if (url && window.tandem) window.tandem.newTab(url);
+          if (url && window.zerant) window.zerant.newTab(url);
         });
       });
 
@@ -996,8 +996,8 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       const activeWebview = document.querySelector('webview.active[data-tab-id]');
       const activeTabId = activeWebview?.dataset?.tabId || null;
       if (!activeTabId || !visibleTabIds.includes(activeTabId)) {
-        if (window.tandem) {
-          window.tandem.focusTab(visibleTabIds[0]);
+        if (window.zerant) {
+          window.zerant.focusTab(visibleTabIds[0]);
         }
       }
     }
@@ -1140,8 +1140,8 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       });
 
       // Listen for main process signal to reload a sidebar webview (e.g. after Google auth)
-      if (window.tandem && window.tandem.onReloadSidebarWebview) {
-        window.tandem.onReloadSidebarWebview((id) => {
+      if (window.zerant && window.zerant.onReloadSidebarWebview) {
+        window.zerant.onReloadSidebarWebview((id) => {
           const wv = getWebview(id);
           if (wv) wv.reload();
           // If Gmail partition reloads, also reload Calendar (they share persist:gmail session)
@@ -1153,8 +1153,8 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       }
 
       // Listen for workspace switch events from main process
-      if (window.tandem && window.tandem.onWorkspaceSwitched) {
-        window.tandem.onWorkspaceSwitched((workspace) => {
+      if (window.zerant && window.zerant.onWorkspaceSwitched) {
+        window.zerant.onWorkspaceSwitched((workspace) => {
           setActiveWorkspaceId(workspace.id);
           // Update local workspace data
           const idx = getWorkspaces().findIndex(w => w.id === workspace.id);
@@ -1165,8 +1165,8 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       }
 
       // Refresh pinboard view when a pin is added via page context menu
-      if (window.tandem && window.tandem.onPinboardItemAdded) {
-        window.tandem.onPinboardItemAdded((boardId) => {
+      if (window.zerant && window.zerant.onPinboardItemAdded) {
+        window.zerant.onPinboardItemAdded((boardId) => {
           if (pbState.currentBoardId === boardId) {
             setTimeout(() => pbRefreshItems(boardId), 800); // delay for OG fetch
           }
@@ -1223,7 +1223,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
         const pbRes = await fetch('http://localhost:8765/pinboards', { headers: { Authorization: `Bearer ${getToken()}` } });
         const pbData = await pbRes.json();
         pbBoards = pbData.boards || [];
-      } catch { /* Tandem not running or no boards */ }
+      } catch { /* Zerant not running or no boards */ }
 
       const menu = document.createElement('div');
       menu.className = 'tandem-ctx-menu';
@@ -1246,7 +1246,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       }
 
       // — New Tab
-      addItem('New Tab', () => { window.tandem.newTab(); });
+      addItem('New Tab', () => { window.zerant.newTab(); });
 
       addSep();
 
@@ -1254,7 +1254,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       addItem('Reload', () => { if (wv) wv.reload(); });
 
       // — Duplicate Tab
-      addItem('Duplicate Tab', () => { if (wv) window.tandem.newTab(wv.src); });
+      addItem('Duplicate Tab', () => { if (wv) window.zerant.newTab(wv.src); });
 
       // — Copy Page Address
       addItem('Copy Page Address', (itemEl) => {
@@ -1438,14 +1438,14 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       addSep();
 
       // — Close Tab
-      addItem('Close Tab', () => { window.tandem.closeTab(domTabId); });
+      addItem('Close Tab', () => { window.zerant.closeTab(domTabId); });
 
       // — Close Other Tabs
       addItem('Close Other Tabs', () => {
         const allTabs = document.querySelectorAll('#tab-bar .tab[data-tab-id]');
         allTabs.forEach(t => {
           const tid = t.dataset.tabId;
-          if (tid && tid !== domTabId) window.tandem.closeTab(tid);
+          if (tid && tid !== domTabId) window.zerant.closeTab(tid);
         });
       });
 
@@ -1456,7 +1456,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
         if (idx >= 0) {
           for (let i = idx + 1; i < allTabs.length; i++) {
             const tid = allTabs[i].dataset.tabId;
-            if (tid) window.tandem.closeTab(tid);
+            if (tid) window.zerant.closeTab(tid);
           }
         }
       });
@@ -1473,7 +1473,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
       requestAnimationFrame(() => {
         const menuRight = menu.getBoundingClientRect().right;
         if (menuRight + 180 > window.innerWidth) {
-          const subs = menu.querySelectorAll('.tandem-ctx-submenu');
+          const subs = menu.querySelectorAll('.zerant-ctx-submenu');
           subs.forEach(s => s.classList.add('flip-left'));
         }
       });
@@ -1499,7 +1499,7 @@ import { BOOKMARK_PANEL_IDS, loadBookmarkPanel } from './panels/bookmarks.js';
     }
 
     // Expose globally so main.js can call it
-    window.__tandemShowTabContextMenu = showTabContextMenu;
+    window.__zerantShowTabContextMenu = showTabContextMenu;
 
     return { init, loadConfig, activateItem, toggleVisibility };
   })();

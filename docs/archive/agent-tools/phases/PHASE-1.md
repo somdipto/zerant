@@ -3,7 +3,7 @@
 ## Goal
 
 `POST /execute-js` voert code eenmalig out and vergeet the na navigatie. Dit lost that op.
-Na this phase has Tandem a `ScriptInjector` that scripts and CSS registreert and
+Na this phase has Zerant a `ScriptInjector` that scripts and CSS registreert and
 ze automatisch again injecteert na elke navigatie — zodat Kees persistente helpers
 can injecteren that the hele session doorleven.
 
@@ -178,12 +178,12 @@ ipcMain.on('activity-webview-event', (event, data) => {
 });
 ```
 
-**Let op:** Kijk hoe andere managers be meegegeven about `startAPI()` / `TandemAPI` constructor.
-Volg exact hetzelfde pattern. Voeg `scriptInjector` toe about `TandemAPIOptions` in `server.ts`.
+**Let op:** Kijk hoe andere managers be meegegeven about `startAPI()` / `ZerantAPI` constructor.
+Volg exact hetzelfde pattern. Voeg `scriptInjector` toe about `ZerantAPIOptions` in `server.ts`.
 
 ### 3. `src/api/server.ts` — Routes registreren
 
-Voeg `ScriptInjector` toe about `TandemAPIOptions` and registreer the routes.
+Voeg `ScriptInjector` toe about `ZerantAPIOptions` and registreer the routes.
 
 **Scripts:**
 
@@ -317,5 +317,5 @@ git push origin main
 
 - `src/scripts/injector.ts` — new file
 - `src/main.ts` — minimale aanpassing: ScriptInjector init + did-finish-load hook
-- `src/api/server.ts` — TandemAPIOptions uitbreiden + 10 routes
+- `src/api/server.ts` — ZerantAPIOptions uitbreiden + 10 routes
 - TypeScript check + verificatie + commit

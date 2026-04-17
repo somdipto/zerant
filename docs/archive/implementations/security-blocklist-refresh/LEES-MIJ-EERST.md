@@ -2,14 +2,14 @@
 
 > **Date:** 2026-03-07
 > **Status:** Complete
-> **Goal:** Make Tandem's blocklist pipeline faster at startup, broader in feed support, and safer to update in the background without freezing the browser
+> **Goal:** Make Zerant's blocklist pipeline faster at startup, broader in feed support, and safer to update in the background without freezing the browser
 > **Order:** Phase 1 → 2 → 3 → 4
 
 ---
 
 ## Why This Track Exists
 
-Tandem's current `NetworkShield` is effective, but it still assumes a small set
+Zerant's current `NetworkShield` is effective, but it still assumes a small set
 or text-based feeds loaded synchronously into memory. That works for the current
 three blocklists, but it does not scale well to modern threat intel formats,
 larger curated feeds, or more frequent updates.

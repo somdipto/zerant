@@ -205,10 +205,10 @@ export class StateManager {
 
 ## Manager Wiring (session 3.2)
 
-### 1. `src/api/server.ts` — TandemAPIOptions interface (regel ~64)
+### 1. `src/api/server.ts` — ZerantAPIOptions interface (regel ~64)
 
 ```typescript
-export interface TandemAPIOptions {
+export interface ZerantAPIOptions {
   // ... existing velden ...
   sessionManager: SessionManager;
   stateManager: StateManager;  // session 3.3
@@ -226,7 +226,7 @@ const sessionManager = new SessionManager();
 // StateManager has devToolsManager nodig:
 const stateManager = new StateManager(devToolsManager!);
 
-// In new TandemAPI({...}):
+// In new ZerantAPI({...}):
 sessionManager: sessionManager!,
 stateManager: stateManager!,
 ```
@@ -517,7 +517,7 @@ npx tsc
 
 1. Maak `src/sessions/types.ts`
 2. Maak `src/sessions/manager.ts` — SessionManager class
-3. **Manager Wiring:** TandemAPIOptions + main.ts startAPI() + will-quit handler
+3. **Manager Wiring:** ZerantAPIOptions + main.ts startAPI() + will-quit handler
 4. Voeg SESSIONS section + endpoints toe about `server.ts`:
    - `GET /sessions/list`
    - `POST /sessions/create` → `sessionManager.create(name)` + optional direct a tab openen via `tabManager.openTab(url, null, 'kees', partition)`
@@ -576,12 +576,12 @@ curl -X POST http://localhost:8765/sessions/destroy \
 1. Maak `src/sessions/state.ts` — StateManager class
 2. `save()`: `session.fromPartition(partition).cookies.get({})` → JSON → disk (~/.tandem/sessions/)
 3. `load()`: disk → JSON → `session.fromPartition(partition).cookies.set(cookie)` per cookie
-4. **Manager Wiring:** Voeg `stateManager` toe about TandemAPIOptions + startAPI()
+4. **Manager Wiring:** Voeg `stateManager` toe about ZerantAPIOptions + startAPI()
 5. Voeg state endpoints toe about server.ts:
    - `POST /sessions/state/save`
    - `POST /sessions/state/load`
    - `GET /sessions/state/list`
-6. Voeg `getSessionPartition()` helper methode toe in TandemAPI class
+6. Voeg `getSessionPartition()` helper methode toe in ZerantAPI class
 7. Pas existing endpoints about that session-aware must are:
    `/navigate`, `/click`, `/type`, `/scroll`, `/page-content`, `/screenshot`
    - Haal partition op via `this.getSessionPartition(req)`
@@ -680,4 +680,4 @@ curl -X POST http://localhost:8765/sessions/destroy \
 **Wiring:**
 
 - ❌ Only endpoint add about server.ts and vergeten the manager te registreren
-- ✅ Altijd 3 plekken: TandemAPIOptions, startAPI(), will-quit
+- ✅ Altijd 3 plekken: ZerantAPIOptions, startAPI(), will-quit

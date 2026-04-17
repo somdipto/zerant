@@ -25,7 +25,7 @@ import type { WingmanStream } from '../activity/wingman-stream';
 import type { SnapshotManager } from '../snapshot/manager';
 import type { VideoRecorderManager } from '../video/recorder';
 import type { WorkspaceManager } from '../workspaces/manager';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { IpcChannels } from '../shared/ipc-channels';
 import { buildOwnershipContextForTab, buildOwnershipContextForTabId } from '../tabs/runtime-context';
@@ -214,7 +214,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   }) => {
     try {
       const activeTab = tabManager.getActiveTab();
-      const currentUrl = activeTab?.url || 'tandem://window';
+      const currentUrl = activeTab?.url || 'zerant://window';
 
       if (data.mode === 'application') {
         return await drawManager.captureApplicationScreenshot(currentUrl);
@@ -336,7 +336,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
       }
       // Get window source for video
       const windowSources = await desktopCapturer.getSources({ types: ['window'], fetchWindowIcons: false });
-      const tandemSource = windowSources.find((s: Electron.DesktopCapturerSource) => s.name.includes('Tandem')) || windowSources[0];
+      const zerantSource = windowSources.find((s: Electron.DesktopCapturerSource) => s.name.includes('Zerant')) || windowSources[0];
 
       // Get screen source for audio (window sources don't include audio on macOS)
       // This is optional - don't let it block recording if it fails
@@ -348,9 +348,9 @@ export function registerIpcHandlers(deps: IpcDeps): void {
         log.warn('Failed to get screen source for audio:', err instanceof Error ? err.message : err);
       }
 
-      return tandemSource ? {
-        id: tandemSource.id,
-        name: tandemSource.name,
+      return zerantSource ? {
+        id: zerantSource.id,
+        name: zerantSource.name,
         audioSourceId,
       } : null;
     } catch (error) {
@@ -659,7 +659,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
 
   ipcMain.handle(IpcChannels.GET_API_TOKEN, async () => {
     try {
-      return fs.readFileSync(tandemDir('api-token'), 'utf-8').trim();
+      return fs.readFileSync(zerantDir('api-token'), 'utf-8').trim();
     } catch {
       return '';
     }
@@ -671,10 +671,10 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     
     const template: Electron.MenuItemConstructorOptions[] = [
       {
-        label: 'Tandem',
+        label: 'Zerant',
         submenu: [
           {
-            label: 'About Tandem Browser',
+            label: 'About Zerant Browser',
             click: () => send('show-about'),
           },
           { type: 'separator' },

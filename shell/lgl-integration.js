@@ -1,5 +1,5 @@
 /**
- * Liquid Glass Lite (LGL) Integration for Tandem Browser
+ * Liquid Glass Lite (LGL) Integration for Zerant Browser
  * 
  * CSS-first glass effects (T1 Static tier) with preparation for full WebGL lensing.
  * Applies glass treatment to chrome elements: tab bar, toolbar, wingman panel, overlays.

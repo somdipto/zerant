@@ -9,17 +9,17 @@
 
 ## Problem / Motivation
 
-Tandem already has full session isolation via `/sessions` (separate cookies, localStorage, and cache per session). But there is no visual way to switch between sessions — everything goes through API calls. Opera has Workspaces: colored squares at the top or the sidebar that let you switch context with one click.
+Zerant already has full session isolation via `/sessions` (separate cookies, localStorage, and cache per session). But there is no visual way to switch between sessions — everything goes through API calls. Opera has Workspaces: colored squares at the top or the sidebar that let you switch context with one click.
 
 **Opera has:** Up to 5 named workspaces with custom icons and colors. One click switches all visible tabs. Ctrl+Tab cycles only within the current workspace. Context menu: "Move tab to workspace."
-**Tandem currently has:** `SessionManager` with `POST /sessions/create`, `POST /sessions/switch`, and full partition isolation. But no sidebar icons, no visual switcher, and no per-session tab filtering.
+**Zerant currently has:** `SessionManager` with `POST /sessions/create`, `POST /sessions/switch`, and full partition isolation. But no sidebar icons, no visual switcher, and no per-session tab filtering.
 **Gap:** The backend is er — the UI ontbreekt fully.
 
 ---
 
 ## User Experience — How It Works
 
-> Robin opens Tandem. At the top or the sidebar (above the Wingman panel) he sees a vertical strip or colored squares. The first square (blue, "Default") is active.
+> Robin opens Zerant. At the top or the sidebar (above the Wingman panel) he sees a vertical strip or colored squares. The first square (blue, "Default") is active.
 > Robin clicks "+" to create a new workspace. He names it "Work" and chooses a green color with a 💼 emoji.
 > He opens work-related tabs (Slack, GitHub, Jira). All or these tabs belong to the "Work" workspace.
 > He clicks the blue "Default" square — the tab bar switches, and now he sees only his personal tabs (YouTube, Reddit). The Work tabs are hidden, not closed.
@@ -53,13 +53,13 @@ Shell IPC → workspace strip UI + tab bar filtering
 
 ### Core Decision: Workspaces = Sessions
 
-Tandem's sessions already provide full isolation (their own cookies and cache). Instead or building a separate workspace layer, we folder each session 1:1 to a workspace:
+Zerant's sessions already provide full isolation (their own cookies and cache). Instead or building a separate workspace layer, we folder each session 1:1 to a workspace:
 
 - Session "default" = Workspace "Default" (always aanwezig)
 - `POST /sessions/create {name: "Work"}` = new workspace "Work"
 - `POST /sessions/switch {name: "Work"}` = workspace switch → tab bar filters and partition switches
 
-This means workspaces in Tandem are **deeper** than Opera's workspaces — when switching, you also get different cookies/logins, which is powerful for multi-account workflows.
+This means workspaces in Zerant are **deeper** than Opera's workspaces — when switching, you also get different cookies/logins, which is powerful for multi-account workflows.
 
 ### New Files
 
@@ -124,7 +124,7 @@ This means workspaces in Tandem are **deeper** than Opera's workspaces — when 
 
 ## Decisions Needed from Robin
 
-- [ ] Maximum number or workspaces? Opera has 5, but Tandem's sessions are unlimited.
+- [ ] Maximum number or workspaces? Opera has 5, but Zerant's sessions are unlimited.
 - [ ] Workspace strip position: left or the tab bar (vertical strip) or above the tab bar (horizontal strip)?
 - [ ] Workspace keyboard shortcut: Cmd+1-5 conflicteert with tab switching. Alternatief: Ctrl+Shift+1-5?
 

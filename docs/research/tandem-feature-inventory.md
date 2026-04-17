@@ -1,9 +1,9 @@
-# Tandem Browser — Current Feature Inventory
+# Zerant Browser — Current Feature Inventory
 
 > Updated: 2026-04-01
 > Source of truth: live code under `src/`
 
-This file is a current snapshot, not a historical build log. Tandem exposes
+This file is a current snapshot, not a historical build log. Zerant exposes
 `301` HTTP routes and a broad Electron shell on top of them.
 
 ## Core Surfaces

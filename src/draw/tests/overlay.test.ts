@@ -11,7 +11,7 @@ const { clipboardWriteImage, nativeImageCreateFromBuffer, execFileMock, execFile
 
 vi.mock('electron', () => ({
   app: {
-    getPath: vi.fn().mockReturnValue('/tmp/tandem-user-data'),
+    getPath: vi.fn().mockReturnValue('/tmp/zerant-user-data'),
   },
   clipboard: {
     writeImage: clipboardWriteImage,
@@ -99,8 +99,8 @@ describe('DrawOverlayManager screenshot modes', () => {
     expect(win.webContents.send).toHaveBeenCalledWith(
       'screenshot-taken',
       expect.objectContaining({
-        path: expect.stringContaining(path.join('Pictures', 'Tandem')),
-        appPath: expect.stringContaining(path.join('/tmp/tandem-user-data', 'screenshots')),
+        path: expect.stringContaining(path.join('Pictures', 'Zerant')),
+        appPath: expect.stringContaining(path.join('/tmp/zerant-user-data', 'screenshots')),
         base64: pngBuffer.toString('base64'),
       }),
     );

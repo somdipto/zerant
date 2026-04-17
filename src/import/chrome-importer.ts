@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import type { ConfigManager } from '../config/manager';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 import { assertSinglePathSegment, resolvePathWithinRoot } from '../utils/security';
 
@@ -47,7 +47,7 @@ export interface ChromeImportStatus {
 export class ChromeImporter {
   private chromeBasePath: string;
   private chromeProfilePath: string;
-  private tandemDir: string;
+  private zerantDir: string;
   private watcher: fs.FSWatcher | null = null;
   private syncDebounce: ReturnType<typeof setTimeout> | null = null;
   private configManager: ConfigManager | null = null;
@@ -67,9 +67,9 @@ export class ChromeImporter {
     }
     const profile = this.configManager?.getConfig().sync.chromeProfile ?? 'Default';
     this.chromeProfilePath = this.resolveChromeProfilePath(profile);
-    this.tandemDir = tandemDir();
-    if (!fs.existsSync(this.tandemDir)) {
-      fs.mkdirSync(this.tandemDir, { recursive: true });
+    this.zerantDir = zerantDir();
+    if (!fs.existsSync(this.zerantDir)) {
+      fs.mkdirSync(this.zerantDir, { recursive: true });
     }
   }
 
@@ -205,7 +205,7 @@ export class ChromeImporter {
     };
   }
 
-  /** Import Chrome bookmarks → ~/.tandem/bookmarks.json */
+  /** Import Chrome bookmarks → ~/.zerant/bookmarks.json */
   importBookmarks(): { ok: boolean; count: number; error?: string } {
     try {
       const bookmarksPath = resolvePathWithinRoot(this.chromeProfilePath, 'Bookmarks');
@@ -236,7 +236,7 @@ export class ChromeImporter {
       countBookmarks(bookmarks);
 
       // Load existing bookmarks.json and merge
-      const outputPath = resolvePathWithinRoot(this.tandemDir, 'bookmarks.json');
+      const outputPath = resolvePathWithinRoot(this.zerantDir, 'bookmarks.json');
       let existing: { bookmarks: ChromeBookmark[]; importedFrom?: string } = { bookmarks: [] };
       if (fs.existsSync(outputPath)) {
         try {
@@ -282,7 +282,7 @@ export class ChromeImporter {
     return bookmark;
   }
 
-  /** Import Chrome history → ~/.tandem/history.json (last 1000 entries) */
+  /** Import Chrome history → ~/.zerant/history.json (last 1000 entries) */
   importHistory(): { ok: boolean; count: number; error?: string } {
     try {
       const historyPath = path.join(this.chromeProfilePath, 'History');
@@ -291,7 +291,7 @@ export class ChromeImporter {
       }
 
       // Chrome locks the History file while running — copy it first
-      const tmpPath = resolvePathWithinRoot(this.tandemDir, '.chrome-history-tmp');
+      const tmpPath = resolvePathWithinRoot(this.zerantDir, '.chrome-history-tmp');
       fs.copyFileSync(historyPath, tmpPath);
 
        
@@ -319,7 +319,7 @@ export class ChromeImporter {
       }));
 
       // Save
-      const outputPath = resolvePathWithinRoot(this.tandemDir, 'history.json');
+      const outputPath = resolvePathWithinRoot(this.zerantDir, 'history.json');
       let existing: { entries: ChromeHistoryEntry[]; importedFrom?: string } = { entries: [] };
       if (fs.existsSync(outputPath)) {
         try {
@@ -353,7 +353,7 @@ export class ChromeImporter {
 
   /** Import Chrome cookies into Electron session.
    *  Strategy 1: Connect to Chrome DevTools Protocol (if Chrome runs with --remote-debugging-port)
-   *  Strategy 2: Read pre-exported JSON from ~/.tandem/chrome-cookies.json
+   *  Strategy 2: Read pre-exported JSON from ~/.zerant/chrome-cookies.json
    *  Strategy 3: Decrypt SQLite directly (Linux v10 cookies only)
    */
   async importCookies(electronSession: Electron.Session): Promise<{ ok: boolean; count: number; error?: string }> {
@@ -363,7 +363,7 @@ export class ChromeImporter {
       if (cdpResult.ok) return cdpResult;
 
       // Strategy 2: Pre-exported JSON file (can be generated externally)
-      const jsonPath = path.join(this.tandemDir, 'chrome-cookies.json');
+      const jsonPath = path.join(this.zerantDir, 'chrome-cookies.json');
       if (fs.existsSync(jsonPath)) {
         const cookies = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
         let count = 0;
@@ -397,7 +397,7 @@ export class ChromeImporter {
       return {
         ok: false,
         count: 0,
-        error: 'Chrome cookies are encrypted. To import: (1) restart Chrome with --remote-debugging-port=9222, or (2) place decrypted cookies in ~/.tandem/chrome-cookies.json',
+        error: 'Chrome cookies are encrypted. To import: (1) restart Chrome with --remote-debugging-port=9222, or (2) place decrypted cookies in ~/.zerant/chrome-cookies.json',
       };
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);

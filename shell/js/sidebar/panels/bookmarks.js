@@ -94,7 +94,7 @@ function refreshBmList() {
       const type = el.dataset.type;
       if (type === 'url') {
         const url = el.dataset.url;
-        if (url && window.tandem) window.tandem.newTab(url);
+        if (url && window.zerant) window.zerant.newTab(url);
       } else if (type === 'folder') {
         const folderId = el.dataset.id;
         const items = bmState.currentFolder ? bmState.currentFolder.children : bmState.all?.children;
@@ -291,7 +291,7 @@ export async function loadBookmarkPanel() {
       listEl?.querySelectorAll('.bm-item.url').forEach(el => {
         el.addEventListener('click', () => {
           const url = el.dataset.url;
-          if (url && window.tandem) window.tandem.newTab(url);
+          if (url && window.zerant) window.zerant.newTab(url);
         });
       });
     }, 250);

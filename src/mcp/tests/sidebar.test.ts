@@ -18,39 +18,39 @@ describe('MCP sidebar tools', () => {
 
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('tandem_sidebar_config returns config', async () => {
+  it('zerant_sidebar_config returns config', async () => {
     mockApiCall.mockResolvedValueOnce({ items: [] });
-    await getHandler(tools, 'tandem_sidebar_config')({});
+    await getHandler(tools, 'zerant_sidebar_config')({});
     expect(mockApiCall).toHaveBeenCalledWith('GET', '/sidebar/config');
   });
 
-  it('tandem_sidebar_update updates config', async () => {
+  it('zerant_sidebar_update updates config', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
-    await getHandler(tools, 'tandem_sidebar_update')({ config: { width: 300 } });
+    await getHandler(tools, 'zerant_sidebar_update')({ config: { width: 300 } });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/sidebar/config', { width: 300 });
   });
 
-  it('tandem_sidebar_toggle_item toggles item', async () => {
+  it('zerant_sidebar_toggle_item toggles item', async () => {
     mockApiCall.mockResolvedValueOnce({ visible: true });
-    await getHandler(tools, 'tandem_sidebar_toggle_item')({ id: 'bookmarks' });
+    await getHandler(tools, 'zerant_sidebar_toggle_item')({ id: 'bookmarks' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/sidebar/items/bookmarks/toggle');
   });
 
-  it('tandem_sidebar_activate_item activates item', async () => {
+  it('zerant_sidebar_activate_item activates item', async () => {
     mockApiCall.mockResolvedValueOnce({ active: true });
-    await getHandler(tools, 'tandem_sidebar_activate_item')({ id: 'history' });
+    await getHandler(tools, 'zerant_sidebar_activate_item')({ id: 'history' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/sidebar/items/history/activate');
   });
 
-  it('tandem_sidebar_reorder reorders items', async () => {
+  it('zerant_sidebar_reorder reorders items', async () => {
     mockApiCall.mockResolvedValueOnce({ ok: true });
-    await getHandler(tools, 'tandem_sidebar_reorder')({ orderedIds: ['a', 'b', 'c'] });
+    await getHandler(tools, 'zerant_sidebar_reorder')({ orderedIds: ['a', 'b', 'c'] });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/sidebar/reorder', { orderedIds: ['a', 'b', 'c'] });
   });
 
-  it('tandem_sidebar_state sets state', async () => {
+  it('zerant_sidebar_state sets state', async () => {
     mockApiCall.mockResolvedValueOnce({ state: 'wide' });
-    await getHandler(tools, 'tandem_sidebar_state')({ state: 'wide' });
+    await getHandler(tools, 'zerant_sidebar_state')({ state: 'wide' });
     expect(mockApiCall).toHaveBeenCalledWith('POST', '/sidebar/state', { state: 'wide' });
   });
 });

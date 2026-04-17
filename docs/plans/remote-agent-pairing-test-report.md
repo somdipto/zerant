@@ -2,20 +2,20 @@
 
 > **Date:** 2026-04-15
 > **Branch:** feature/agent-bootstrap-and-pairing
-> **Tandem version:** 0.73.0
+> **Zerant version:** 0.73.0
 > **Tester:** Claude Code (Opus 4.6) + Robin Waslander (manual UI + live remote testing)
 
 ---
 
 ## What was built
 
-Phase 1 of remote agent connectivity for Tandem Browser:
+Phase 1 of remote agent connectivity for Zerant Browser:
 
 1. **PairingManager** — setup code generation, token exchange, binding lifecycle, JSON persistence
 2. **Bootstrap routes** — `/agent`, `/skill`, `/agent/manifest`, `/agent/version` with request-aware base URLs and correct route names
 3. **Pairing routes** — setup-code generation, exchange, bindings CRUD, whoami, address detection
 4. **Binding token auth** — paired agents authenticate with `tdm_ast_` tokens alongside existing `api-token`
-5. **Onboarding-first Settings UI** — "Connect your AI to Tandem" with two modes (on this machine / on another machine), address detection, generated instruction block with `bindingKind`, binding management
+5. **Onboarding-first Settings UI** — "Connect your AI to Zerant" with two modes (on this machine / on another machine), address detection, generated instruction block with `bindingKind`, binding management
 6. **Address detection** — automatic local and Tailscale address detection via `GET /pairing/addresses`
 7. **Listen host default** — `apiListenHost` defaults to `0.0.0.0` (local + remote simultaneously), with config migration for existing installs
 
@@ -34,7 +34,7 @@ TypeScript: clean compile (`tsc --noEmit`, zero errors).
 
 ---
 
-## Live tests (manual, against running Tandem)
+## Live tests (manual, against running Zerant)
 
 ### Setup code lifecycle
 
@@ -102,7 +102,7 @@ All four routes are public (no auth required), serve correct route names, and us
 
 | Test | Result |
 |---|---|
-| `tandem_browser_status` via MCP (local, stdio) | Works — returns ready state, active tab, version |
+| `zerant_browser_status` via MCP (local, stdio) | Works — returns ready state, active tab, version |
 | MCP unaffected by binding pause/revoke | Correct — MCP uses local api-token, not binding token |
 | Remote MCP | Not available — remote agents use HTTP API |
 
@@ -123,7 +123,7 @@ All four routes are public (no auth required), serve correct route names, and us
 ## What is not yet proven
 
 - **Remote MCP** — not in phase 1 scope; remote agents use HTTP API
-- **Token persistence across Tandem restart** — bindings save to disk but restart continuity not explicitly tested
+- **Token persistence across Zerant restart** — bindings save to disk but restart continuity not explicitly tested
 - **Multiple concurrent remote agents** — only single-remote-agent flows tested
 - **UI auto-refresh polling** — code exists but not explicitly verified in live testing
 

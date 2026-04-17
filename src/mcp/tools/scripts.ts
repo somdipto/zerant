@@ -4,7 +4,7 @@ import { apiCall, logActivity } from '../api-client.js';
 
 export function registerScriptTools(server: McpServer): void {
   server.tool(
-    'tandem_scripts_list',
+    'zerant_scripts_list',
     'List all persistent injected scripts with their enabled state and preview',
     async () => {
       const data = await apiCall('GET', '/scripts');
@@ -14,7 +14,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_script_add',
+    'zerant_script_add',
     'Add a persistent JavaScript script that will be injected into pages',
     {
       name: z.string().describe('Name for the script'),
@@ -28,7 +28,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_script_remove',
+    'zerant_script_remove',
     'Remove a persistent injected script by name',
     {
       name: z.string().describe('Name of the script to remove'),
@@ -46,7 +46,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_script_enable',
+    'zerant_script_enable',
     'Enable a persistent injected script by name',
     {
       name: z.string().describe('Name of the script to enable'),
@@ -59,7 +59,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_script_disable',
+    'zerant_script_disable',
     'Disable a persistent injected script by name',
     {
       name: z.string().describe('Name of the script to disable'),
@@ -72,7 +72,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_styles_list',
+    'zerant_styles_list',
     'List all persistent injected CSS styles with their enabled state and preview',
     async () => {
       const data = await apiCall('GET', '/styles');
@@ -82,7 +82,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_style_add',
+    'zerant_style_add',
     'Add a persistent CSS style that will be injected into pages',
     {
       name: z.string().describe('Name for the style'),
@@ -96,7 +96,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_style_remove',
+    'zerant_style_remove',
     'Remove a persistent injected CSS style by name',
     {
       name: z.string().describe('Name of the style to remove'),
@@ -114,7 +114,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_style_enable',
+    'zerant_style_enable',
     'Enable a persistent injected CSS style by name',
     {
       name: z.string().describe('Name of the style to enable'),
@@ -127,7 +127,7 @@ export function registerScriptTools(server: McpServer): void {
   );
 
   server.tool(
-    'tandem_style_disable',
+    'zerant_style_disable',
     'Disable a persistent injected CSS style by name',
     {
       name: z.string().describe('Name of the style to disable'),

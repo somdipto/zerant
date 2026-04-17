@@ -86,7 +86,7 @@
 ```
 ┌───────────────────────────────────────────────────────────┐
 │                                                           │
-│              Welcome to Tandem Browser!                   │
+│              Welcome to Zerant Browser!                   │
 │                                                           │
 │           AI-Human symbiotic browsing...                  │
 │                                                           │

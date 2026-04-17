@@ -51,9 +51,9 @@ export function initChat() {
   } = renderer;
 
   async function persistChatMessage(from, text, image, notifyWebhook = false) {
-    if (!window.tandem?.persistChatMessage) return false;
+    if (!window.zerant?.persistChatMessage) return false;
     try {
-      const result = await window.tandem.persistChatMessage({ from, text, image, notifyWebhook });
+      const result = await window.zerant.persistChatMessage({ from, text, image, notifyWebhook });
       return Boolean(result?.ok);
     } catch {
       return false;
@@ -335,8 +335,8 @@ export function initChat() {
       msgText.appendChild(img);
 
       // Send to main process via IPC
-      if (window.tandem?.sendChatImage) {
-        window.tandem.sendChatImage(text, imageData);
+      if (window.zerant?.sendChatImage) {
+        window.zerant.sendChatImage(text, imageData);
       }
       return;
     }
@@ -411,8 +411,8 @@ export function initChat() {
     .catch(() => switchBackend('openclaw'));
 
   // Listen for incoming Wingman messages pushed via POST /chat API
-  if (window.tandem && window.tandem.onChatMessage) {
-    window.tandem.onChatMessage((msg) => {
+  if (window.zerant && window.zerant.onChatMessage) {
+    window.zerant.onChatMessage((msg) => {
       // msg: {id, from, text, timestamp, image}
       // Skip user messages — already shown optimistically in the UI
       if (msg.from === 'user') return;

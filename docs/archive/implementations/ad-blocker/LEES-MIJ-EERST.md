@@ -9,7 +9,7 @@
 
 ## Why this feature?
 
-Tandem's NetworkShield blokkeert malware and phishing (811K+ URLs), but no advertenties. Ad blocking is table stakes for moderne browsers — page's laden faster, minder tracking, betere privacy. Opera has a inbuilte ad blocker with EasyList. Dit is the #8 prioriteit in the gap analyse (docs/research/gap-analysis.md).
+Zerant's NetworkShield blokkeert malware and phishing (811K+ URLs), but no advertenties. Ad blocking is table stakes for moderne browsers — page's laden faster, minder tracking, betere privacy. Opera has a inbuilte ad blocker with EasyList. Dit is the #8 prioriteit in the gap analyse (docs/research/gap-analysis.md).
 
 ---
 
@@ -43,7 +43,7 @@ Browser request → Electron session.webRequest.onBeforeRequest()
 |---------|---------------|-------------------|
 | `AGENTS.md` | Anti-detect rules, code stijl, commit format | — (read fully) |
 | `src/main.ts` | App startup, manager registratie, RequestDispatcher setup | `startAPI()`, `createWindow()` |
-| `src/api/server.ts` | TandemAPI class, route registratie | `class TandemAPI`, `setupRoutes()` |
+| `src/api/server.ts` | ZerantAPI class, route registratie | `class ZerantAPI`, `setupRoutes()` |
 | `src/registry.ts` | ManagerRegistry interface | `interface ManagerRegistry` |
 | `src/network/dispatcher.ts` | RequestDispatcher — central hub for webRequest hooks | `class RequestDispatcher`, `registerBeforeRequest()` |
 

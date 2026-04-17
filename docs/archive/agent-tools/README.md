@@ -1,8 +1,8 @@
 # Agent Tools — Implementation Project
 
-Three features Kees, the default OpenClaw persona in Tandem, needs to work more
+Three features Kees, the default OpenClaw persona in Zerant, needs to work more
 effectively with the browser. This pack is based on a gap analysis between
-Tandem (174 endpoints) and `agent-browser` (~65 endpoints).
+Zerant (174 endpoints) and `agent-browser` (~65 endpoints).
 
 ## Goal
 
@@ -12,7 +12,7 @@ Not for end-user demos. Purely for agent-facing capability work:
 |---|---|---|
 | **Persistent scripts** | `POST /execute-js` loses state after navigation | `ScriptInjector` — re-inject on every `did-finish-load` |
 | **Semantic locators** | CSS selectors are fragile and hard to generate | `POST /find {"by":"role","value":"button"}` — query by semantics |
-| **Device emulation** | Tandem always runs desktop Chromium | iPhone/Galaxy presets via the Electron native API |
+| **Device emulation** | Zerant always runs desktop Chromium | iPhone/Galaxy presets via the Electron native API |
 
 ## Structure
 

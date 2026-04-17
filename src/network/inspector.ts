@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { STATUS_CODES } from 'http';
 import type { RequestDispatcher } from './dispatcher';
-import { tandemDir } from '../utils/paths';
+import { zerantDir } from '../utils/paths';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('NetworkInspector');
@@ -90,7 +90,7 @@ export interface HarExport {
   log: {
     version: '1.2';
     creator: {
-      name: 'Tandem Browser';
+      name: 'Zerant Browser';
       version: string;
     };
     pages: Array<{
@@ -112,7 +112,7 @@ export interface HarExport {
  * NetworkInspector — Logs and analyzes network traffic via RequestDispatcher.
  *
  * Runs in the main process (NOT in webview) — safe for anti-detection.
- * Stores last 1000 requests in memory, flushes per-domain data to ~/.tandem/network/.
+ * Stores last 1000 requests in memory, flushes per-domain data to ~/.zerant/network/.
  */
 export class NetworkInspector {
   // === 1. Private state ===
@@ -126,7 +126,7 @@ export class NetworkInspector {
 
   // === 2. Constructor ===
   constructor() {
-    this.networkDir = tandemDir('network');
+    this.networkDir = zerantDir('network');
     if (!fs.existsSync(this.networkDir)) {
       fs.mkdirSync(this.networkDir, { recursive: true });
     }
@@ -346,13 +346,13 @@ export class NetworkInspector {
         : 'active tab';
     const title = opts.domain
       ? `Network log for ${opts.domain} (${scopeLabel})`
-      : `Tandem network log (${scopeLabel})`;
+      : `Zerant network log (${scopeLabel})`;
 
     return {
       log: {
         version: '1.2',
         creator: {
-          name: 'Tandem Browser',
+          name: 'Zerant Browser',
           version: process.env.npm_package_version || '0.0.0',
         },
         pages: [{

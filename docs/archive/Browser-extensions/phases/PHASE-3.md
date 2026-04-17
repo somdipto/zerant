@@ -3,7 +3,7 @@
 > **Priority:** MEDIUM | **Effort:** ~half day | **Dependencies:** Phase 1
 
 ## Goal
-Allow users to import their existing Chrome extensions into Tandem with zero effort. Detect Chrome's extension directory, list what's installed, and copy extensions into `~/.tandem/extensions/`.
+Allow users to import their existing Chrome extensions into Zerant with zero effort. Detect Chrome's extension directory, list what's installed, and copy extensions into `~/.tandem/extensions/`.
 
 ## Files to Read
 - `src/extensions/loader.ts` — understand how extensions are loaded from `~/.tandem/extensions/`
@@ -59,7 +59,7 @@ Extensions/
 **Import logic:**
 1. Find the extension in the Chrome listing
 2. Copy the version folder contents to `~/.tandem/extensions/{id}/`
-3. Skip if already exists in Tandem's extensions dir
+3. Skip if already exists in Zerant's extensions dir
 4. Use `fs.cpSync()` for recursive copy (available in Node 16.7+)
 5. **Store CWS source metadata:** After copying, write a `.tandem-meta.json` file inside the extension directory:
    ```json

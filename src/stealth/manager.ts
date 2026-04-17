@@ -9,7 +9,7 @@ const log = createLogger('StealthManager');
 // ─── Manager ───
 
 /**
- * StealthManager — Makes Tandem Browser look like a regular human browser.
+ * StealthManager — Makes Zerant Browser look like a regular human browser.
  *
  * Anti-detection measures:
  * 1. Realistic User-Agent (matches real Chrome)
@@ -27,7 +27,7 @@ export class StealthManager {
   private readonly chromeMajor: string;
 
   // === 2. Constructor ===
-  constructor(session: Session, partition: string = 'persist:tandem') {
+  constructor(session: Session, partition: string = 'persist:zerant') {
     this.session = session;
     // Store the real Electron UA before overwriting — needed for Google auth
     this.originalUserAgent = session.getUserAgent();
@@ -119,7 +119,7 @@ export class StealthManager {
    * Phase 5: includes canvas, WebGL, audio, font, and timing fingerprint protection.
    * @param seed - Deterministic seed for consistent noise per session
    */
-  static getStealthScript(seed: string = 'tandem-default-seed', chromeVersion: string = process.versions.chrome): string {
+  static getStealthScript(seed: string = 'zerant-default-seed', chromeVersion: string = process.versions.chrome): string {
     const chromeMajor = chromeVersion.split('.')[0];
     return `
       // ═══ All stealth patches in one IIFE — no globals leaked to window ═══

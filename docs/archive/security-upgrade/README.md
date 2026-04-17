@@ -1,6 +1,6 @@
-# Tandem Security Upgrade Project
+# Zerant Security Upgrade Project
 
-> Improve Tandem's security system based on insights from Azul Bedrock (ASD), CyberChef (GCHQ), and Ghidra (NSA).
+> Improve Zerant's security system based on insights from Azul Bedrock (ASD), CyberChef (GCHQ), and Ghidra (NSA).
 
 **Start:** 24 Feb 2026
 **Status:** In progress

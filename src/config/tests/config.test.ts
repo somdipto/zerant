@@ -59,7 +59,7 @@ describe('ConfigManager', () => {
       expect(config.screenshots.clipboard).toBe(true);
       expect(config.screenshots.localFolder).toBe(true);
       expect(config.screenshots.localFolderPath).toBe(
-        path.join(os.homedir(), 'Pictures', 'Tandem')
+        path.join(os.homedir(), 'Pictures', 'Zerant')
       );
       expect(config.screenshots.applePhotos).toBe(false);
       expect(config.screenshots.googlePhotos).toBe(false);
@@ -413,11 +413,11 @@ describe('ConfigManager', () => {
   });
 
   describe('directory creation', () => {
-    it('creates ~/.tandem directory if it does not exist', () => {
+    it('creates ~/.zerant directory if it does not exist', () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
       new ConfigManager();
       expect(fs.mkdirSync).toHaveBeenCalledWith(
-        expect.stringContaining('.tandem'),
+        expect.stringContaining('.zerant'),
         { recursive: true }
       );
     });
